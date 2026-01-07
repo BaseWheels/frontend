@@ -442,3 +442,28 @@ body {
     animation: scroll-right 40s linear infinite;
   }
 }
+
+/* Latar belakang kartu mobil sesuai Figma */
+.bg-orange-gradient {
+  background: linear-gradient(to bottom, #FF8C00 0%, #FFA500 40%, #FFFFFF 100%);
+}
+
+/* Jika ingin efek shadow halus seperti di gambar */
+.car-card {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.car-card:hover {
+  transform: translateY(-5px);
+}
+
+
+.hotwheels-gradient-text {
+  background: linear-gradient(to bottom, #FFD147 0%, #FF8C05 50%, #E54200 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Pengganti WebkitTextStroke yang aman */
+  /* filter: drop-shadow(0px 1px 1px #8B3200); */
+  /* -webkit-text-stroke: 1px #8B3200; */
+}
