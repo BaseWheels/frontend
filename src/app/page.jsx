@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { usePrivy } from "@privy-io/react-auth";
+import { useRouter } from "next/navigation";
 
 const background =
   "/assets/backgrounds/view-car-running-high-speed%20%282%29.jpg";
@@ -51,11 +52,19 @@ const features = [
 ];
 
 export default function Home() {
-  const { ready, login } = usePrivy();
+  const { ready, authenticated, login } = usePrivy();
+  const router = useRouter();
   const [activeCarIndexTop, setActiveCarIndexTop] = useState(0);
   const [activeCarIndexBottom, setActiveCarIndexBottom] = useState(0);
   const carouselTopRef = useRef(null);
   const carouselBottomRef = useRef(null);
+
+  // Redirect to dashboard if authenticated
+  useEffect(() => {
+    if (ready && authenticated) {
+      router.push("/dashboard");
+    }
+  }, [ready, authenticated, router]);
 
   return (
     <main className="relative overflow-x-hidden bg-black text-white">
