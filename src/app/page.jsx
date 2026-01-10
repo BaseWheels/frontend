@@ -248,31 +248,6 @@ export default function Home() {
               </div>
             ))}
           </div>
-
-          <div className="mt-8 text-center sm:mt-12">
-            <div className="glass-light mx-auto inline-block rounded-2xl px-6 py-5 sm:px-8 sm:py-6">
-              <div className="mb-3 flex items-center justify-center gap-3 sm:mb-4">
-                <img
-                  src="/assets/icons/pngwing.com.png"
-                  alt="Hot Wheels Car"
-                  className="h-20 w-20 object-contain sm:h-24 sm:w-24"
-                />
-              </div>
-              <p className="mb-3 text-base font-semibold text-slate-800 sm:mb-4 sm:text-lg">
-                Vote <span className="text-blue-600">On-chain</span> | Or{" "}
-                <span className="text-red-600">Off-chain</span> for your Crypto
-                Wallet
-              </p>
-              <div className="flex justify-center gap-2 sm:gap-3">
-                <button className="rounded-full bg-blue-600 px-5 py-2 text-sm font-bold text-white shadow-md transition-transform hover:scale-105 sm:px-6 sm:text-base">
-                  On-chain
-                </button>
-                <button className="rounded-full bg-red-600 px-5 py-2 text-sm font-bold text-white shadow-md transition-transform hover:scale-105 sm:px-6 sm:text-base">
-                  Off-chain
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
