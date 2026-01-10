@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
+import LoadingAnimation from "@/components/LoadingAnimation";
 
 const background =
   "/assets/backgrounds/view-car-running-high-speed%20%282%29.jpg";
@@ -21,7 +22,7 @@ const hotWheelsCarsTop = [
 
 const hotWheelsCarsBottom = [
   { name: "Speed Demon", image: "/assets/car/Speed Demon.png" },
-  { name: "purple light", image: "/assets/car/purple light.png" },
+  { name: "Purple Light", image: "/assets/car/purple light.png" },
   { name: "Thunder Bolt", image: "/assets/car/Thunder Bolt.png" },
   { name: "Fire Beast", image: "/assets/car/Fire Beast.png" },
   { name: "Steel Racer", image: "/assets/car/Steel Racer.png" },
@@ -54,22 +55,35 @@ const features = [
 export default function Home() {
   const { ready, authenticated, login } = usePrivy();
   const router = useRouter();
-  const [activeCarIndexTop, setActiveCarIndexTop] = useState(0);
-  const [activeCarIndexBottom, setActiveCarIndexBottom] = useState(0);
-  const carouselTopRef = useRef(null);
-  const carouselBottomRef = useRef(null);
+  const [showLoading, setShowLoading] = useState(false);
+  const [loginError, setLoginError] = useState(null);
 
-  // Redirect to dashboard if authenticated
+  // Show loading animation and redirect to dashboard if authenticated
   useEffect(() => {
     if (ready && authenticated) {
-      router.push("/dashboard");
+      setShowLoading(true);
     }
-  }, [ready, authenticated, router]);
+  }, [ready, authenticated]);
+
+  const handleLoadingComplete = () => {
+    setShowLoading(false);
+    router.push("/dashboard");
+  };
+
+  const handleLogin = async () => {
+    try {
+      setLoginError(null);
+      await login();
+    } catch (error) {
+      console.error("Login failed:", error);
+      setLoginError("Failed to connect. Please try again.");
+    }
+  };
 
   return (
     <main className="relative overflow-x-hidden bg-black text-white">
       {/* SECTION 1: HERO */}
-      <section className="section-full relative px-4 py-12 text-center sm:px-6 sm:py-16">
+      <section id="hero" className="section-full relative px-4 py-12 text-center sm:px-6 sm:py-16">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0 bg-cover bg-center"
@@ -79,7 +93,7 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl">
-          <div className="-mt-20 flex justify-center sm:-mt-[80px]">
+          <div className="-mt-12 flex justify-center sm:-mt-16 md:-mt-20">
             <img
               src={logo}
               alt="Base Wheels"
@@ -87,7 +101,7 @@ export default function Home() {
             />
           </div>
 
-          <h1 className="hotwheels-title hotwheels-gradient-text mt-[350px] mb-2 text-2xl font-black leading-tight sm:mt-[350px] sm:mb-3 sm:text-4xl md:text-6xl">
+          <h1 className="hotwheels-title hotwheels-gradient-text mt-[240px] mb-2 text-2xl font-black leading-tight sm:mt-[280px] sm:mb-3 sm:text-4xl md:mt-[320px] md:text-6xl">
             The Ultimate NFT Car Collection on Base
           </h1>
 
@@ -102,15 +116,20 @@ export default function Home() {
               disabled={!ready}
               className="hotwheels-launch-button"
             >
-              <img src={fireIcon} alt="" className="hotwheels-launch-icon" />
+              <img src={fireIcon} alt="Fire icon" className="hotwheels-launch-icon" />
               <span className="hotwheels-launch-text">Launch App</span>
             </button>
+            {loginError && (
+              <p className="mt-3 text-sm text-red-400 text-center" role="alert">
+                {loginError}
+              </p>
+            )}
           </div>
         </div>
       </section>
 
       {/* SECTION 2: ECOSYSTEM */}
-      <section className="section-full bg-gradient-to-b from-white to-gray-100 px-4 py-8 text-slate-900 sm:px-6 sm:py-16">
+      <section id="collection" className="section-full bg-gradient-to-b from-white to-gray-100 px-4 py-8 text-slate-900 sm:px-6 sm:py-16">
         <div className="mx-auto w-full">
           <h2 className="mb-2 text-center text-2xl font-bold leading-tight text-slate-900 sm:text-3xl md:text-4xl lg:text-5xl">
             A Collection That Works For Your Crypto Ecosystem
@@ -122,9 +141,9 @@ export default function Home() {
           </p>
 
           {/* Hot Wheels Carousel - TOP (Scrolls LEFT) */}
-          <div className="relative mb-4 overflow-hidden py-4">
+          <div className="relative mb-4 overflow-hidden py-4 group" aria-label="Hot Wheels collection carousel scrolling left">
             <div
-              className="flex animate-scroll-left gap-6 sm:gap-8"
+              className="flex animate-scroll-left group-hover:pause-animation gap-6 sm:gap-8"
               style={{ pointerEvents: "none" }}
             >
               {[
@@ -137,7 +156,6 @@ export default function Home() {
                   key={index}
                   className="car-card group min-w-[200px] max-w-[200px] flex-shrink-0 rounded-2xl bg-white p-4 shadow-xl sm:min-w-[280px] sm:max-w-[280px] sm:p-5"
                 >
-                  {/* GANTI BARIS 114-120 DENGAN KODE INI */}
                   <div className="mb-3 flex h-32 items-center justify-center overflow-hidden rounded-xl bg-orange-gradient relative sm:mb-4 sm:h-40">
                     {/* Pola Titik (Dot Pattern) Overlay */}
                     <div
@@ -152,6 +170,7 @@ export default function Home() {
                     <img
                       src={car.image}
                       alt={car.name}
+                      loading="lazy"
                       className="relative z-10 h-full w-full object-contain scale-110"
                     />
                   </div>
@@ -164,9 +183,9 @@ export default function Home() {
           </div>
 
           {/* Hot Wheels Carousel - BOTTOM (Scrolls RIGHT) */}
-          <div className="relative mb-4 overflow-hidden py-4">
+          <div className="relative mb-4 overflow-hidden py-4 group" aria-label="Hot Wheels collection carousel scrolling right">
             <div
-              className="flex animate-scroll-right gap-6 sm:gap-8"
+              className="flex animate-scroll-right group-hover:pause-animation gap-6 sm:gap-8"
               style={{ pointerEvents: "none" }}
             >
               {[
@@ -207,7 +226,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 3: HOW IT WORKS */}
-      <section className="section-full bg-gradient-to-b from-gray-900 to-black px-4 py-12 sm:px-6 sm:py-20">
+      <section id="features" className="section-full bg-gradient-to-b from-gray-900 to-black px-4 py-12 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <h2 className="hotwheels-title hotwheels-gradient-text mb-3 text-center text-2xl font-black sm:mb-4 sm:text-3xl md:text-5xl">
             How Base Wheels Works
@@ -221,7 +240,7 @@ export default function Home() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="hotwheels-panel group rounded-2xl p-5 text-center transition-transform hover:scale-105 sm:p-6"
+                className="hotwheels-panel group rounded-2xl p-5 text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 sm:p-6"
               >
                 <div className="mb-3 flex justify-center sm:mb-4">
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 p-3 shadow-lg sm:h-20 sm:w-20 sm:p-4">
@@ -241,39 +260,14 @@ export default function Home() {
               </div>
             ))}
           </div>
-
-          <div className="mt-8 text-center sm:mt-12">
-            <div className="glass-light mx-auto inline-block rounded-2xl px-6 py-5 sm:px-8 sm:py-6">
-              <div className="mb-3 flex items-center justify-center gap-3 sm:mb-4">
-                <img
-                  src="/assets/icons/pngwing.com.png"
-                  alt="Hot Wheels Car"
-                  className="h-20 w-20 object-contain sm:h-24 sm:w-24"
-                />
-              </div>
-              <p className="mb-3 text-base font-semibold text-slate-800 sm:mb-4 sm:text-lg">
-                Vote <span className="text-blue-600">On-chain</span> | Or{" "}
-                <span className="text-red-600">Off-chain</span> for your Crypto
-                Wallet
-              </p>
-              <div className="flex justify-center gap-2 sm:gap-3">
-                <button className="rounded-full bg-blue-600 px-5 py-2 text-sm font-bold text-white shadow-md transition-transform hover:scale-105 sm:px-6 sm:text-base">
-                  On-chain
-                </button>
-                <button className="rounded-full bg-red-600 px-5 py-2 text-sm font-bold text-white shadow-md transition-transform hover:scale-105 sm:px-6 sm:text-base">
-                  Off-chain
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* SECTION 4: FINAL CTA */}
-      <section className="section-full bg-gradient-to-b from-slate-100 to-white px-4 py-12 text-slate-900 sm:px-6 sm:py-20">
+      <section id="cta" className="section-full bg-gradient-to-b from-slate-100 to-white px-4 py-12 text-slate-900 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="mb-4 text-3xl font-black text-slate-900 sm:mb-6 sm:text-4xl md:text-6xl">
-            Ready to Own Digital Hot Wheels? ???
+            Ready to Own Digital Hot Wheels? 🏎️🔥
           </h2>
           <p className="mb-8 text-base text-slate-600 sm:mb-10 sm:text-lg md:text-xl">
             Collect legendary cars as NFTs on Base blockchain. Each car is
@@ -283,39 +277,54 @@ export default function Home() {
           <div className="hotwheels-launch-wrap mx-auto max-w-sm sm:max-w-md">
             <button
               type="button"
-              onClick={login}
+              onClick={handleLogin}
               disabled={!ready}
               className="hotwheels-launch-button"
+              aria-label="Launch Base Wheels App"
             >
-              <img src={fireIcon} alt="" className="hotwheels-launch-icon" />
+              <img src={fireIcon} alt="Fire icon" className="hotwheels-launch-icon" />
               <span className="hotwheels-launch-text">Launch App</span>
             </button>
+            {loginError && (
+              <p className="mt-3 text-sm text-red-400 text-center" role="alert">
+                {loginError}
+              </p>
+            )}
           </div>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-8 sm:gap-6">
             <a
               href="#"
               className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm"
+              aria-label="View documentation"
             >
               Documentation
             </a>
-            <span className="text-slate-300"></span>
+            <span className="text-slate-300" aria-hidden="true">•</span>
             <a
               href="#"
               className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm"
+              aria-label="Join our community"
             >
               Community
             </a>
-            <span className="text-slate-300"></span>
+            <span className="text-slate-300" aria-hidden="true">•</span>
             <a
               href="#"
               className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm"
+              aria-label="Get support"
             >
               Support
             </a>
           </div>
         </div>
       </section>
+
+      {/* Loading Animation Popup */}
+      <LoadingAnimation
+        isVisible={showLoading}
+        onComplete={handleLoadingComplete}
+      />
     </main>
   );
 }

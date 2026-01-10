@@ -441,6 +441,10 @@ body {
   .animate-scroll-right {
     animation: scroll-right 40s linear infinite;
   }
+
+  .pause-animation {
+    animation-play-state: paused;
+  }
 }
 
 /* Latar belakang kartu mobil sesuai Figma */

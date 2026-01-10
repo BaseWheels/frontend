@@ -51,16 +51,33 @@ export default function ProfilePage() {
     return null;
   }
 
-  // Get user info
+  // Get user info - Priority: Twitter/Discord > Email > Wallet Address
   const userEmail = user?.email?.address || "";
-  const userName = user?.twitter?.username || user?.discord?.username || "Hot Wheels Racer";
+
+  // Determine account type and username
+  let userName = "Racer";
+  let accountType = "Guest";
+
+  if (user?.twitter?.username) {
+    userName = user.twitter.username;
+    accountType = "Twitter";
+  } else if (user?.discord?.username) {
+    userName = user.discord.username;
+    accountType = "Discord";
+  } else if (userEmail) {
+    userName = userEmail.split('@')[0];
+    accountType = "Email";
+  } else if (walletAddress) {
+    userName = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+    accountType = "Wallet";
+  }
 
   // Shorten wallet address for display
   const shortAddress = isConnected && walletAddress
     ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
     : authenticated
-    ? "Creating wallet..."
-    : "Not connected";
+      ? "Creating wallet..."
+      : "Not connected";
 
   const menuItems = [
     {
@@ -129,7 +146,7 @@ export default function ProfilePage() {
             <img
               src="/assets/icons/logo2.png"
               alt="Hot Wheels"
-              className="h-16 object-contain drop-shadow-2xl"
+              className="h-24 sm:h-28 object-contain drop-shadow-2xl"
             />
           </div>
 
@@ -142,9 +159,18 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <h2 className="text-xl font-black">{userName}</h2>
-                  {userEmail && (
-                    <p className="text-xs text-white/80">{userEmail}</p>
-                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full uppercase font-bold">
+                      {accountType === "Twitter" && "🐦 "}
+                      {accountType === "Discord" && "💬 "}
+                      {accountType === "Email" && "✉️ "}
+                      {accountType === "Wallet" && "💳 "}
+                      {accountType}
+                    </span>
+                    {userEmail && (
+                      <span className="text-xs text-white/70">{userEmail}</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

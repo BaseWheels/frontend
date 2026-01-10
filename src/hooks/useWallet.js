@@ -84,13 +84,26 @@ export function useWallet() {
             console.log("✅ Wallet creation triggered successfully!");
           } catch (error) {
             console.error("❌ Failed to create wallet:", error);
-            setWalletError(error.message || "Failed to create wallet");
 
-            // Show user-friendly error
-            if (error.message?.includes("not enabled")) {
-              console.error("🚨 ERROR: Embedded wallets not enabled in Privy Dashboard!");
-              console.error("👉 Go to: https://dashboard.privy.io");
-              console.error("👉 Enable 'Embedded wallets' in Settings");
+            // Handle case where wallet already exists but hasn't appeared yet
+            if (error.message?.includes("already has an embedded wallet")) {
+              console.log("ℹ️ User already has an embedded wallet. Waiting for it to appear...");
+              setWalletError(null); // Don't show error to user
+
+              // Reset flag so we can check again
+              createWalletAttempted.current = false;
+
+              // The wallet should appear in the wallets array soon
+              // The useEffect will re-run when wallets array updates
+            } else {
+              setWalletError(error.message || "Failed to create wallet");
+
+              // Show user-friendly error for other cases
+              if (error.message?.includes("not enabled")) {
+                console.error("🚨 ERROR: Embedded wallets not enabled in Privy Dashboard!");
+                console.error("👉 Go to: https://dashboard.privy.io");
+                console.error("👉 Enable 'Embedded wallets' in Settings");
+              }
             }
           } finally {
             setIsConnecting(false);
