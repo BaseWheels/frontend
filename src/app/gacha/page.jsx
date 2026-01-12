@@ -7,6 +7,7 @@ import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
 import NetworkModal from "@/components/shared/NetworkModal";
 import { getGachaBoxes, openGachaBox, getRarityConfig } from "@/lib/gachaApi";
+import { burnMockIDRX } from "@/lib/mockidrx";
 
 export default function GachaPage() {
   const { authenticated, ready, getAccessToken } = usePrivy();
@@ -23,7 +24,7 @@ export default function GachaPage() {
 
   // Gacha data from backend
   const [gachaBoxes, setGachaBoxes] = useState([]);
-  const [userCoins, setUserCoins] = useState(0);
+  const [userMockIDRX, setUserMockIDRX] = useState(0);
   const [selectedBoxType, setSelectedBoxType] = useState("standard");
   const [loadingGachaData, setLoadingGachaData] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -64,7 +65,7 @@ export default function GachaPage() {
     }
   }, [walletAddress, embeddedWallet, chainId]);
 
-  // Fetch gacha boxes and user coins from backend
+  // Fetch gacha boxes and user MockIDRX balance from backend
   const fetchGachaData = async () => {
     if (!authenticated) return;
 
@@ -75,7 +76,7 @@ export default function GachaPage() {
       const data = await getGachaBoxes(authToken);
 
       setGachaBoxes(data.boxes);
-      setUserCoins(data.userCoins);
+      setUserMockIDRX(data.userMockIDRX);
       setLoadingGachaData(false);
     } catch (error) {
       console.error("Failed to fetch gacha data:", error);
@@ -147,11 +148,33 @@ export default function GachaPage() {
     isDraggingRef.current = false;
 
     try {
-      // Get auth token
+      // Get selected box cost
+      const selectedBox = gachaBoxes.find(box => box.type === selectedBoxType);
+      if (!selectedBox) {
+        throw new Error("Box data not loaded. Please refresh the page.");
+      }
+
+      if (!selectedBox.costCoins || selectedBox.costCoins <= 0) {
+        throw new Error("Invalid box cost. Please refresh the page.");
+      }
+
+      console.log("📦 Selected box:", selectedBox);
+
+      // Step 1: User burns their own MockIDRX tokens (no approval needed!)
+      console.log(`🔥 Burning ${selectedBox.costCoins} IDRX...`);
+      const burnResult = await burnMockIDRX(embeddedWallet, selectedBox.costCoins);
+
+      if (!burnResult.success) {
+        throw new Error(burnResult.error || "Failed to burn tokens");
+      }
+
+      console.log("✅ Burn successful:", burnResult.txHash);
+
+      // Step 2: Get auth token
       const authToken = await getAccessToken();
 
-      // Call backend API to open gacha box
-      const result = await openGachaBox(selectedBoxType, authToken);
+      // Step 3: Call backend API with burn TX hash for verification
+      const result = await openGachaBox(selectedBoxType, burnResult.txHash, authToken);
 
       // Simulate spinning animation (2 seconds)
       setTimeout(() => {
@@ -172,8 +195,8 @@ export default function GachaPage() {
         setHasSpun(true);
         setIsSpinning(false);
 
-        // Update user coins
-        setUserCoins(result.coins.remaining);
+        // Update user MockIDRX balance
+        setUserMockIDRX(result.mockIDRX.remaining);
 
         console.log("✅ Gacha Success:", result);
       }, 2000);
@@ -183,8 +206,8 @@ export default function GachaPage() {
       setSlideProgress(0);
 
       // Show error message
-      if (error.message.includes("Insufficient coins")) {
-        setErrorMessage("Insufficient coins! You need more coins to open this box.");
+      if (error.message.includes("Insufficient MockIDRX")) {
+        setErrorMessage("Insufficient MockIDRX tokens! You need more IDRX to open this box.");
       } else {
         setErrorMessage(error.message || "Failed to open gacha box. Please try again.");
       }
@@ -215,36 +238,15 @@ export default function GachaPage() {
         {/* Header */}
         <header className="px-4 pt-3 pb-2">
           <div className="flex items-center justify-between gap-2">
-            {/* User Coins (from backend) */}
+            {/* User MockIDRX Balance (from backend) */}
             <div className="flex items-center gap-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full px-3 py-1.5 shadow-lg">
               <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center text-yellow-300 font-black text-xs">
                 💰
               </div>
               <span className="font-black text-sm text-orange-900">
-                {loadingGachaData ? "..." : userCoins}
+                {loadingGachaData ? "..." : userMockIDRX}
               </span>
-              <span className="text-xs font-bold text-orange-900 opacity-80">coins</span>
-            </div>
-
-            {/* ETH Balance Badge - Click to switch network */}
-            <div
-              onClick={() => setShowNetworkModal(true)}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full px-3 py-1.5 shadow-lg cursor-pointer hover:scale-105 transition-transform group"
-            >
-              <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-orange-900 font-black text-xs">
-                {currencySymbol === "MATIC" ? "⬡" : "Ξ"}
-              </div>
-              <span className="font-black text-sm">
-                {loadingBalance ? "..." : balance.toFixed(4)}
-              </span>
-              <span className="text-xs font-bold opacity-80">{currencySymbol}</span>
-              {chainId && (
-                <div className="ml-1 opacity-70 group-hover:opacity-100 transition-opacity">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              )}
+              <span className="text-xs font-bold text-orange-900 opacity-80">IDRX</span>
             </div>
           </div>
         </header>
@@ -266,7 +268,7 @@ export default function GachaPage() {
                       : "bg-gray-700/50 text-gray-500 cursor-not-allowed"
                   }`}
                 >
-                  {box.type.toUpperCase()} ({box.costCoins} 💰)
+                  {box.type.toUpperCase()} ({box.costMockIDRX} 💰)
                 </button>
               ))}
             </div>
@@ -319,8 +321,9 @@ export default function GachaPage() {
                     <span className="text-2xl">💰</span>
                   </div>
                   <span className="text-6xl font-black text-orange-400">
-                    {gachaBoxes.find(b => b.type === selectedBoxType)?.costCoins || 0}
+                    {gachaBoxes.find(b => b.type === selectedBoxType)?.costMockIDRX || 0}
                   </span>
+                  <span className="text-2xl font-bold text-orange-400 opacity-80">IDRX</span>
                 </div>
                 <p className="text-gray-400 text-xs mt-2">
                   {selectedBoxType.toUpperCase()} Box

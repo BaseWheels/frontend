@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
 import NetworkModal from "@/components/shared/NetworkModal";
+import { claimFaucet, checkFaucetCooldown, formatCooldownTime } from "@/lib/mockidrx";
 
 // Car data
 const carCollection = [
@@ -54,13 +55,20 @@ const carCollection = [
 ];
 
 export default function Dashboard() {
-  const { authenticated, ready } = usePrivy();
-  const { isConnected, walletAddress, getBalance, currencySymbol, chainId } = useWallet();
+  const { authenticated, ready, getAccessToken } = usePrivy();
+  const { isConnected, walletAddress, getBalance, currencySymbol, chainId, embeddedWallet } = useWallet();
   const router = useRouter();
   const [currentCarIndex, setCurrentCarIndex] = useState(0);
   const [balance, setBalance] = useState(0);
+  const [mockIDRXBalance, setMockIDRXBalance] = useState(0);
   const [loadingBalance, setLoadingBalance] = useState(false);
+  const [loadingMockIDRX, setLoadingMockIDRX] = useState(false);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
+
+  // Faucet states
+  const [claimingFaucet, setClaimingFaucet] = useState(false);
+  const [faucetCooldown, setFaucetCooldown] = useState(0);
+  const [showClaimSuccess, setShowClaimSuccess] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -69,12 +77,19 @@ export default function Dashboard() {
     }
   }, [ready, authenticated, router]);
 
-  // Fetch balance when wallet is connected
+  // Fetch ETH balance when wallet is connected
   useEffect(() => {
     if (isConnected) {
       fetchBalance();
     }
   }, [isConnected]);
+
+  // Fetch MockIDRX balance from backend
+  useEffect(() => {
+    if (authenticated) {
+      fetchMockIDRXBalance();
+    }
+  }, [authenticated]);
 
   const fetchBalance = async () => {
     try {
@@ -88,6 +103,72 @@ export default function Dashboard() {
       setLoadingBalance(false);
     }
   };
+
+  const fetchMockIDRXBalance = async () => {
+    try {
+      setLoadingMockIDRX(true);
+      const authToken = await getAccessToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/overview`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.json();
+      setMockIDRXBalance(data.user?.mockIDRX || 0);
+    } catch (error) {
+      console.error("Failed to fetch MockIDRX balance:", error);
+      setMockIDRXBalance(0);
+    } finally {
+      setLoadingMockIDRX(false);
+    }
+  };
+
+  // Check faucet cooldown
+  const checkCooldown = async () => {
+    if (!embeddedWallet || !walletAddress) return;
+
+    try {
+      const seconds = await checkFaucetCooldown(embeddedWallet, walletAddress);
+      setFaucetCooldown(seconds);
+    } catch (error) {
+      console.error("Failed to check cooldown:", error);
+    }
+  };
+
+  // Handle claim faucet
+  const handleClaimFaucet = async () => {
+    if (!embeddedWallet || claimingFaucet) return;
+
+    try {
+      setClaimingFaucet(true);
+      const result = await claimFaucet(embeddedWallet);
+
+      if (result.success) {
+        setShowClaimSuccess(true);
+        setTimeout(() => setShowClaimSuccess(false), 3000);
+
+        // Refresh balance and cooldown
+        fetchMockIDRXBalance();
+        checkCooldown();
+      } else {
+        alert(result.error || "Failed to claim faucet");
+      }
+    } catch (error) {
+      console.error("Claim faucet error:", error);
+      alert("Claim gagal! Coba lagi.");
+    } finally {
+      setClaimingFaucet(false);
+    }
+  };
+
+  // Check cooldown on load and every minute
+  useEffect(() => {
+    if (isConnected && walletAddress && embeddedWallet) {
+      checkCooldown();
+      const interval = setInterval(checkCooldown, 60000); // Check every minute
+      return () => clearInterval(interval);
+    }
+  }, [isConnected, walletAddress, embeddedWallet]);
 
   if (!ready || !authenticated) {
     return null;
@@ -104,32 +185,20 @@ export default function Dashboard() {
       <div className="relative z-10 flex flex-col h-screen max-w-md mx-auto">
         {/* Header */}
         <header className="px-4 pt-3 pb-2">
-          {/* Top Bar */}
-          <div className="flex items-center justify-between">
-            {/* Balance Badge - Click to switch network */}
-            <div
-              onClick={() => setShowNetworkModal(true)}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full px-3 py-1.5 shadow-lg cursor-pointer hover:scale-105 transition-transform group"
-              title="Click to switch network"
-            >
-              <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-orange-900 font-black text-xs">
-                {currencySymbol === "MATIC" ? "⬡" : "Ξ"}
+          {/* Top Bar - Single row with balance on left, wallet + help on right */}
+          <div className="flex items-center justify-between gap-2">
+            {/* MockIDRX Balance Badge */}
+            <div className="flex items-center gap-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full px-3 py-1.5 shadow-lg">
+              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center text-yellow-300 font-black text-xs">
+                💰
               </div>
-              <span className="font-black text-sm">
-                {loadingBalance ? "..." : balance.toFixed(4)}
+              <span className="font-black text-sm text-orange-900">
+                {loadingMockIDRX ? "..." : Math.floor(mockIDRXBalance)}
               </span>
-              <span className="text-xs font-bold opacity-80">{currencySymbol}</span>
-              {/* Network indicator */}
-              {chainId && (
-                <div className="ml-1 opacity-70 group-hover:opacity-100 transition-opacity">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              )}
+              <span className="text-xs font-bold text-orange-900 opacity-80">IDRX</span>
             </div>
 
-            {/* Wallet Status */}
+            {/* Wallet Status + Help Button */}
             <div className="flex items-center gap-2">
               {isConnected ? (
                 <div className="bg-green-500/20 border border-green-500 rounded-full px-3 py-1.5 flex items-center gap-2">
@@ -188,6 +257,55 @@ export default function Dashboard() {
             />
           </div>
         </div>
+
+        {/* Faucet Claim Button */}
+        {isConnected && (
+          <div className="px-4 mb-4">
+            <button
+              onClick={handleClaimFaucet}
+              disabled={claimingFaucet || faucetCooldown > 0}
+              className={`w-full rounded-xl p-4 flex items-center justify-between transition-all ${
+                faucetCooldown > 0
+                  ? 'bg-gray-700/50 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-green-500/50'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">💰</span>
+                </div>
+                <div className="text-left">
+                  <div className="font-black text-white text-sm">
+                    {faucetCooldown > 0 ? 'Faucet Cooldown' : claimingFaucet ? 'Claiming...' : 'Claim Free IDRX'}
+                  </div>
+                  <div className="text-xs text-white/80">
+                    {faucetCooldown > 0
+                      ? `Next claim: ${formatCooldownTime(faucetCooldown)}`
+                      : '1,000,000 IDRX per day'
+                    }
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                {claimingFaucet ? (
+                  <div className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full" />
+                ) : faucetCooldown > 0 ? (
+                  <span className="text-2xl">⏰</span>
+                ) : (
+                  <span className="text-2xl">🎁</span>
+                )}
+              </div>
+            </button>
+
+            {/* Success Message */}
+            {showClaimSuccess && (
+              <div className="mt-2 p-3 bg-green-500/20 border border-green-500 rounded-lg flex items-center gap-2">
+                <span className="text-xl">✅</span>
+                <span className="text-green-400 text-sm font-bold">Claimed 1,000,000 IDRX!</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ALL CAR Label */}
         <div className="px-4 mb-3">

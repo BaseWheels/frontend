@@ -6,9 +6,9 @@
 import { apiGet, apiPost } from "./api";
 
 /**
- * Get available gacha boxes and user coins
+ * Get available gacha boxes and user MockIDRX balance
  * @param {string} authToken - Privy authentication token
- * @returns {Promise<{userCoins: number, boxes: Array}>}
+ * @returns {Promise<{userMockIDRX: number, boxes: Array}>}
  */
 export async function getGachaBoxes(authToken) {
   try {
@@ -23,14 +23,15 @@ export async function getGachaBoxes(authToken) {
 /**
  * Open a gacha box and mint NFT
  * @param {string} boxType - Type of box: "standard" | "premium" | "legendary"
+ * @param {string} burnTxHash - Transaction hash of the burn transaction
  * @param {string} authToken - Privy authentication token
- * @returns {Promise<{success: boolean, reward: Object, coins: Object}>}
+ * @returns {Promise<{success: boolean, reward: Object, mockIDRX: Object}>}
  */
-export async function openGachaBox(boxType, authToken) {
+export async function openGachaBox(boxType, burnTxHash, authToken) {
   try {
     const data = await apiPost(
       "/api/gacha/open",
-      { boxType },
+      { boxType, burnTxHash },
       authToken
     );
     return data;

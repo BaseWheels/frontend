@@ -8,11 +8,13 @@ import { useWallet } from "@/hooks/useWallet";
 import NetworkModal from "@/components/shared/NetworkModal";
 
 export default function ProfilePage() {
-  const { authenticated, ready, user, logout } = usePrivy();
+  const { authenticated, ready, user, logout, getAccessToken } = usePrivy();
   const { isConnected, walletAddress, getBalance, currencySymbol, chainId } = useWallet();
   const router = useRouter();
   const [balance, setBalance] = useState(0);
+  const [mockIDRXBalance, setMockIDRXBalance] = useState(0);
   const [loadingBalance, setLoadingBalance] = useState(false);
+  const [loadingMockIDRX, setLoadingMockIDRX] = useState(false);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
 
   // Redirect if not authenticated
@@ -22,12 +24,19 @@ export default function ProfilePage() {
     }
   }, [ready, authenticated, router]);
 
-  // Fetch balance when wallet is connected
+  // Fetch ETH balance when wallet is connected
   useEffect(() => {
     if (isConnected) {
       fetchBalance();
     }
   }, [isConnected]);
+
+  // Fetch MockIDRX balance from backend
+  useEffect(() => {
+    if (authenticated) {
+      fetchMockIDRXBalance();
+    }
+  }, [authenticated]);
 
   const fetchBalance = async () => {
     try {
@@ -39,6 +48,25 @@ export default function ProfilePage() {
       setBalance(0);
     } finally {
       setLoadingBalance(false);
+    }
+  };
+
+  const fetchMockIDRXBalance = async () => {
+    try {
+      setLoadingMockIDRX(true);
+      const authToken = await getAccessToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/overview`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.json();
+      setMockIDRXBalance(data.user?.mockIDRX || 0);
+    } catch (error) {
+      console.error("Failed to fetch MockIDRX balance:", error);
+      setMockIDRXBalance(0);
+    } finally {
+      setLoadingMockIDRX(false);
     }
   };
 
@@ -175,27 +203,18 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Balance Display - Click to switch network */}
-            <div
-              onClick={() => setShowNetworkModal(true)}
-              className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full px-4 py-2 w-fit cursor-pointer hover:scale-105 transition-transform group"
-              title="Click to switch network"
-            >
-              <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-orange-900 font-black text-sm">
-                {currencySymbol === "MATIC" ? "⬡" : "Ξ"}
-              </div>
-              <span className="font-black text-lg">
-                {loadingBalance ? "..." : balance.toFixed(4)}
-              </span>
-              <span className="text-sm font-bold opacity-90">{currencySymbol}</span>
-              {/* Network indicator */}
-              {chainId && (
-                <div className="ml-1 opacity-70 group-hover:opacity-100 transition-opacity">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+            {/* Balance Display */}
+            <div className="flex gap-2">
+              {/* MockIDRX Balance Badge */}
+              <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full px-4 py-2 w-fit">
+                <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center text-yellow-300 font-black text-sm">
+                  💰
                 </div>
-              )}
+                <span className="font-black text-lg text-orange-900">
+                  {loadingMockIDRX ? "..." : Math.floor(mockIDRXBalance)}
+                </span>
+                <span className="text-sm font-bold text-orange-900 opacity-90">IDRX</span>
+              </div>
             </div>
           </div>
         </header>

@@ -106,7 +106,7 @@ export default function Home() {
           </h1>
 
           <p className="hotwheels-tagline mb-10 text-xs uppercase tracking-widest sm:mb-12 sm:text-base md:text-lg">
-            Collect. Build. Own Real Toy Cars.
+            Collect. Build. Own Die-Cast Cars.
           </p>
 
           <div className="hotwheels-launch-wrap mx-auto w-full max-w-[380px]">

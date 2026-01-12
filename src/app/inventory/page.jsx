@@ -40,12 +40,14 @@ const inventoryData = [
 ];
 
 export default function InventoryPage() {
-  const { authenticated, ready } = usePrivy();
+  const { authenticated, ready, getAccessToken } = usePrivy();
   const router = useRouter();
   const { walletAddress, chainId, currencySymbol, getBalance, embeddedWallet } = useWallet();
 
   const [balance, setBalance] = useState(0);
+  const [mockIDRXBalance, setMockIDRXBalance] = useState(0);
   const [loadingBalance, setLoadingBalance] = useState(true);
+  const [loadingMockIDRX, setLoadingMockIDRX] = useState(false);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("semua");
   const [selectedCars, setSelectedCars] = useState([]);
@@ -83,6 +85,32 @@ export default function InventoryPage() {
       fetchBalance();
     }
   }, [walletAddress, embeddedWallet, chainId]);
+
+  // Fetch MockIDRX balance from backend
+  useEffect(() => {
+    if (authenticated) {
+      fetchMockIDRXBalance();
+    }
+  }, [authenticated]);
+
+  const fetchMockIDRXBalance = async () => {
+    try {
+      setLoadingMockIDRX(true);
+      const authToken = await getAccessToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/overview`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.json();
+      setMockIDRXBalance(data.user?.mockIDRX || 0);
+    } catch (error) {
+      console.error("Failed to fetch MockIDRX balance:", error);
+      setMockIDRXBalance(0);
+    } finally {
+      setLoadingMockIDRX(false);
+    }
+  };
 
   // Filter inventory based on selected filter
   const filteredInventory = selectedFilter === "semua"
@@ -137,26 +165,16 @@ export default function InventoryPage() {
       <div className="relative z-10 flex flex-col min-h-screen max-w-md mx-auto">
         {/* Header */}
         <header className="px-4 pt-3 pb-4">
-          <div className="flex items-center justify-end mb-4">
-            {/* Balance Badge - Click to switch network */}
-            <div
-              onClick={() => setShowNetworkModal(true)}
-              className="flex items-center gap-2 bg-orange-600/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg cursor-pointer hover:scale-105 transition-transform group"
-            >
-              <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-orange-900 font-black text-xs">
-                {currencySymbol === "MATIC" ? "⬡" : "Ξ"}
+          <div className="flex items-center justify-end gap-2 mb-4">
+            {/* MockIDRX Balance Badge */}
+            <div className="flex items-center gap-1.5 bg-yellow-400 rounded-full px-3 py-1.5 shadow-lg">
+              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center text-yellow-300 font-black text-xs">
+                💰
               </div>
-              <span className="font-black text-lg">
-                {loadingBalance ? "..." : balance.toFixed(4)}
+              <span className="font-black text-sm text-orange-900">
+                {loadingMockIDRX ? "..." : Math.floor(mockIDRXBalance)}
               </span>
-              <span className="text-xs font-bold opacity-80">{currencySymbol}</span>
-              {chainId && (
-                <div className="ml-1 opacity-70 group-hover:opacity-100 transition-opacity">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              )}
+              <span className="text-xs font-bold text-orange-900 opacity-80">IDRX</span>
             </div>
           </div>
 
