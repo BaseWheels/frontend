@@ -44,6 +44,11 @@ export default function InventoryPage() {
   const [assembling, setAssembling] = useState(false);
   const [assemblyResult, setAssemblyResult] = useState(null);
 
+  // Sold out modal state
+  const [showSoldOutModal, setShowSoldOutModal] = useState(false);
+  const [soldOutData, setSoldOutData] = useState(null);
+  const [processingOption, setProcessingOption] = useState(false);
+
   // Tab state
   const [activeTab, setActiveTab] = useState("cars"); // "cars" or "fragments"
 
@@ -181,6 +186,22 @@ export default function InventoryPage() {
 
       const data = await response.json();
 
+      // Check if sold out (status 409)
+      if (response.status === 409 && data.soldOut) {
+        // Show sold out modal with options
+        setSoldOutData({
+          brand,
+          series: data.series,
+          fragmentIds: data.fragmentIds,
+          supplyStatus: data.supplyStatus,
+          options: data.options,
+          message: data.message,
+        });
+        setShowSoldOutModal(true);
+        setAssembling(false);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(data.message || data.error || "Assembly failed");
       }
@@ -192,7 +213,7 @@ export default function InventoryPage() {
       });
 
       // Refresh data
-      await Promise.all([fetchInventory(), fetchFragments()]);
+      await Promise.all([fetchInventory(), fetchFragments(), fetchMockIDRXBalance()]);
     } catch (error) {
       console.error("Assembly failed:", error);
       setAssemblyResult({
@@ -201,6 +222,90 @@ export default function InventoryPage() {
       });
     } finally {
       setAssembling(false);
+    }
+  };
+
+  // Handle refund option
+  const handleRefundOption = async () => {
+    if (!soldOutData || processingOption) return;
+
+    try {
+      setProcessingOption(true);
+      const authToken = await getAccessToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/supply/claim-refund`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          fragmentIds: soldOutData.fragmentIds,
+          series: soldOutData.series,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Refund failed");
+      }
+
+      // Close modal and show success
+      setShowSoldOutModal(false);
+      setAssemblyResult({
+        success: true,
+        message: data.message,
+      });
+
+      // Refresh data
+      await Promise.all([fetchFragments(), fetchMockIDRXBalance()]);
+    } catch (error) {
+      console.error("Refund failed:", error);
+      alert(error.message || "Failed to process refund");
+    } finally {
+      setProcessingOption(false);
+    }
+  };
+
+  // Handle waitlist option
+  const handleWaitlistOption = async () => {
+    if (!soldOutData || processingOption) return;
+
+    try {
+      setProcessingOption(true);
+      const authToken = await getAccessToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/supply/join-waitlist`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          fragmentIds: soldOutData.fragmentIds,
+          series: soldOutData.series,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to join waiting list");
+      }
+
+      // Close modal and show success
+      setShowSoldOutModal(false);
+      setAssemblyResult({
+        success: true,
+        message: data.message + ` (Position: #${data.position})`,
+      });
+
+      // Refresh data
+      await fetchFragments();
+    } catch (error) {
+      console.error("Join waitlist failed:", error);
+      alert(error.message || "Failed to join waiting list");
+    } finally {
+      setProcessingOption(false);
     }
   };
 
@@ -515,6 +620,89 @@ export default function InventoryPage() {
         onClose={() => setShowNetworkModal(false)}
         onNetworkChanged={() => {}}
       />
+
+      {/* Sold Out Modal */}
+      {showSoldOutModal && soldOutData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400">
+            {/* Header */}
+            <div className="text-center mb-6">
+              <div className="text-6xl mb-3">⚠️</div>
+              <h2 className="text-2xl font-black text-white mb-2">
+                Series Sold Out!
+              </h2>
+              <div className="bg-white/20 rounded-lg p-3 mb-2">
+                <p className="font-bold text-yellow-300 text-lg">
+                  {soldOutData.series} Series
+                </p>
+                <p className="text-sm text-white/90">
+                  {soldOutData.supplyStatus?.currentMinted}/{soldOutData.supplyStatus?.maxSupply} Minted
+                </p>
+              </div>
+              <p className="text-white/90 text-sm">
+                {soldOutData.message}
+              </p>
+            </div>
+
+            {/* Options */}
+            <div className="space-y-3 mb-4">
+              {soldOutData.options?.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    if (option.type === "refund") {
+                      handleRefundOption();
+                    } else if (option.type === "waitlist") {
+                      handleWaitlistOption();
+                    }
+                  }}
+                  disabled={processingOption}
+                  className={`w-full p-4 rounded-xl text-left transition-all shadow-lg ${
+                    option.type === "refund"
+                      ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                      : "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                  } ${processingOption ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-3xl">{option.type === "refund" ? "💰" : "⏳"}</div>
+                    <div className="flex-1">
+                      <h3 className="font-black text-white text-lg mb-1">
+                        {option.title}
+                      </h3>
+                      <p className="text-white/90 text-sm mb-2">
+                        {option.description}
+                      </p>
+                      {option.type === "refund" && (
+                        <div className="bg-white/20 rounded-lg px-3 py-1 inline-block">
+                          <span className="font-black text-yellow-300">
+                            +{option.bonus?.toLocaleString()} IDRX
+                          </span>
+                        </div>
+                      )}
+                      {option.type === "waitlist" && (
+                        <div className="bg-white/20 rounded-lg px-3 py-1 inline-block">
+                          <span className="font-bold text-white text-sm">
+                            Position: #{option.currentPosition}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Close button */}
+            <button
+              onClick={() => setShowSoldOutModal(false)}
+              disabled={processingOption}
+              className="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50"
+            >
+              {processingOption ? "Processing..." : "Close"}
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
