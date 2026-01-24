@@ -10,6 +10,7 @@ import {
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
 import { BrowserProvider, Contract, parseUnits } from "ethers";
+import { toast } from "sonner";
 
 // Rarity color mapping
 const rarityColorMap = {
@@ -440,11 +441,11 @@ export default function MarketplacePage() {
         throw new Error(data.error || "Cancel failed");
       }
 
-      alert("Listing cancelled successfully!");
+      toast.success("Listing cancelled successfully!");
       fetchMyListings();
     } catch (error) {
       console.error("Cancel error:", error);
-      alert(error.message || "Failed to cancel listing");
+      toast.error(error.message || "Failed to cancel listing");
     }
   };
 

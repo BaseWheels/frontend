@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import {
@@ -11,6 +11,7 @@ import {
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
 import NetworkModal from "@/components/shared/NetworkModal";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { authenticated, ready, user, logout, getAccessToken } = usePrivy();
@@ -21,9 +22,6 @@ export default function ProfilePage() {
   const [loadingBalance, setLoadingBalance] = useState(false);
   const [loadingMockIDRX, setLoadingMockIDRX] = useState(false);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const toastTimerRef = useRef(null);
   const [userInfo, setUserInfo] = useState({
     username: null,
     email: null,
@@ -50,14 +48,6 @@ export default function ProfilePage() {
       fetchMockIDRXBalance();
     }
   }, [authenticated]);
-
-  useEffect(() => {
-    return () => {
-      if (toastTimerRef.current) {
-        clearTimeout(toastTimerRef.current);
-      }
-    };
-  }, []);
 
   const fetchBalance = async () => {
     try {
@@ -101,17 +91,6 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     await logout();
     router.push("/");
-  };
-
-  const triggerToast = (message) => {
-    setToastMessage(message);
-    setShowToast(true);
-    if (toastTimerRef.current) {
-      clearTimeout(toastTimerRef.current);
-    }
-    toastTimerRef.current = setTimeout(() => {
-      setShowToast(false);
-    }, 2200);
   };
 
   if (!ready || !authenticated) {
@@ -179,36 +158,36 @@ export default function ProfilePage() {
 
   const handleCopyAddress = async () => {
     if (!hasWallet) {
-      triggerToast("Wallet not connected yet");
+      toast.error("Wallet not connected yet");
       return;
     }
     if (!navigator?.clipboard) {
-      triggerToast("Copy not supported");
+      toast.error("Copy not supported");
       return;
     }
     try {
       await navigator.clipboard.writeText(walletAddress);
-      triggerToast("Wallet address copied");
+      toast.success("Wallet address copied!");
     } catch (error) {
       console.error("Failed to copy wallet address:", error);
-      triggerToast("Copy failed");
+      toast.error("Copy failed");
     }
   };
 
   const handleOpenExplorer = () => {
     if (!hasWallet) {
-      triggerToast("Wallet not connected yet");
+      toast.error("Wallet not connected yet");
       return;
     }
     if (!explorerBaseUrl) {
-      triggerToast("Explorer not available");
+      toast.error("Explorer not available");
       return;
     }
     window.open(`${explorerBaseUrl}/address/${walletAddress}`, "_blank", "noopener,noreferrer");
   };
 
   const handleComingSoon = (label) => {
-    triggerToast(`${label} coming soon`);
+    toast.info(`${label} coming soon`);
   };
 
   const menuItems = [
@@ -401,12 +380,6 @@ export default function ProfilePage() {
           />
         </div>
       </div>
-
-      {showToast && (
-        <div className="profile-toast animate-rise" role="status" aria-live="polite">
-          {toastMessage}
-        </div>
-      )}
 
       {/* Bottom Navigation */}
       <BottomNavigation />

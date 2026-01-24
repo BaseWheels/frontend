@@ -11,6 +11,7 @@ import {
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
 import NetworkModal from "@/components/shared/NetworkModal";
+import { toast } from "sonner";
 
 // Rarity color mapping
 const rarityColorMap = {
@@ -197,7 +198,7 @@ export default function InventoryPage() {
   // Save shipping info
   const handleSaveShipping = async () => {
     if (!shippingInfo.name || !shippingInfo.phone || !shippingInfo.address) {
-      alert("Please fill all fields");
+      toast.error("Please fill all fields");
       return;
     }
 
@@ -219,6 +220,7 @@ export default function InventoryPage() {
         throw new Error(data.error || "Failed to save shipping info");
       }
 
+      toast.success("Shipping info saved successfully!");
       setHasShippingInfo(true);
       setShowShippingModal(false);
 
@@ -228,7 +230,7 @@ export default function InventoryPage() {
       }
     } catch (error) {
       console.error("Save shipping error:", error);
-      alert(error.message || "Failed to save shipping info");
+      toast.error(error.message || "Failed to save shipping info");
     } finally {
       setLoadingShipping(false);
     }
@@ -399,7 +401,7 @@ export default function InventoryPage() {
       await Promise.all([fetchFragments(), fetchMockIDRXBalance()]);
     } catch (error) {
       console.error("Refund failed:", error);
-      alert(error.message || "Failed to process refund");
+      toast.error(error.message || "Failed to process refund");
     } finally {
       setProcessingOption(false);
     }
@@ -441,7 +443,7 @@ export default function InventoryPage() {
       await fetchFragments();
     } catch (error) {
       console.error("Join waitlist failed:", error);
-      alert(error.message || "Failed to join waiting list");
+      toast.error(error.message || "Failed to join waiting list");
     } finally {
       setProcessingOption(false);
     }

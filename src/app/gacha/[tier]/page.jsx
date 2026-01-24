@@ -7,6 +7,7 @@ import { Wallet } from "lucide-react";
 import { useWallet } from "@/hooks/useWallet";
 import { getGachaBoxes, openGachaBox, getRarityConfig } from "@/lib/gachaApi";
 import { burnMockIDRX } from "@/lib/mockidrx";
+import { toast } from "sonner";
 
 export default function GachaTierPage() {
   const { authenticated, ready, getAccessToken } = usePrivy();
@@ -199,8 +200,10 @@ export default function GachaTierPage() {
       // Show error message
       if (error.message.includes("Insufficient MockIDRX")) {
         setErrorMessage("Insufficient MockIDRX tokens! You need more IDRX to open this box.");
+        toast.error("Insufficient IDRX balance!");
       } else {
         setErrorMessage(error.message || "Failed to open gacha box. Please try again.");
+        toast.error("Gacha failed. Please try again.");
       }
     }
   };
