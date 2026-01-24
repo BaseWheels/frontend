@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { Wallet, Bell, Car, Flame, Lock, Circle } from "lucide-react";
+import { Wallet, Bell, Car, Flame, Lock, Circle, Activity } from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import SetUsernameModal from "@/components/SetUsernameModal";
 import { useWallet } from "@/hooks/useWallet";
@@ -333,8 +333,9 @@ export default function Dashboard() {
             <h3 className="text-white font-black text-sm mb-3 tracking-wide">
               NFT SUPPLY BY TIER
             </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {supplyData.map((tier) => {
+            {supplyData.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {supplyData.map((tier) => {
                 const percentage = tier.maxSupply > 0 ? (tier.currentMinted / tier.maxSupply) * 100 : 0;
 
                 // Tier color configurations
@@ -403,8 +404,16 @@ export default function Dashboard() {
                     </div>
                   </div>
                 );
-              })}
-            </div>
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8">
+                <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-3 animate-pulse">
+                  <Car size={24} className="text-gray-600" strokeWidth={1.5} />
+                </div>
+                <p className="text-gray-500 text-sm font-medium">Loading supply data...</p>
+              </div>
+            )}
           </div>
 
           {/* Rare Pool Showcase */}
@@ -478,25 +487,35 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-2">
-              {recentActivity.map((activity) => (
-                <div
-                  key={activity.id}
-                  className="bg-gray-800/50 rounded-lg p-3 flex items-center gap-3 hover:bg-gray-800 transition-colors"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-lg flex-shrink-0">
-                    {activity.avatar}
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="bg-gray-800/50 rounded-lg p-3 flex items-center gap-3 hover:bg-gray-800 transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-lg flex-shrink-0">
+                      {activity.avatar}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm">
+                        <span className="font-bold">{activity.user}</span>{" "}
+                        <span className="text-gray-400">{activity.action}</span>
+                      </p>
+                    </div>
+                    <span className="text-gray-500 text-xs flex-shrink-0">
+                      {activity.time}
+                    </span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm">
-                      <span className="font-bold">{activity.user}</span>{" "}
-                      <span className="text-gray-400">{activity.action}</span>
-                    </p>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-3">
+                    <Activity size={24} className="text-gray-600" strokeWidth={1.5} />
                   </div>
-                  <span className="text-gray-500 text-xs flex-shrink-0">
-                    {activity.time}
-                  </span>
+                  <p className="text-gray-500 text-sm font-medium">No activity yet</p>
+                  <p className="text-gray-600 text-xs">Be the first to open a gacha box!</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>

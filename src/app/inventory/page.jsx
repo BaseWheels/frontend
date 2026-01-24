@@ -621,18 +621,30 @@ export default function InventoryPage() {
                   ))}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-full min-h-[200px]">
-                  <div className="text-center">
-                    <p className="text-white/60 text-lg font-bold mb-2">
+                <div className="flex items-center justify-center h-full min-h-[280px]">
+                  <div className="text-center px-4">
+                    <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                      <Car size={40} className="text-white/40" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="text-white text-xl font-black mb-2">
                       {selectedFilter === "semua"
-                        ? "Inventory Kosong"
-                        : "Tidak ada mobil di kategori ini"}
-                    </p>
-                    <p className="text-white/40 text-sm">
+                        ? "No Cars Yet"
+                        : "No Cars Found"}
+                    </h3>
+                    <p className="text-white/60 text-sm mb-6 max-w-[200px] mx-auto">
                       {selectedFilter === "semua"
-                        ? "Buka gacha box untuk mendapatkan mobil!"
-                        : "Coba filter lain atau buka gacha box"}
+                        ? "Open your first gacha box to start your collection!"
+                        : "Try a different filter or open more gacha boxes"}
                     </p>
+                    {selectedFilter === "semua" && (
+                      <button
+                        onClick={() => router.push('/gacha')}
+                        className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-orange-900 font-black py-3 px-6 rounded-full shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto"
+                      >
+                        <Box size={18} strokeWidth={2.5} />
+                        Open Gacha Box
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -732,14 +744,24 @@ export default function InventoryPage() {
                   ))}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-full min-h-[200px]">
-                  <div className="text-center">
-                    <p className="text-white/60 text-lg font-bold mb-2">
-                      Belum Ada Fragments
+                <div className="flex items-center justify-center h-full min-h-[280px]">
+                  <div className="text-center px-4">
+                    <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                      <Wrench size={40} className="text-white/40" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="text-white text-xl font-black mb-2">
+                      No Fragments Yet
+                    </h3>
+                    <p className="text-white/60 text-sm mb-6 max-w-[220px] mx-auto">
+                      Collect 5 matching fragments to assemble a complete car!
                     </p>
-                    <p className="text-white/40 text-sm">
-                      Buka gacha box untuk mendapatkan fragments!
-                    </p>
+                    <button
+                      onClick={() => router.push('/gacha')}
+                      className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-orange-900 font-black py-3 px-6 rounded-full shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto"
+                    >
+                      <Box size={18} strokeWidth={2.5} />
+                      Start Collecting
+                    </button>
                   </div>
                 </div>
               )}
