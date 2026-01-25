@@ -58,6 +58,14 @@ export default function Home() {
   const [loginError, setLoginError] = useState(null);
   const heroRef = useRef(null);
 
+  // Horizontal swipe state
+  const [currentPage, setCurrentPage] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const containerRef = useRef(null);
+
+  const totalPages = 3;
+
   // Show loading animation and redirect to dashboard if authenticated
   useEffect(() => {
     if (ready && authenticated) {
@@ -156,299 +164,245 @@ export default function Home() {
     }
   };
 
+  // Swipe handlers
+  const handleTouchStart = (e) => {
+    setTouchStart(e.touches[0].clientX);
+    setTouchEnd(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    const minSwipeDistance = 50;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    } else if (isRightSwipe && currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToPage = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <main className="relative overflow-x-hidden bg-black text-white">
-      {/* SECTION 1: HERO */}
-      <section
-        id="hero"
-        ref={heroRef}
-        className="section-full minigarage-hero relative px-4 py-12 text-center sm:px-6 sm:py-16"
+    <main
+      className="relative h-screen overflow-hidden bg-black text-white"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Horizontal Swipe Container */}
+      <div
+        ref={containerRef}
+        className="flex h-full transition-transform duration-500 ease-out"
+        style={{ transform: `translateX(-${currentPage * 100}%)` }}
       >
-        <div className="absolute inset-0 z-0">
-          <div
-            className="absolute inset-0 minigarage-hero-bg bg-cover bg-center"
-            style={{ backgroundImage: `url('${background}')` }}
-          />
-          <div className="absolute inset-0 minigarage-hero-grid" aria-hidden="true" />
-          <div className="absolute inset-0 minigarage-hero-glow" aria-hidden="true" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black" />
-        </div>
-
-        <div className="relative z-10 mx-auto max-w-4xl">
-          <h1
-            className="minigarage-title minigarage-gradient-text mt-16 mb-2 text-2xl font-black leading-tight sm:mt-20 sm:mb-3 sm:text-4xl md:mt-24 md:text-6xl"
-            data-reveal
-            style={{ "--reveal-delay": "120ms" }}
-          >
-            The Ultimate NFT Car Collection on Base
-          </h1>
-
-          <p
-            className="minigarage-tagline mb-10 text-xs uppercase tracking-widest sm:mb-12 sm:text-base md:text-lg"
-            data-reveal
-            style={{ "--reveal-delay": "240ms" }}
-          >
-            Collect. Build. Own.
-          </p>
-
-          <div
-            className="minigarage-launch-wrap mx-auto w-full max-w-[380px]"
-            data-reveal
-            style={{ "--reveal-delay": "360ms" }}
-          >
-            <button
-              type="button"
-              onClick={handleLogin}
-              disabled={!ready}
-              className="minigarage-launch-button"
-            >
-              <img src={fireIcon} alt="Fire icon" className="minigarage-launch-icon" />
-              <span className="minigarage-launch-text">Launch App</span>
-            </button>
-            {loginError && (
-              <p className="mt-3 text-sm text-red-400 text-center" role="alert">
-                {loginError}
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 2: ECOSYSTEM */}
-      <section id="collection" className="section-full bg-gradient-to-b from-white to-gray-100 px-4 py-8 text-slate-900 sm:px-6 sm:py-16">
-        <div className="mx-auto w-full">
-          <h2
-            className="mb-2 text-center text-2xl font-bold leading-tight text-slate-900 sm:text-3xl md:text-4xl lg:text-5xl"
-            data-reveal
-            style={{ "--reveal-delay": "0ms" }}
-          >
-            A Collection That Works For Your Crypto Ecosystem
-          </h2>
-          <p
-            className="mx-auto mb-6 w-full break-words text-center text-base leading-snug text-slate-600 sm:max-w-2xl sm:mb-8 sm:text-lg md:text-xl"
-            data-reveal
-            style={{ "--reveal-delay": "120ms" }}
-          >
-            Seamless integration across platforms. Collect premium digital cars
-            quickly and transparently, making it easy to own rare collectibles in the
-            blockchain era.
-          </p>
-
-          {/* Die-Cast Cars Carousel - TOP (Scrolls LEFT) */}
-          <div
-            className="relative mb-4 overflow-hidden py-4 group"
-            aria-label="Die-cast car collection carousel scrolling left"
-            data-reveal
-            style={{ "--reveal-delay": "220ms" }}
-          >
+        {/* PAGE 1: HERO */}
+        <div className="min-w-full h-full relative flex items-center justify-center">
+          <div className="absolute inset-0 z-0">
             <div
-              className="flex animate-scroll-left group-hover:pause-animation gap-6 sm:gap-8"
-              style={{ pointerEvents: "none" }}
-            >
-              {[
-                ...diecastCarsTop,
-                ...diecastCarsTop,
-                ...diecastCarsTop,
-                ...diecastCarsTop,
-              ].map((car, index) => (
-                <div
-                  key={index}
-                  className="car-card group min-w-[200px] max-w-[200px] flex-shrink-0 rounded-2xl bg-white p-4 shadow-xl sm:min-w-[280px] sm:max-w-[280px] sm:p-5"
-                >
-                  <div className="mb-3 flex h-32 items-center justify-center overflow-hidden rounded-xl bg-orange-gradient relative sm:mb-4 sm:h-40">
-                    {/* Pola Titik (Dot Pattern) Overlay */}
-                    <div
-                      className="absolute inset-0 opacity-30"
-                      style={{
-                        backgroundImage:
-                          "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-                        backgroundSize: "12px 12px",
-                      }}
-                    ></div>
-
-                    <img
-                      src={car.image}
-                      alt={car.name}
-                      loading="lazy"
-                      className="relative z-10 h-full w-full object-contain scale-110"
-                    />
-                  </div>
-                  <h3 className="text-center text-xs font-bold uppercase leading-tight tracking-wide text-slate-800 sm:text-sm md:text-base">
-                    {car.name}
-                  </h3>
-                </div>
-              ))}
-            </div>
+              className="absolute inset-0 minigarage-hero-bg bg-cover bg-center"
+              style={{ backgroundImage: `url('${background}')` }}
+            />
+            <div className="absolute inset-0 minigarage-hero-grid" aria-hidden="true" />
+            <div className="absolute inset-0 minigarage-hero-glow" aria-hidden="true" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black" />
           </div>
 
-          {/* Die-Cast Cars Carousel - BOTTOM (Scrolls RIGHT) */}
-          <div
-            className="relative mb-4 overflow-hidden py-4 group"
-            aria-label="Die-cast car collection carousel scrolling right"
-            data-reveal
-            style={{ "--reveal-delay": "320ms" }}
-          >
-            <div
-              className="flex animate-scroll-right group-hover:pause-animation gap-6 sm:gap-8"
-              style={{ pointerEvents: "none" }}
-            >
-              {[
-                ...diecastCarsBottom,
-                ...diecastCarsBottom,
-                ...diecastCarsBottom,
-                ...diecastCarsBottom,
-              ].map((car, index) => (
-                <div
-                  key={index}
-                  className="car-card group min-w-[200px] max-w-[200px] flex-shrink-0 rounded-2xl bg-white p-4 shadow-xl sm:min-w-[280px] sm:max-w-[280px] sm:p-5"
-                >
-                  <div className="mb-3 flex h-32 items-center justify-center overflow-hidden rounded-xl bg-orange-gradient relative sm:mb-4 sm:h-40">
-                    {/* Pola Titik (Dot Pattern) Overlay */}
-                    <div
-                      className="absolute inset-0 opacity-30"
-                      style={{
-                        backgroundImage:
-                          "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-                        backgroundSize: "12px 12px",
-                      }}
-                    ></div>
+          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
+            <h1 className="minigarage-title minigarage-gradient-text mb-4 text-3xl font-black leading-tight sm:text-4xl md:text-6xl">
+              The Ultimate NFT Car Collection on Base
+            </h1>
 
-                    <img
-                      src={car.image}
-                      alt={car.name}
-                      className="relative z-10 h-full w-full object-contain scale-110"
-                    />
-                  </div>
-                  <h3 className="text-center text-xs font-bold uppercase leading-tight tracking-wide text-slate-800 sm:text-sm md:text-base">
-                    {car.name}
-                  </h3>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+            <p className="minigarage-tagline mb-12 text-sm uppercase tracking-widest sm:text-base md:text-lg">
+              Collect. Build. Own.
+            </p>
 
-      {/* SECTION 3: HOW IT WORKS */}
-      <section id="features" className="section-full bg-gradient-to-b from-gray-900 to-black px-4 py-12 sm:px-6 sm:py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2
-            className="minigarage-title minigarage-gradient-text mb-3 text-center text-2xl font-black sm:mb-4 sm:text-3xl md:text-5xl"
-            data-reveal
-            style={{ "--reveal-delay": "0ms" }}
-          >
-            How MiniGarage Works
-          </h2>
-          <p
-            className="mx-auto mb-10 max-w-2xl text-center text-sm text-gray-300 sm:mb-16 sm:text-base md:text-lg"
-            data-reveal
-            style={{ "--reveal-delay": "120ms" }}
-          >
-            Blockchain-powered collecting makes NFT ownership easy, secure, and
-            transparent.
-          </p>
-
-          <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="minigarage-panel group rounded-2xl p-5 text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 sm:p-6"
-                data-reveal
-                style={{ "--reveal-delay": `${180 + index * 120}ms` }}
+            <div className="minigarage-launch-wrap mx-auto w-full max-w-[380px]">
+              <button
+                type="button"
+                onClick={handleLogin}
+                disabled={!ready}
+                className="minigarage-launch-button"
               >
-                <div className="mb-3 flex justify-center sm:mb-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 p-3 shadow-lg sm:h-20 sm:w-20 sm:p-4">
-                    <img
-                      src={feature.icon}
-                      alt={feature.title}
-                      className="h-8 w-8 object-contain brightness-0 invert sm:h-10 sm:w-10"
-                    />
-                  </div>
-                </div>
-                <h3 className="mb-2 text-base font-bold text-orange-300 sm:text-lg">
-                  {feature.title}
-                </h3>
-                <p className="text-xs text-gray-300 sm:text-sm">
-                  {feature.description}
+                <img src={fireIcon} alt="Fire icon" className="minigarage-launch-icon" />
+                <span className="minigarage-launch-text">Launch App</span>
+              </button>
+              {loginError && (
+                <p className="mt-3 text-sm text-red-400 text-center" role="alert">
+                  {loginError}
                 </p>
+              )}
+            </div>
+
+            {/* Swipe hint */}
+            <div className="mt-8 flex items-center justify-center gap-2 text-white/60 text-xs animate-pulse">
+              <span>Swipe to learn more</span>
+              <span>→</span>
+            </div>
+          </div>
+        </div>
+
+        {/* PAGE 2: COLLECTION PREVIEW */}
+        <div className="min-w-full h-full relative flex items-center justify-center bg-gradient-to-b from-white to-gray-100">
+          <div className="mx-auto w-full px-4 py-8">
+            <h2 className="mb-3 text-center text-2xl font-bold leading-tight text-slate-900 sm:text-3xl md:text-4xl">
+              Collect Exclusive NFTs on Base
+            </h2>
+            <p className="mx-auto mb-8 w-full text-center text-sm leading-snug text-slate-600 max-w-lg sm:text-base">
+              Premium digital cars with seamless blockchain integration. Own rare collectibles that are truly yours.
+            </p>
+
+            {/* Single Carousel */}
+            <div className="relative mb-6 overflow-hidden py-4">
+              <div
+                className="flex animate-scroll-left gap-4 sm:gap-6"
+                style={{ pointerEvents: "none" }}
+              >
+                {[
+                  ...diecastCarsTop,
+                  ...diecastCarsTop,
+                  ...diecastCarsTop,
+                ].map((car, index) => (
+                  <div
+                    key={index}
+                    className="car-card min-w-[180px] max-w-[180px] flex-shrink-0 rounded-2xl bg-white p-4 shadow-xl sm:min-w-[220px] sm:max-w-[220px]"
+                  >
+                    <div className="mb-3 flex h-28 items-center justify-center overflow-hidden rounded-xl bg-orange-gradient relative sm:h-32">
+                      <div
+                        className="absolute inset-0 opacity-30"
+                        style={{
+                          backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+                          backgroundSize: "12px 12px",
+                        }}
+                      />
+                      <img
+                        src={car.image}
+                        alt={car.name}
+                        loading="lazy"
+                        className="relative z-10 h-full w-full object-contain scale-110"
+                      />
+                    </div>
+                    <h3 className="text-center text-xs font-bold uppercase leading-tight tracking-wide text-slate-800 sm:text-sm">
+                      {car.name}
+                    </h3>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Key Stats */}
+            <div className="grid grid-cols-3 gap-3 max-w-lg mx-auto mb-6">
+              <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-3 text-center shadow-lg">
+                <p className="text-2xl font-black text-white">100+</p>
+                <p className="text-xs text-white/80">Unique Cars</p>
+              </div>
+              <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl p-3 text-center shadow-lg">
+                <p className="text-2xl font-black text-white">4</p>
+                <p className="text-xs text-white/80">Rarity Tiers</p>
+              </div>
+              <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl p-3 text-center shadow-lg">
+                <p className="text-2xl font-black text-white">Base</p>
+                <p className="text-xs text-white/80">Blockchain</p>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleLogin}
+                disabled={!ready}
+                className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-black py-3 px-8 rounded-full shadow-lg transform hover:scale-105 active:scale-95 transition-all"
+              >
+                Start Collecting
+              </button>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* SECTION 4: FINAL CTA */}
-      <section id="cta" className="section-full bg-gradient-to-b from-slate-100 to-white px-4 py-12 text-slate-900 sm:px-6 sm:py-20">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2
-            className="mb-4 text-3xl font-black text-slate-900 sm:mb-6 sm:text-4xl md:text-6xl"
-            data-reveal
-            style={{ "--reveal-delay": "0ms" }}
-          >
-            Ready to Build Your Collection? 🏎️
-          </h2>
-          <p
-            className="mb-8 text-base text-slate-600 sm:mb-10 sm:text-lg md:text-xl"
-            data-reveal
-            style={{ "--reveal-delay": "120ms" }}
-          >
-            Collect legendary racing machines as NFTs on Base blockchain. Each car is
-            unique, tradeable, and exclusively yours.
-          </p>
+        {/* PAGE 3: FEATURES + CTA */}
+        <div className="min-w-full h-full relative flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
+          <div className="mx-auto max-w-2xl px-4 py-8">
+            <h2 className="minigarage-title minigarage-gradient-text mb-8 text-center text-2xl font-black sm:text-3xl md:text-4xl">
+              How MiniGarage Works
+            </h2>
 
-          <div
-            className="minigarage-launch-wrap mx-auto max-w-sm sm:max-w-md"
-            data-reveal
-            style={{ "--reveal-delay": "240ms" }}
-          >
-            <button
-              type="button"
-              onClick={handleLogin}
-              disabled={!ready}
-              className="minigarage-launch-button"
-              aria-label="Launch MiniGarage App"
-            >
-              <img src={fireIcon} alt="Fire icon" className="minigarage-launch-icon" />
-              <span className="minigarage-launch-text">Launch App</span>
-            </button>
-            {loginError && (
-              <p className="mt-3 text-sm text-red-400 text-center" role="alert">
-                {loginError}
+            {/* Features Grid */}
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="minigarage-panel rounded-xl p-4 text-center"
+                >
+                  <div className="mb-2 flex justify-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 p-2 shadow-lg sm:h-14 sm:w-14">
+                      <img
+                        src={feature.icon}
+                        alt={feature.title}
+                        className="h-6 w-6 object-contain brightness-0 invert sm:h-7 sm:w-7"
+                      />
+                    </div>
+                  </div>
+                  <h3 className="mb-1 text-sm font-bold text-orange-300 sm:text-base">
+                    {feature.title}
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Final CTA */}
+            <div className="text-center">
+              <h3 className="mb-4 text-xl font-black text-white sm:text-2xl">
+                Ready to Build Your Collection? 🏎️
+              </h3>
+              <p className="mb-6 text-sm text-gray-300 sm:text-base">
+                Collect legendary racing machines as NFTs. Each car is unique, tradeable, and exclusively yours.
               </p>
-            )}
-          </div>
 
-          <div
-            className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-8 sm:gap-6"
-            data-reveal
-            style={{ "--reveal-delay": "360ms" }}
-          >
-            <a
-              href="#"
-              className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm"
-              aria-label="View documentation"
-            >
-              Documentation
-            </a>
-            <span className="text-slate-300" aria-hidden="true">•</span>
-            <a
-              href="#"
-              className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm"
-              aria-label="Join our community"
-            >
-              Community
-            </a>
-            <span className="text-slate-300" aria-hidden="true">•</span>
-            <a
-              href="#"
-              className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm"
-              aria-label="Get support"
-            >
-              Support
-            </a>
+              <button
+                type="button"
+                onClick={handleLogin}
+                disabled={!ready}
+                className="minigarage-launch-button mx-auto"
+              >
+                <img src={fireIcon} alt="Fire icon" className="minigarage-launch-icon" />
+                <span className="minigarage-launch-text">Launch App</span>
+              </button>
+              {loginError && (
+                <p className="mt-3 text-sm text-red-400 text-center" role="alert">
+                  {loginError}
+                </p>
+              )}
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* Page Indicators (Dots) */}
+      <div className="absolute bottom-8 left-0 right-0 z-20 flex justify-center gap-2">
+        {[...Array(totalPages)].map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToPage(index)}
+            className={`h-2 rounded-full transition-all ${
+              index === currentPage
+                ? "w-8 bg-orange-500"
+                : "w-2 bg-white/40 hover:bg-white/60"
+            }`}
+            aria-label={`Go to page ${index + 1}`}
+          />
+        ))}
+      </div>
 
       {/* Loading Animation Popup */}
       <LoadingAnimation
