@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import {
   Car, User, Twitter, MessageCircle, Mail, CreditCard,
   MapPin, Globe, Compass, MessageSquare, Info,
-  FileText, Lock, ChevronRight, Wallet
+  FileText, Lock, ChevronRight, Wallet,
+  HistoryIcon
 } from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
@@ -232,11 +233,11 @@ export default function ProfilePage() {
       disabled: !hasWallet || !explorerBaseUrl,
     },
     {
-      id: "help",
-      Icon: MessageSquare,
-      title: "Help & Support",
-      subtitle: "customer services",
-      onClick: () => handleComingSoon("Customer service")
+      id: "history",
+      Icon: HistoryIcon,
+      title: "History Transaction",
+      subtitle: "View your activity",
+      onClick: () => router.push("/history")
     },
     {
       id: "info",
@@ -413,6 +414,14 @@ export default function ProfilePage() {
         isOpen={showShippingModal}
         onClose={() => setShowShippingModal(false)}
         shippingInfo={shippingInfo}
+        onUpdate={(updatedUser) => {
+          // Update local state with new shipping info
+          setShippingInfo({
+            shippingName: updatedUser.shippingName,
+            shippingPhone: updatedUser.shippingPhone,
+            shippingAddress: updatedUser.shippingAddress
+          });
+        }}
       />
     </main>
   );

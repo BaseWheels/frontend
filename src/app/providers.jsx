@@ -33,10 +33,8 @@ export default function Providers({ children }) {
           requireUserPasswordOnCreate: false, // No password needed
           noPromptOnSignature: true, // No popup for signing (smooth UX)
         },
-        defaultChain: baseSepolia, // Default to Base Sepolia testnet
-        supportedChains: [base, baseSepolia, mainnet], // Support Base mainnet, testnet, and Ethereum mainnet
-        // Wallet connection behavior
-        walletConnectCloudProjectId: undefined, // Disable if not using WalletConnect
+        defaultChain: baseSepolia, // Base Sepolia testnet
+        supportedChains: [base, baseSepolia, mainnet], // Support Base mainnet, testnet, and Ethereum
       }}
     >
       {children}

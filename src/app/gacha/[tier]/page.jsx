@@ -6,7 +6,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Wallet } from "lucide-react";
 import { useWallet } from "@/hooks/useWallet";
 import { getGachaBoxes, openGachaBox, getRarityConfig } from "@/lib/gachaApi";
-import { burnMockIDRX } from "@/lib/mockidrx";
+import { payForSpin } from "@/lib/mockidrx";
 import { toast } from "sonner";
 
 export default function GachaTierPage() {
@@ -152,21 +152,21 @@ export default function GachaTierPage() {
 
       console.log("📦 Selected box:", selectedBox);
 
-      // Step 1: User burns their own MockIDRX tokens (no approval needed!)
-      console.log(`🔥 Burning ${selectedBox.costCoins} IDRX...`);
-      const burnResult = await burnMockIDRX(embeddedWallet, selectedBox.costCoins);
+      // Step 1: User pays for spin by transferring to treasury (GASLESS!)
+      console.log(`💳 Paying ${selectedBox.costCoins} IDRX for spin (gasless)...`);
+      const paymentResult = await payForSpin(embeddedWallet, selectedBox.costCoins);
 
-      if (!burnResult.success) {
-        throw new Error(burnResult.error || "Failed to burn tokens");
+      if (!paymentResult.success) {
+        throw new Error(paymentResult.error || "Failed to pay for spin");
       }
 
-      console.log("✅ Burn successful:", burnResult.txHash);
+      console.log("✅ Payment successful:", paymentResult.txHash);
 
       // Step 2: Get auth token
       const authToken = await getAccessToken();
 
-      // Step 3: Call backend API with burn TX hash for verification
-      const result = await openGachaBox(tierType, burnResult.txHash, authToken);
+      // Step 3: Call backend API with payment TX hash for verification
+      const result = await openGachaBox(tierType, paymentResult.txHash, authToken);
 
       // Simulate spinning animation (2 seconds)
       setTimeout(() => {

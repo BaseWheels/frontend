@@ -23,15 +23,15 @@ export async function getGachaBoxes(authToken) {
 /**
  * Open a gacha box and mint NFT
  * @param {string} boxType - Type of box: "standard" | "premium" | "legendary"
- * @param {string} burnTxHash - Transaction hash of the burn transaction
+ * @param {string} paymentTxHash - Transaction hash of the payment transaction (transfer to treasury or burn)
  * @param {string} authToken - Privy authentication token
  * @returns {Promise<{success: boolean, reward: Object, mockIDRX: Object}>}
  */
-export async function openGachaBox(boxType, burnTxHash, authToken) {
+export async function openGachaBox(boxType, paymentTxHash, authToken) {
   try {
     const data = await apiPost(
       "/api/gacha/open",
-      { boxType, burnTxHash },
+      { boxType, paymentTxHash },
       authToken
     );
     return data;

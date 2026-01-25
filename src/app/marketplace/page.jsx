@@ -469,56 +469,54 @@ export default function MarketplacePage() {
       {/* Main Content */}
       <div className="relative z-10 flex flex-col min-h-screen max-w-md mx-auto pb-24">
         {/* Header */}
-        <header className="px-4 pt-3 pb-4">
-          <div className="flex items-center justify-between gap-2 mb-4">
+        <header className="px-3 sm:px-4 pt-3 pb-3 sm:pb-4">
+          <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4">
             {/* MockIDRX Balance Badge */}
-            <div className="flex items-center gap-1.5 bg-yellow-400 rounded-full px-3 py-1.5 shadow-lg">
-              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
-                <Wallet size={14} className="text-yellow-300" strokeWidth={3} />
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-yellow-400 rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 shadow-lg">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 bg-orange-600 rounded-full flex items-center justify-center">
+                <Wallet size={12} className="text-yellow-300 sm:w-3.5 sm:h-3.5" strokeWidth={3} />
               </div>
-              <span className="font-black text-sm text-orange-900">
+              <span className="font-black text-xs sm:text-sm text-orange-900">
                 {Math.floor(mockIDRXBalance).toLocaleString()}
               </span>
-              <span className="text-xs font-bold text-orange-900 opacity-80">IDRX</span>
+              <span className="text-[10px] sm:text-xs font-bold text-orange-900 opacity-80">IDRX</span>
             </div>
 
             {/* Sell Button */}
             <button
               onClick={handleSellClick}
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-all"
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-1.5 sm:py-2 px-3 sm:px-4 rounded-full shadow-lg transition-all text-xs sm:text-sm"
             >
               🏷️ Sell NFT
             </button>
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl font-black text-white mb-4 flex items-center gap-3">
-            <ShoppingBag size={36} strokeWidth={2.5} />
+          <h1 className="text-3xl sm:text-4xl font-black text-white mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3">
+            <ShoppingBag size={28} strokeWidth={2.5} className="sm:w-9 sm:h-9" />
             Marketplace
           </h1>
 
           {/* Tab Switcher */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-3 sm:mb-4">
             <button
               onClick={() => setActiveTab("browse")}
-              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 ${
-                activeTab === "browse"
-                  ? "bg-white text-orange-600 shadow-lg"
-                  : "bg-orange-600/50 text-white hover:bg-orange-600/70"
-              }`}
+              className={`flex-1 py-2 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${activeTab === "browse"
+                ? "bg-white text-orange-600 shadow-lg"
+                : "bg-orange-600/50 text-white hover:bg-orange-600/70"
+                }`}
             >
-              <Search size={16} strokeWidth={2.5} />
+              <Search size={14} strokeWidth={2.5} className="sm:w-4 sm:h-4" />
               Browse
             </button>
             <button
               onClick={() => setActiveTab("my-listings")}
-              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 ${
-                activeTab === "my-listings"
-                  ? "bg-white text-orange-600 shadow-lg"
-                  : "bg-orange-600/50 text-white hover:bg-orange-600/70"
-              }`}
+              className={`flex-1 py-2 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${activeTab === "my-listings"
+                ? "bg-white text-orange-600 shadow-lg"
+                : "bg-orange-600/50 text-white hover:bg-orange-600/70"
+                }`}
             >
-              <List size={16} strokeWidth={2.5} />
+              <List size={14} strokeWidth={2.5} className="sm:w-4 sm:h-4" />
               My Listings
             </button>
           </div>
@@ -527,16 +525,15 @@ export default function MarketplacePage() {
           {activeTab === "browse" && (
             <div className="space-y-2">
               {/* Series Filter */}
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 {seriesOptions.map((series) => (
                   <button
                     key={series}
                     onClick={() => setSeriesFilter(series)}
-                    className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all ${
-                      seriesFilter === series
-                        ? "bg-white text-orange-600 shadow-lg"
-                        : "bg-orange-600/50 text-white hover:bg-orange-600/70"
-                    }`}
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap transition-all ${seriesFilter === series
+                      ? "bg-white text-orange-600 shadow-lg"
+                      : "bg-orange-600/50 text-white hover:bg-orange-600/70"
+                      }`}
                   >
                     {series === "all" ? "All Series" : series}
                   </button>
@@ -544,38 +541,35 @@ export default function MarketplacePage() {
               </div>
 
               {/* Sort */}
-              <div className="flex gap-2">
+              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 <button
                   onClick={() => setSortBy("newest")}
-                  className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 ${
-                    sortBy === "newest"
-                      ? "bg-white text-orange-600"
-                      : "bg-orange-600/50 text-white"
-                  }`}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-[10px] sm:text-xs flex items-center gap-1 whitespace-nowrap ${sortBy === "newest"
+                    ? "bg-white text-orange-600"
+                    : "bg-orange-600/50 text-white"
+                    }`}
                 >
-                  <Sparkles size={12} strokeWidth={2.5} />
+                  <Sparkles size={11} strokeWidth={2.5} className="sm:w-3 sm:h-3" />
                   Newest
                 </button>
                 <button
                   onClick={() => setSortBy("price_asc")}
-                  className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 ${
-                    sortBy === "price_asc"
-                      ? "bg-white text-orange-600"
-                      : "bg-orange-600/50 text-white"
-                  }`}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-[10px] sm:text-xs flex items-center gap-1 whitespace-nowrap ${sortBy === "price_asc"
+                    ? "bg-white text-orange-600"
+                    : "bg-orange-600/50 text-white"
+                    }`}
                 >
-                  <Wallet size={12} strokeWidth={2.5} />
+                  <Wallet size={11} strokeWidth={2.5} className="sm:w-3 sm:h-3" />
                   Low → High
                 </button>
                 <button
                   onClick={() => setSortBy("price_desc")}
-                  className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 ${
-                    sortBy === "price_desc"
-                      ? "bg-white text-orange-600"
-                      : "bg-orange-600/50 text-white"
-                  }`}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-[10px] sm:text-xs flex items-center gap-1 whitespace-nowrap ${sortBy === "price_desc"
+                    ? "bg-white text-orange-600"
+                    : "bg-orange-600/50 text-white"
+                    }`}
                 >
-                  <Gem size={12} strokeWidth={2.5} />
+                  <Gem size={11} strokeWidth={2.5} className="sm:w-3 sm:h-3" />
                   High → Low
                 </button>
               </div>
@@ -584,16 +578,15 @@ export default function MarketplacePage() {
 
           {/* My Listings Filter */}
           {activeTab === "my-listings" && (
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {["all", "active", "sold", "cancelled"].map((status) => (
                 <button
                   key={status}
                   onClick={() => setMyListingsFilter(status)}
-                  className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all ${
-                    myListingsFilter === status
-                      ? "bg-white text-orange-600 shadow-lg"
-                      : "bg-orange-600/50 text-white hover:bg-orange-600/70"
-                  }`}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap transition-all ${myListingsFilter === status
+                    ? "bg-white text-orange-600 shadow-lg"
+                    : "bg-orange-600/50 text-white hover:bg-orange-600/70"
+                    }`}
                 >
                   {status.charAt(0).toUpperCase() + status.slice(1)}
                 </button>
@@ -604,13 +597,13 @@ export default function MarketplacePage() {
 
         {/* Browse Listings */}
         {activeTab === "browse" && (
-          <div className="flex-1 px-4 mb-4">
-            <div className="bg-orange-700/50 backdrop-blur-sm rounded-3xl p-4 min-h-[300px]">
+          <div className="flex-1 px-3 sm:px-4 mb-4">
+            <div className="bg-orange-700/50 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-3 sm:p-4 min-h-[300px]">
               {loadingListings ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                    <p className="text-white/60">Loading listings...</p>
+                    <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-white mx-auto mb-4"></div>
+                    <p className="text-white/60 text-sm">Loading listings...</p>
                   </div>
                 </div>
               ) : listings.length > 0 ? (
@@ -622,27 +615,26 @@ export default function MarketplacePage() {
                         setSelectedListing(listing);
                         setShowDetailModal(true);
                       }}
-                      className={`relative bg-gradient-to-br ${
-                        rarityColorMap[listing.car.rarity] || "from-gray-500 to-gray-600"
-                      } rounded-2xl p-3 shadow-xl cursor-pointer transition-transform hover:scale-105 active:scale-[0.98] group marketplace-card animate-rise`}
+                      className={`relative bg-gradient-to-br ${rarityColorMap[listing.car.rarity] || "from-gray-500 to-gray-600"
+                        } rounded-2xl p-3 shadow-xl cursor-pointer transition-transform hover:scale-105 active:scale-[0.98] group marketplace-card animate-rise`}
                       style={{ animationDelay: `${index * 70}ms` }}
                     >
                       {/* Rarity Badge */}
-                      <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 z-10">
-                        <span className="text-white text-[10px] font-black uppercase">
+                      <div className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 bg-black/60 backdrop-blur-sm rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 z-10">
+                        <span className="text-white text-[9px] sm:text-[10px] font-black uppercase">
                           {listing.car.rarity}
                         </span>
                       </div>
 
                       {/* Token ID Badge */}
-                      <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 z-10">
-                        <span className="text-white text-[10px] font-bold">
+                      <div className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 bg-black/60 backdrop-blur-sm rounded-full px-1.5 sm:px-2 py-0.5 sm:py-1 z-10">
+                        <span className="text-white text-[9px] sm:text-[10px] font-bold">
                           #{listing.car.tokenId}
                         </span>
                       </div>
 
                       {/* Car Image */}
-                      <div className="aspect-square flex items-center justify-center mb-2">
+                      <div className="aspect-square flex items-center justify-center mb-1.5 sm:mb-2">
                         <img
                           src={`/assets/car/${listing.car.modelName}.png`}
                           alt={listing.car.modelName}
@@ -654,25 +646,25 @@ export default function MarketplacePage() {
                       </div>
 
                       {/* Car Info */}
-                      <div className="text-center px-1 mb-2">
-                        <p className="text-white text-xs font-black uppercase truncate">
+                      <div className="text-center px-0.5 sm:px-1 mb-1.5 sm:mb-2">
+                        <p className="text-white text-[10px] sm:text-xs font-black uppercase truncate">
                           {listing.car.modelName}
                         </p>
-                        <p className="text-white/70 text-[10px] font-semibold truncate">
+                        <p className="text-white/70 text-[8px] sm:text-[10px] font-semibold truncate">
                           {listing.car.series}
                         </p>
                       </div>
 
                       {/* Price */}
-                      <div className="bg-yellow-400 rounded-full py-1 px-2 flex items-center justify-center gap-1">
-                        <span className="text-orange-900 text-xs font-black">
+                      <div className="bg-yellow-400 rounded-full py-0.5 sm:py-1 px-1.5 sm:px-2 flex items-center justify-center gap-0.5 sm:gap-1">
+                        <span className="text-orange-900 text-[10px] sm:text-xs font-black">
                           {listing.price.toLocaleString()}
                         </span>
-                        <span className="text-orange-900 text-[8px] font-bold">IDRX</span>
+                        <span className="text-orange-900 text-[7px] sm:text-[8px] font-bold">IDRX</span>
                       </div>
 
-                      <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 transition-opacity duration-200 flex items-center justify-center group-hover:opacity-100 group-active:opacity-100">
-                        <span className="px-3 py-1 rounded-full bg-black/60 text-orange-200 text-[10px] font-bold tracking-[0.3em] uppercase">
+                      <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-black/40 opacity-0 transition-opacity duration-200 flex items-center justify-center group-hover:opacity-100 group-active:opacity-100">
+                        <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-black/60 text-orange-200 text-[9px] sm:text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.3em] uppercase">
                           View
                         </span>
                       </div>
@@ -689,7 +681,7 @@ export default function MarketplacePage() {
                       No Listings Found
                     </h3>
                     <p className="text-white/60 text-sm mb-6 max-w-[220px] mx-auto">
-                      {seriesFilter !== "all" 
+                      {seriesFilter !== "all"
                         ? "Try a different series filter or check back later"
                         : "Be the first to list your car on the marketplace!"}
                     </p>
@@ -709,67 +701,67 @@ export default function MarketplacePage() {
 
         {/* My Listings */}
         {activeTab === "my-listings" && (
-          <div className="flex-1 px-4 mb-4">
-            <div className="bg-orange-700/50 backdrop-blur-sm rounded-3xl p-4 min-h-[300px]">
+          <div className="flex-1 px-3 sm:px-4 mb-4">
+            <div className="bg-orange-700/50 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-3 sm:p-4 min-h-[300px]">
               {loadingMyListings ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                    <p className="text-white/60">Loading...</p>
+                    <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-white mx-auto mb-4"></div>
+                    <p className="text-white/60 text-sm">Loading...</p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {myListingsFilter === "all"
                     ? myListings.all.map((listing) => (
-                        <ListingCard
-                          key={listing.id}
-                          listing={listing}
-                          onCancel={handleCancelListing}
-                          onClick={() => {
-                            setSelectedListing(listing);
-                            setShowDetailModal(true);
-                          }}
-                        />
-                      ))
+                      <ListingCard
+                        key={listing.id}
+                        listing={listing}
+                        onCancel={handleCancelListing}
+                        onClick={() => {
+                          setSelectedListing(listing);
+                          setShowDetailModal(true);
+                        }}
+                      />
+                    ))
                     : myListings[myListingsFilter]?.map((listing) => (
-                        <ListingCard
-                          key={listing.id}
-                          listing={listing}
-                          onCancel={handleCancelListing}
-                          onClick={() => {
-                            setSelectedListing(listing);
-                            setShowDetailModal(true);
-                          }}
-                        />
-                      ))}
+                      <ListingCard
+                        key={listing.id}
+                        listing={listing}
+                        onCancel={handleCancelListing}
+                        onClick={() => {
+                          setSelectedListing(listing);
+                          setShowDetailModal(true);
+                        }}
+                      />
+                    ))}
                   {((myListingsFilter === "all" && myListings.all.length === 0) ||
                     (myListingsFilter !== "all" && myListings[myListingsFilter]?.length === 0)) && (
-                    <div className="flex items-center justify-center min-h-[280px]">
-                      <div className="text-center px-4">
-                        <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-                          <List size={40} className="text-white/40" strokeWidth={1.5} />
+                      <div className="flex items-center justify-center min-h-[280px]">
+                        <div className="text-center px-4">
+                          <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                            <List size={40} className="text-white/40" strokeWidth={1.5} />
+                          </div>
+                          <h3 className="text-white text-xl font-black mb-2">
+                            {myListingsFilter === "all" ? "No Listings Yet" : `No ${myListingsFilter.charAt(0).toUpperCase() + myListingsFilter.slice(1)} Listings`}
+                          </h3>
+                          <p className="text-white/60 text-sm mb-6 max-w-[220px] mx-auto">
+                            {myListingsFilter === "all"
+                              ? "Start selling your cars to earn IDRX!"
+                              : `You don't have any ${myListingsFilter} listings`}
+                          </p>
+                          {myListingsFilter === "all" && (
+                            <button
+                              onClick={handleSellClick}
+                              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-black py-3 px-6 rounded-full shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto"
+                            >
+                              <Tag size={18} strokeWidth={2.5} />
+                              List Your First Car
+                            </button>
+                          )}
                         </div>
-                        <h3 className="text-white text-xl font-black mb-2">
-                          {myListingsFilter === "all" ? "No Listings Yet" : `No ${myListingsFilter.charAt(0).toUpperCase() + myListingsFilter.slice(1)} Listings`}
-                        </h3>
-                        <p className="text-white/60 text-sm mb-6 max-w-[220px] mx-auto">
-                          {myListingsFilter === "all" 
-                            ? "Start selling your cars to earn IDRX!"
-                            : `You don't have any ${myListingsFilter} listings`}
-                        </p>
-                        {myListingsFilter === "all" && (
-                          <button
-                            onClick={handleSellClick}
-                            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-black py-3 px-6 rounded-full shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto"
-                          >
-                            <Tag size={18} strokeWidth={2.5} />
-                            List Your First Car
-                          </button>
-                        )}
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               )}
             </div>
@@ -846,13 +838,12 @@ function ListingCard({ listing, onCancel, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`bg-gradient-to-br ${
-        rarityColorMap[listing.car.rarity] || "from-gray-500 to-gray-600"
-      } rounded-2xl p-4 shadow-xl cursor-pointer hover:scale-[1.02] active:scale-[0.99] transition-transform marketplace-card`}
+      className={`bg-gradient-to-br ${rarityColorMap[listing.car.rarity] || "from-gray-500 to-gray-600"
+        } rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl cursor-pointer hover:scale-[1.02] active:scale-[0.99] transition-transform marketplace-card`}
     >
-      <div className="flex gap-3">
+      <div className="flex gap-2 sm:gap-3">
         {/* Car Image */}
-        <div className="w-24 h-24 flex-shrink-0">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
           <img
             src={`/assets/car/${listing.car.modelName}.png`}
             alt={listing.car.modelName}
@@ -864,20 +855,20 @@ function ListingCard({ listing, onCancel, onClick }) {
         </div>
 
         {/* Info */}
-        <div className="flex-1 flex flex-col justify-between">
+        <div className="flex-1 flex flex-col justify-between min-w-0">
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-white font-black text-sm uppercase">
+            <div className="flex items-center justify-between mb-1 gap-2">
+              <h3 className="text-white font-black text-xs sm:text-sm uppercase truncate">
                 {listing.car.modelName}
               </h3>
               {getStatusBadge(listing.status)}
             </div>
-            <p className="text-white/70 text-xs mb-2">{listing.car.series}</p>
-            <div className="flex items-center gap-1">
-              <span className="text-yellow-300 text-sm font-black">
+            <p className="text-white/70 text-[10px] sm:text-xs mb-2 truncate">{listing.car.series}</p>
+            <div className="flex items-center gap-0.5 sm:gap-1">
+              <span className="text-yellow-300 text-xs sm:text-sm font-black">
                 {listing.price.toLocaleString()}
               </span>
-              <span className="text-yellow-300 text-[10px] font-bold">IDRX</span>
+              <span className="text-yellow-300 text-[9px] sm:text-[10px] font-bold">IDRX</span>
             </div>
           </div>
 
@@ -888,15 +879,17 @@ function ListingCard({ listing, onCancel, onClick }) {
                 e.stopPropagation();
                 onCancel(listing.id);
               }}
-              className="bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-full mt-2"
+              className="bg-red-500 hover:bg-red-600 text-white text-[10px] sm:text-xs font-bold py-1 px-2.5 sm:px-3 rounded-full mt-2"
             >
               Cancel
             </button>
           )}
           {listing.status === "sold" && listing.buyer && (
-            <p className="text-white/60 text-[10px] mt-1">
-              Sold to {listing.buyer.walletAddress.slice(0, 6)}...
-              {listing.buyer.walletAddress.slice(-4)}
+            <p className="text-white/60 text-[9px] sm:text-[10px] mt-1">
+              Sold to {listing.buyer?.username
+                || (listing.buyer?.walletAddress
+                  ? `${listing.buyer.walletAddress.slice(0, 6)}...${listing.buyer.walletAddress.slice(-4)}`
+                  : 'Unknown')}
             </p>
           )}
         </div>
@@ -908,11 +901,11 @@ function ListingCard({ listing, onCancel, onClick }) {
 // Buy Modal Component
 function BuyModal({ listing, step, error, txHash, balance, onClose, onApprove }) {
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3 sm:p-4">
+      <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl sm:rounded-3xl p-5 sm:p-6 max-w-sm w-full shadow-2xl">
         {step === "approve" && (
           <>
-            <h3 className="text-2xl font-black text-white mb-4">Buy NFT</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4">Buy NFT</h3>
             <div className="bg-white/20 rounded-2xl p-4 mb-4">
               <p className="text-white font-bold mb-2">{listing.car.modelName}</p>
               <p className="text-white/70 text-sm mb-3">{listing.car.series}</p>
@@ -925,9 +918,8 @@ function BuyModal({ listing, step, error, txHash, balance, onClose, onApprove })
               <div className="flex items-center justify-between mt-2">
                 <span className="text-white text-sm">Your Balance:</span>
                 <span
-                  className={`font-black ${
-                    balance >= listing.price ? "text-green-300" : "text-red-300"
-                  }`}
+                  className={`font-black ${balance >= listing.price ? "text-green-300" : "text-red-300"
+                    }`}
                 >
                   {Math.floor(balance).toLocaleString()} IDRX
                 </span>
@@ -960,9 +952,9 @@ function BuyModal({ listing, step, error, txHash, balance, onClose, onApprove })
         )}
         {step === "buying" && (
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4"></div>
-            <h3 className="text-2xl font-black text-white mb-2">Processing...</h3>
-            <p className="text-white/80 text-sm">
+            <div className="animate-spin rounded-full h-14 w-14 sm:h-16 sm:w-16 border-b-4 border-white mx-auto mb-4"></div>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-2">Processing...</h3>
+            <p className="text-white/80 text-xs sm:text-sm">
               Approving IDRX and completing purchase...
             </p>
           </div>
@@ -970,9 +962,9 @@ function BuyModal({ listing, step, error, txHash, balance, onClose, onApprove })
         {step === "success" && (
           <div className="text-center">
             <div className="mb-4 flex justify-center">
-              <PartyPopper size={64} className="text-white" strokeWidth={1.5} />
+              <PartyPopper size={56} className="text-white sm:w-16 sm:h-16" strokeWidth={1.5} />
             </div>
-            <h3 className="text-2xl font-black text-white mb-2">Purchase Complete!</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-2">Purchase Complete!</h3>
             <p className="text-white/80 text-sm mb-4">
               The NFT is now yours. Check your inventory!
             </p>
@@ -997,9 +989,9 @@ function BuyModal({ listing, step, error, txHash, balance, onClose, onApprove })
         {step === "error" && (
           <div className="text-center">
             <div className="mb-4 flex justify-center">
-              <Frown size={64} className="text-white" strokeWidth={1.5} />
+              <Frown size={56} className="text-white sm:w-16 sm:h-16" strokeWidth={1.5} />
             </div>
-            <h3 className="text-2xl font-black text-white mb-2">Purchase Failed</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-2">Purchase Failed</h3>
             <p className="text-white/80 text-sm mb-4">{error}</p>
             <button
               onClick={onClose}
@@ -1028,11 +1020,11 @@ function SellModal({
   onApprove,
 }) {
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl p-6 max-w-sm w-full shadow-2xl my-8">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl sm:rounded-3xl p-5 sm:p-6 max-w-sm w-full shadow-2xl my-8">
         {step === "select" && (
           <>
-            <h3 className="text-2xl font-black text-white mb-4">Select NFT to Sell</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4">Select NFT to Sell</h3>
             <div className="max-h-96 overflow-y-auto space-y-2 mb-4">
               {cars.length > 0 ? (
                 cars.map((c) => (
@@ -1072,7 +1064,7 @@ function SellModal({
         )}
         {step === "price" && car && (
           <>
-            <h3 className="text-2xl font-black text-white mb-4">Set Price</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4">Set Price</h3>
             <div className="bg-white/20 rounded-xl p-4 mb-4">
               <p className="text-white font-bold mb-1">{car.modelName}</p>
               <p className="text-white/70 text-xs">#{car.tokenId}</p>
@@ -1110,7 +1102,7 @@ function SellModal({
         )}
         {step === "approve" && car && (
           <>
-            <h3 className="text-2xl font-black text-white mb-4">Confirm Listing</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4">Confirm Listing</h3>
             <div className="bg-white/20 rounded-xl p-4 mb-4">
               <p className="text-white font-bold mb-1">{car.modelName}</p>
               <p className="text-white/70 text-xs mb-3">#{car.tokenId}</p>
@@ -1142,8 +1134,8 @@ function SellModal({
         )}
         {step === "listing" && (
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4"></div>
-            <h3 className="text-2xl font-black text-white mb-2">Creating Listing...</h3>
+            <div className="animate-spin rounded-full h-14 w-14 sm:h-16 sm:w-16 border-b-4 border-white mx-auto mb-4"></div>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-2">Creating Listing...</h3>
             <p className="text-white/80 text-sm">
               Approving NFT and creating listing...
             </p>
@@ -1152,9 +1144,9 @@ function SellModal({
         {step === "success" && (
           <div className="text-center">
             <div className="mb-4 flex justify-center">
-              <CheckCircle size={64} className="text-white" strokeWidth={1.5} />
+              <CheckCircle size={56} className="text-white sm:w-16 sm:h-16" strokeWidth={1.5} />
             </div>
-            <h3 className="text-2xl font-black text-white mb-2">Listed Successfully!</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-2">Listed Successfully!</h3>
             <p className="text-white/80 text-sm mb-4">
               Your NFT is now on the marketplace!
             </p>
@@ -1169,9 +1161,9 @@ function SellModal({
         {step === "error" && (
           <div className="text-center">
             <div className="mb-4 flex justify-center">
-              <X size={64} className="text-white" strokeWidth={1.5} />
+              <X size={56} className="text-white sm:w-16 sm:h-16" strokeWidth={1.5} />
             </div>
-            <h3 className="text-2xl font-black text-white mb-2">Listing Failed</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-white mb-2">Listing Failed</h3>
             <p className="text-white/80 text-sm mb-4">{error}</p>
             <button
               onClick={onClose}
@@ -1194,9 +1186,8 @@ function DetailModal({ listing, balance, onClose, onBuy, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
       <div
-        className={`bg-gradient-to-br ${
-          rarityColorMap[listing.car.rarity] || "from-gray-500 to-gray-600"
-        } rounded-3xl p-6 max-w-sm w-full shadow-2xl`}
+        className={`bg-gradient-to-br ${rarityColorMap[listing.car.rarity] || "from-gray-500 to-gray-600"
+          } rounded-3xl p-6 max-w-sm w-full shadow-2xl`}
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-2xl font-black text-white">NFT Details</h3>
@@ -1246,9 +1237,11 @@ function DetailModal({ listing, balance, onClose, onBuy, onCancel }) {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-white/80 text-sm">Seller:</span>
-            <span className="text-white font-mono text-xs">
-              {listing.seller.walletAddress.slice(0, 6)}...
-              {listing.seller.walletAddress.slice(-4)}
+            <span className="text-white font-bold text-sm">
+              {listing.seller?.username
+                || (listing.seller?.walletAddress
+                  ? `${listing.seller.walletAddress.slice(0, 6)}...${listing.seller.walletAddress.slice(-4)}`
+                  : 'Unknown')}
             </span>
           </div>
           <div className="flex items-center justify-between">

@@ -141,7 +141,7 @@ export default function Dashboard() {
       // Find most popular series
       const popularSeries = supplyData.series?.reduce((max, s) =>
         s.currentMinted > max.currentMinted ? s : max
-      , { series: "Economy", currentMinted: 0 }) || { series: "Economy", currentMinted: 0 };
+        , { series: "Economy", currentMinted: 0 }) || { series: "Economy", currentMinted: 0 };
 
       setStats({
         totalMinted,
@@ -233,6 +233,46 @@ export default function Dashboard() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Auto-rotate activity feed with smooth scrolling
+  useEffect(() => {
+    if (recentActivity.length <= 5) return; // No scrolling if 5 or fewer items
+
+    const interval = setInterval(() => {
+      const container = document.getElementById('activity-feed-container');
+      if (!container) return;
+
+      const itemHeight = 68; // Approximate height of each activity item
+      const scrollAmount = itemHeight * 5; // Scroll by 5 items
+
+      // Get current scroll position
+      const currentScroll = container.scrollTop;
+      const maxScroll = container.scrollHeight - container.clientHeight;
+
+      // Calculate next scroll position
+      let nextScroll = currentScroll + scrollAmount;
+
+      // If next scroll would go past the end, scroll to the very end first
+      if (nextScroll > maxScroll) {
+        // Check if we're already at the bottom
+        if (currentScroll >= maxScroll - 5) {
+          // We're at the bottom, loop back to top
+          nextScroll = 0;
+        } else {
+          // Scroll to the very bottom
+          nextScroll = maxScroll;
+        }
+      }
+
+      // Smooth scroll to next position
+      container.scrollTo({
+        top: nextScroll,
+        behavior: 'smooth'
+      });
+    }, 5000); // Scroll every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [recentActivity.length]);
 
   if (!ready || !authenticated) {
     return null;
@@ -336,74 +376,74 @@ export default function Dashboard() {
             {supplyData.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {supplyData.map((tier) => {
-                const percentage = tier.maxSupply > 0 ? (tier.currentMinted / tier.maxSupply) * 100 : 0;
+                  const percentage = tier.maxSupply > 0 ? (tier.currentMinted / tier.maxSupply) * 100 : 0;
 
-                // Tier color configurations
-                const tierColors = {
-                  Economy: {
-                    bg: "bg-gradient-to-br from-gray-700 to-gray-800",
-                    text: "text-gray-300",
-                    bar: "bg-gray-500",
-                    indicatorColor: "text-gray-400"
-                  },
-                  Sport: {
-                    bg: "bg-gradient-to-br from-blue-900 to-blue-950",
-                    text: "text-blue-400",
-                    bar: "bg-blue-500",
-                    indicatorColor: "text-blue-400"
-                  },
-                  Supercar: {
-                    bg: "bg-gradient-to-br from-purple-900 to-purple-950",
-                    text: "text-purple-400",
-                    bar: "bg-purple-500",
-                    indicatorColor: "text-purple-400"
-                  },
-                  Hypercar: {
-                    bg: "bg-gradient-to-br from-yellow-900 to-orange-950",
-                    text: "text-yellow-400",
-                    bar: "bg-yellow-500",
-                    indicatorColor: "text-yellow-400"
-                  }
-                };
+                  // Tier color configurations
+                  const tierColors = {
+                    Economy: {
+                      bg: "bg-gradient-to-br from-gray-700 to-gray-800",
+                      text: "text-gray-300",
+                      bar: "bg-gray-500",
+                      indicatorColor: "text-gray-400"
+                    },
+                    Sport: {
+                      bg: "bg-gradient-to-br from-blue-900 to-blue-950",
+                      text: "text-blue-400",
+                      bar: "bg-blue-500",
+                      indicatorColor: "text-blue-400"
+                    },
+                    Supercar: {
+                      bg: "bg-gradient-to-br from-purple-900 to-purple-950",
+                      text: "text-purple-400",
+                      bar: "bg-purple-500",
+                      indicatorColor: "text-purple-400"
+                    },
+                    Hypercar: {
+                      bg: "bg-gradient-to-br from-yellow-900 to-orange-950",
+                      text: "text-yellow-400",
+                      bar: "bg-yellow-500",
+                      indicatorColor: "text-yellow-400"
+                    }
+                  };
 
-                const config = tierColors[tier.series] || tierColors.Economy;
+                  const config = tierColors[tier.series] || tierColors.Economy;
 
-                return (
-                  <div key={tier.series} className={`${config.bg} rounded-2xl p-4 shadow-xl border border-gray-700/50`}>
-                    {/* Tier Name with Indicator */}
-                    <div className="flex items-center justify-between mb-3">
-                      <span className={`text-xs font-black ${config.text} tracking-wider`}>
-                        {tier.series.toUpperCase()}
-                      </span>
-                      {tier.soldOut && (
-                        <Lock size={12} className="text-gray-400" />
-                      )}
-                      {tier.almostSoldOut && !tier.soldOut && (
-                        <Circle size={10} className={config.indicatorColor} fill="currentColor" />
-                      )}
-                    </div>
-
-                    {/* Big Number */}
-                    <div className="mb-3">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-white text-4xl font-black">
-                          {tier.currentMinted}
+                  return (
+                    <div key={tier.series} className={`${config.bg} rounded-2xl p-4 shadow-xl border border-gray-700/50`}>
+                      {/* Tier Name with Indicator */}
+                      <div className="flex items-center justify-between mb-3">
+                        <span className={`text-xs font-black ${config.text} tracking-wider`}>
+                          {tier.series.toUpperCase()}
                         </span>
-                        <span className="text-gray-500 text-sm font-bold">
-                          /{tier.maxSupply}
-                        </span>
+                        {tier.soldOut && (
+                          <Lock size={12} className="text-gray-400" />
+                        )}
+                        {tier.almostSoldOut && !tier.soldOut && (
+                          <Circle size={10} className={config.indicatorColor} fill="currentColor" />
+                        )}
+                      </div>
+
+                      {/* Big Number */}
+                      <div className="mb-3">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-white text-4xl font-black">
+                            {tier.currentMinted}
+                          </span>
+                          <span className="text-gray-500 text-sm font-bold">
+                            /{tier.maxSupply}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="relative w-full h-2 bg-gray-800/50 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${config.bar} transition-all duration-500 ease-out`}
+                          style={{ width: `${percentage}%` }}
+                        />
                       </div>
                     </div>
-
-                    {/* Progress Bar */}
-                    <div className="relative w-full h-2 bg-gray-800/50 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${config.bar} transition-all duration-500 ease-out`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                );
+                  );
                 })}
               </div>
             ) : (
@@ -464,11 +504,10 @@ export default function Dashboard() {
                 <button
                   key={idx}
                   onClick={() => setCurrentCarIndex(idx)}
-                  className={`h-2 rounded-full transition-all ${
-                    idx === currentCarIndex
-                      ? "w-6 bg-orange-500"
-                      : "w-2 bg-gray-600 hover:bg-gray-500"
-                  }`}
+                  className={`h-2 rounded-full transition-all ${idx === currentCarIndex
+                    ? "w-6 bg-orange-500"
+                    : "w-2 bg-gray-600 hover:bg-gray-500"
+                    }`}
                 />
               ))}
             </div>
@@ -486,12 +525,16 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="max-h-[300px] overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 scroll-smooth" id="activity-feed-container">
               {recentActivity.length > 0 ? (
-                recentActivity.map((activity) => (
+                recentActivity.map((activity, index) => (
                   <div
                     key={activity.id}
-                    className="bg-gray-800/50 rounded-lg p-3 flex items-center gap-3 hover:bg-gray-800 transition-colors"
+                    className="bg-gray-800/50 rounded-lg p-3 flex items-center gap-3 hover:bg-gray-800 transition-all animate-fade-up"
+                    style={{
+                      animationDelay: `${Math.min(index, 4) * 100}ms`,
+                      animationFillMode: 'backwards'
+                    }}
                   >
                     <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-lg flex-shrink-0">
                       {activity.avatar}
@@ -527,7 +570,7 @@ export default function Dashboard() {
       {/* Set Username Modal */}
       <SetUsernameModal
         isOpen={showUsernameModal}
-        onClose={() => {}} // Cannot close - must set username
+        onClose={() => { }} // Cannot close - must set username
         onSubmit={handleSetUsername}
       />
     </main>

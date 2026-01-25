@@ -967,3 +967,49 @@ body {
   /* filter: drop-shadow(0px 1px 1px #8B3200); */
   /* -webkit-text-stroke: 1px #8B3200; */
 }
+
+/* Fade up animation for activity feed */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 500ms ease-out;
+}
+
+/* Custom scrollbar styles */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.scrollbar-thin:hover::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thumb-gray-700::-webkit-scrollbar-thumb {
+  background: #374151;
+}
+
+.hover\:scrollbar-thumb-gray-600:hover::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}

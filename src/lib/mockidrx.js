@@ -3,7 +3,7 @@
  * Direct interaction dengan MockIDRX smart contract
  */
 
-const MOCKIDRX_ADDRESS = "0x2F5e6f1acbd3a6D754385407880b60B382814020";
+const MOCKIDRX_ADDRESS = "0x57ADEa3A1F286bF386544Ec6ac53C3Ba2085217c"; // New contract with treasury
 const BACKEND_WALLET_ADDRESS = "0x92F9778c18D43b9721E58A7a634cb65eeA80661d";
 
 export { BACKEND_WALLET_ADDRESS };
@@ -76,6 +76,19 @@ const MOCKIDRX_ABI = [
       }
     ],
     "name": "burn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "spinCost",
+        "type": "uint256"
+      }
+    ],
+    "name": "payForSpin",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -346,6 +359,53 @@ export async function checkAllowance(embeddedWallet, ownerAddress, spenderAddres
   } catch (error) {
     console.error("Check allowance error:", error);
     return 0;
+  }
+}
+
+/**
+ * Pay for spin by transferring to treasury
+ * @param {Object} embeddedWallet - Privy embedded wallet
+ * @param {number} amount - Amount to pay (in IDRX units)
+ * @returns {Promise<{success: boolean, txHash?: string, error?: string}>}
+ */
+export async function payForSpin(embeddedWallet, amount) {
+  try {
+    if (!embeddedWallet) {
+      throw new Error("Wallet not connected");
+    }
+
+    const { BrowserProvider, Contract, parseUnits } = await import("ethers");
+    const ethereumProvider = await embeddedWallet.getEthereumProvider();
+    const provider = new BrowserProvider(ethereumProvider);
+    const signer = await provider.getSigner();
+
+    const contract = new Contract(MOCKIDRX_ADDRESS, MOCKIDRX_ABI, signer);
+    const decimals = await contract.decimals();
+    const amountInWei = parseUnits(amount.toString(), decimals);
+
+    // Call payForSpin - transfer to treasury (NO APPROVAL NEEDED!)
+    // User pays small gas fee (~$0.0001 on Base Sepolia)
+    const tx = await contract.payForSpin(amountInWei);
+    const receipt = await tx.wait();
+
+    return {
+      success: true,
+      txHash: receipt.hash
+    };
+  } catch (error) {
+    console.error("PayForSpin error:", error);
+
+    let errorMessage = "Failed to pay for spin";
+    if (error.message?.includes("Insufficient balance")) {
+      errorMessage = "Insufficient MockIDRX balance";
+    } else if (error.message?.includes("user rejected")) {
+      errorMessage = "Transaction cancelled";
+    }
+
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 }
 

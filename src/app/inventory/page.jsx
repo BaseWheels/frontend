@@ -73,6 +73,10 @@ export default function InventoryPage() {
   const [redeeming, setRedeeming] = useState(false);
   const [redeemResult, setRedeemResult] = useState(null);
 
+  // Marketplace listing state
+  const [activeListings, setActiveListings] = useState([]); // Array of tokenIds that are listed
+  const [showListingWarning, setShowListingWarning] = useState(false);
+
   const filters = ["semua", "legendary", "epic", "rare", "common"];
 
   // Redirect if not authenticated
@@ -238,6 +242,13 @@ export default function InventoryPage() {
 
   // Handle claim physical button click
   const handleClaimPhysical = async (car) => {
+    // Check if car is listed on marketplace
+    if (activeListings.includes(car.tokenId)) {
+      setSelectedCar(car);
+      setShowListingWarning(true);
+      return;
+    }
+
     setSelectedCar(car);
 
     // Check if user has shipping info
@@ -290,12 +301,34 @@ export default function InventoryPage() {
     }
   };
 
+  // Fetch active listings from marketplace
+  const fetchActiveListings = async () => {
+    try {
+      const authToken = await getAccessToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/marketplace/my-listings?status=active`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      // Extract tokenIds from active listings
+      const tokenIds = data.listings
+        .filter(listing => listing.status === "active")
+        .map(listing => listing.carTokenId);
+      setActiveListings(tokenIds);
+    } catch (error) {
+      console.error("Failed to fetch active listings:", error);
+    }
+  };
+
   // Fetch data when authenticated
   useEffect(() => {
     if (authenticated) {
       fetchInventory();
       fetchFragments();
       fetchShippingInfo();
+      fetchActiveListings(); // Check for active marketplace listings
     }
   }, [authenticated]);
 
@@ -303,8 +336,8 @@ export default function InventoryPage() {
   const filteredInventory = selectedFilter === "semua"
     ? inventoryData.filter((car) => !car.isRedeemed)
     : inventoryData.filter(
-        (car) => car.rarity?.toLowerCase() === selectedFilter.toLowerCase() && !car.isRedeemed
-      );
+      (car) => car.rarity?.toLowerCase() === selectedFilter.toLowerCase() && !car.isRedeemed
+    );
 
   // Handle assembly
   const handleAssemble = async (brand) => {
@@ -506,22 +539,20 @@ export default function InventoryPage() {
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => setActiveTab("cars")}
-              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${
-                activeTab === "cars"
-                  ? "bg-white text-orange-600 shadow-lg"
-                  : "bg-orange-600/50 text-white hover:bg-orange-600/70"
-              }`}
+              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${activeTab === "cars"
+                ? "bg-white text-orange-600 shadow-lg"
+                : "bg-orange-600/50 text-white hover:bg-orange-600/70"
+                }`}
             >
               <Car size={16} strokeWidth={2.5} />
               Cars ({inventoryData.length})
             </button>
             <button
               onClick={() => setActiveTab("fragments")}
-              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${
-                activeTab === "fragments"
-                  ? "bg-white text-orange-600 shadow-lg"
-                  : "bg-orange-600/50 text-white hover:bg-orange-600/70"
-              }`}
+              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${activeTab === "fragments"
+                ? "bg-white text-orange-600 shadow-lg"
+                : "bg-orange-600/50 text-white hover:bg-orange-600/70"
+                }`}
             >
               <Box size={16} strokeWidth={2.5} />
               Fragments ({fragmentsData.reduce((sum, b) => sum + b.totalParts, 0)})
@@ -535,11 +566,10 @@ export default function InventoryPage() {
                 <button
                   key={filter}
                   onClick={() => setSelectedFilter(filter)}
-                  className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all active:scale-95 ${
-                    selectedFilter === filter
-                      ? "bg-white text-orange-600 shadow-lg scale-105"
-                      : "bg-orange-600/50 text-white hover:bg-orange-600/70"
-                  }`}
+                  className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all active:scale-95 ${selectedFilter === filter
+                    ? "bg-white text-orange-600 shadow-lg scale-105"
+                    : "bg-orange-600/50 text-white hover:bg-orange-600/70"
+                    }`}
                 >
                   {filter}
                 </button>
@@ -605,13 +635,23 @@ export default function InventoryPage() {
 
                       {/* Claim Physical Button */}
                       {!car.isRedeemed ? (
-                        <button
-                          onClick={() => handleClaimPhysical(car)}
-                          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2 px-3 rounded-lg text-[10px] shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1"
-                        >
-                          <Flame size={12} className="text-white" fill="currentColor" />
-                          CLAIM PHYSICAL
-                        </button>
+                        activeListings.includes(car.tokenId) ? (
+                          <button
+                            onClick={() => handleClaimPhysical(car)}
+                            className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold py-2 px-3 rounded-lg text-[10px] shadow-lg cursor-not-allowed opacity-75 flex items-center justify-center gap-1"
+                          >
+                            <Package size={12} className="text-white" />
+                            UNABLE TO CLAIM
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleClaimPhysical(car)}
+                            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2 px-3 rounded-lg text-[10px] shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1"
+                          >
+                            <Flame size={12} className="text-white" fill="currentColor" />
+                            CLAIM PHYSICAL
+                          </button>
+                        )
                       ) : (
                         <div className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-2 px-3 rounded-lg text-[10px] text-center">
                           ✅ REDEEMED
@@ -678,11 +718,10 @@ export default function InventoryPage() {
                           <p className="text-white/70 text-xs">{brandData.series}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                            brandData.canAssemble
-                              ? "bg-green-500 text-white"
-                              : "bg-black/40 text-white/70"
-                          }`}>
+                          <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${brandData.canAssemble
+                            ? "bg-green-500 text-white"
+                            : "bg-black/40 text-white/70"
+                            }`}>
                             {brandData.canAssemble ? "READY!" : `${brandData.fragments.length}/5`}
                           </span>
                         </div>
@@ -698,11 +737,10 @@ export default function InventoryPage() {
                           return (
                             <div
                               key={typeId}
-                              className={`flex flex-col items-center p-2 rounded-xl transition-transform ${
-                                hasFragment
-                                  ? "bg-white/30 hover:scale-105 active:scale-95"
-                                  : "bg-black/30 opacity-70"
-                              }`}
+                              className={`flex flex-col items-center p-2 rounded-xl transition-transform ${hasFragment
+                                ? "bg-white/30 hover:scale-105 active:scale-95"
+                                : "bg-black/30 opacity-70"
+                                }`}
                             >
                               <Icon size={20} className="text-white mb-1" strokeWidth={2.5} />
                               <span className="text-[8px] font-bold text-white/80">
@@ -815,7 +853,7 @@ export default function InventoryPage() {
       <NetworkModal
         isOpen={showNetworkModal}
         onClose={() => setShowNetworkModal(false)}
-        onNetworkChanged={() => {}}
+        onNetworkChanged={() => { }}
       />
 
       {/* Sold Out Modal */}
@@ -856,11 +894,10 @@ export default function InventoryPage() {
                     }
                   }}
                   disabled={processingOption}
-                  className={`w-full p-4 rounded-xl text-left transition-all shadow-lg ${
-                    option.type === "refund"
-                      ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-                      : "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
-                  } ${processingOption ? "opacity-50 cursor-not-allowed" : ""}`}
+                  className={`w-full p-4 rounded-xl text-left transition-all shadow-lg ${option.type === "refund"
+                    ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                    : "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                    } ${processingOption ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <div className="flex items-start gap-3">
                     {option.type === "refund" ? (
@@ -931,7 +968,7 @@ export default function InventoryPage() {
                 <input
                   type="text"
                   value={shippingInfo.name}
-                  onChange={(e) => setShippingInfo({...shippingInfo, name: e.target.value})}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, name: e.target.value })}
                   placeholder="Enter full name"
                   className="w-full px-4 py-3 rounded-lg bg-white/90 text-gray-900 font-semibold placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 />
@@ -944,7 +981,7 @@ export default function InventoryPage() {
                 <input
                   type="tel"
                   value={shippingInfo.phone}
-                  onChange={(e) => setShippingInfo({...shippingInfo, phone: e.target.value})}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, phone: e.target.value })}
                   placeholder="+1 (555) 000-0000"
                   className="w-full px-4 py-3 rounded-lg bg-white/90 text-gray-900 font-semibold placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 />
@@ -956,7 +993,7 @@ export default function InventoryPage() {
                 </label>
                 <textarea
                   value={shippingInfo.address}
-                  onChange={(e) => setShippingInfo({...shippingInfo, address: e.target.value})}
+                  onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
                   placeholder="Street, City, State, ZIP Code, Country"
                   rows={4}
                   className="w-full px-4 py-3 rounded-lg bg-white/90 text-gray-900 font-semibold placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 resize-none"
@@ -1092,6 +1129,54 @@ export default function InventoryPage() {
               >
                 OK
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Marketplace Listing Warning Modal */}
+      {showListingWarning && selectedCar && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="text-center">
+              <div className="mb-4 flex justify-center">
+                <AlertTriangle size={64} className="text-yellow-300" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-2xl font-black text-white mb-2">
+                Unable to Claim
+              </h3>
+              <p className="text-white/90 text-sm mb-6">
+                This NFT is currently listed on the marketplace. You must <strong>delist it first</strong> before proceeding with physical redemption.
+              </p>
+              {activeListings.includes(selectedCar.tokenId) && (
+                <div className="bg-white/20 rounded-2xl p-4 mb-4">
+                  <p className="text-white font-bold">{selectedCar.modelName}</p>
+                  <p className="text-white/70 text-sm">{selectedCar.series}</p>
+                  <p className="text-yellow-300 text-xs font-bold uppercase mt-1">
+                    Token #{selectedCar.tokenId}
+                  </p>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setShowListingWarning(false);
+                    setSelectedCar(null);
+                  }}
+                  className="flex-1 bg-white/20 hover:bg-white/30 text-white font-bold py-3 rounded-xl transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowListingWarning(false);
+                    router.push('/marketplace');
+                  }}
+                  className="flex-1 bg-white text-orange-600 font-black py-3 rounded-xl hover:bg-gray-100 transition-all"
+                >
+                  Go to Marketplace
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -39,7 +39,7 @@ export function useWallet() {
       }))
     });
 
-    // PRIORITAS 1: Cari embedded wallet Privy (untuk user login email/social)
+    // Find Privy embedded wallet (for email/social login)
     const embeddedWallet = wallets.find((wallet) => wallet.walletClientType === "privy");
 
     if (embeddedWallet) {
