@@ -1,18 +1,26 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { usePrivy } from "@privy-io/react-auth";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { Wallet, Bell, Car, Flame, Lock, Circle, Activity, BadgeCheck } from "lucide-react";
+import { Wallet, Bell, Car, Flame, Lock, Circle, Activity, BadgeCheck, Droplet } from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import SetUsernameModal from "@/components/SetUsernameModal";
 import { useWallet } from "@/hooks/useWallet";
 import { PullToRefresh } from "@/components/shared";
+import { checkFaucetCooldown, formatCooldownTime } from "@/lib/mockidrx";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const { authenticated, ready, getAccessToken } = usePrivy();
   const { walletAddress } = useWallet();
+  const { wallets } = useWallets();
   const router = useRouter();
+
+  // Get embedded wallet instance from Privy
+  const embeddedWallet = wallets.find(
+    wallet => wallet.walletClientType === 'privy'
+  );
 
   // State
   const [mockIDRXBalance, setMockIDRXBalance] = useState(0);
@@ -38,6 +46,8 @@ export default function Dashboard() {
     usernameSet: false
   });
   const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [faucetCooldown, setFaucetCooldown] = useState(0);
+  const [claimingFaucet, setClaimingFaucet] = useState(false);
 
   // Rare pool showcase cars
   const showcaseCars = [
@@ -211,21 +221,75 @@ export default function Dashboard() {
     }
   };
 
+  // Check faucet cooldown
+  const checkCooldown = useCallback(async () => {
+    if (!walletAddress || !embeddedWallet) return;
+
+    try {
+      const cooldownSeconds = await checkFaucetCooldown(embeddedWallet, walletAddress);
+      setFaucetCooldown(cooldownSeconds);
+    } catch (error) {
+      console.error("Failed to check faucet cooldown:", error);
+    }
+  }, [walletAddress, embeddedWallet]);
+
+  // Handle claim faucet
+  const handleClaimFaucet = async () => {
+    if (faucetCooldown > 0) {
+      toast.error(`Cooldown active! Wait ${formatCooldownTime(faucetCooldown)}`);
+      return;
+    }
+
+    try {
+      setClaimingFaucet(true);
+
+      const authToken = await getAccessToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/gasless/claim-faucet`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.details || 'Failed to claim faucet');
+      }
+
+      toast.success("Faucet claimed successfully! +1,000,000 IDRX");
+
+      // Refresh balance
+      await fetchMockIDRXBalance();
+
+      // Check cooldown again
+      await checkCooldown();
+    } catch (error) {
+      console.error("Claim faucet error:", error);
+      toast.error(error.message || "Failed to claim faucet");
+    } finally {
+      setClaimingFaucet(false);
+    }
+  };
+
   useEffect(() => {
     if (authenticated) {
       fetchMockIDRXBalance();
       fetchStats();
       fetchRecentActivity();
+      checkCooldown();
 
       // Refresh stats every 30 seconds
       const interval = setInterval(() => {
         fetchStats();
         fetchRecentActivity();
+        checkCooldown();
       }, 30000);
 
       return () => clearInterval(interval);
     }
-  }, [authenticated, fetchMockIDRXBalance, fetchStats, fetchRecentActivity]);
+  }, [authenticated, fetchMockIDRXBalance, fetchStats, fetchRecentActivity, checkCooldown]);
 
   // Auto-rotate showcase cars
   useEffect(() => {
@@ -308,7 +372,8 @@ export default function Dashboard() {
         <div className={`relative z-10 flex flex-col min-h-screen max-w-md mx-auto pb-24 ${showUsernameModal ? 'blur-sm pointer-events-none' : ''}`}>
           {/* Header */}
           <header className="px-4 pt-3 pb-4">
-            <div className="flex items-center justify-between gap-2 mb-4">
+            {/* Top Row - Balance and Username */}
+            <div className="flex items-center justify-between gap-2 mb-3">
               {/* MockIDRX Balance Badge */}
               <button
                 onClick={fetchMockIDRXBalance}
@@ -332,12 +397,23 @@ export default function Dashboard() {
                   </span>
                 </div>
               )}
-
-              {/* Notification Icon */}
-              <button className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-                <Bell size={18} className="text-white" strokeWidth={2} />
-              </button>
             </div>
+
+            {/* Bottom - Faucet Button (Full Width) */}
+            <button
+              onClick={handleClaimFaucet}
+              disabled={faucetCooldown > 0 || claimingFaucet}
+              className={`w-full flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 shadow-xl transition-all font-bold ${
+                faucetCooldown > 0 || claimingFaucet
+                  ? 'bg-gray-400 cursor-not-allowed opacity-60'
+                  : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:scale-[1.02] hover:shadow-2xl'
+              }`}
+            >
+              <Droplet size={16} className="text-white" strokeWidth={3} />
+              <span className="text-sm text-white">
+                {claimingFaucet ? "Claiming..." : faucetCooldown > 0 ? `Wait ${formatCooldownTime(faucetCooldown)}` : "Claim Free 1,000,000 IDRX"}
+              </span>
+            </button>
           </header>
 
           {/* Content Container */}
