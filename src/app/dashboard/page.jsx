@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { Wallet, Bell, Car, Flame, Lock, Circle, Activity } from "lucide-react";
+import { Wallet, Bell, Car, Flame, Lock, Circle, Activity, BadgeCheck } from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import SetUsernameModal from "@/components/SetUsernameModal";
 import { useWallet } from "@/hooks/useWallet";
@@ -291,7 +291,7 @@ export default function Dashboard() {
   const currentCar = showcaseCars[currentCarIndex];
 
   return (
-    <main className={`relative min-h-screen bg-gradient-to-b from-orange-400 via-orange-500 to-orange-600 text-white overflow-hidden ${showUsernameModal ? 'pointer-events-none blur-sm' : ''}`}>
+    <main className="relative min-h-screen bg-gradient-to-b from-orange-400 via-orange-500 to-orange-600 text-white overflow-hidden">
       {/* Checkered Pattern Background */}
       <div
         className="absolute inset-0 opacity-30"
@@ -305,274 +305,284 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <PullToRefresh onRefresh={handleRefresh}>
-        <div className="relative z-10 flex flex-col min-h-screen max-w-md mx-auto pb-24">
+        <div className={`relative z-10 flex flex-col min-h-screen max-w-md mx-auto pb-24 ${showUsernameModal ? 'blur-sm pointer-events-none' : ''}`}>
           {/* Header */}
-        <header className="px-4 pt-3 pb-4">
-          <div className="flex items-center justify-between gap-2 mb-4">
-            {/* MockIDRX Balance Badge */}
-            <button
-              onClick={fetchMockIDRXBalance}
-              className="flex items-center gap-1.5 bg-yellow-400 rounded-full px-3 py-1.5 shadow-lg hover:scale-105 transition-transform"
-            >
-              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
-                <Wallet size={14} className="text-yellow-300" strokeWidth={3} />
-              </div>
-              <span className="font-black text-sm text-orange-900">
-                {loadingMockIDRX ? "..." : Math.floor(mockIDRXBalance).toLocaleString()}
-              </span>
-              <span className="text-xs font-bold text-orange-900 opacity-80">IDRX</span>
-            </button>
-
-            {/* User Info Badge */}
-            {(userInfo.username || userInfo.email || walletAddress) && (
-              <div className="bg-emerald-500 border-2 border-emerald-400 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-lg">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                <span className="text-white text-xs font-bold">
-                  {userInfo.username || (userInfo.email ? userInfo.email.split('@')[0] : null) || `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
+          <header className="px-4 pt-3 pb-4">
+            <div className="flex items-center justify-between gap-2 mb-4">
+              {/* MockIDRX Balance Badge */}
+              <button
+                onClick={fetchMockIDRXBalance}
+                className="flex items-center gap-1.5 bg-yellow-400 rounded-full px-3 py-1.5 shadow-lg hover:scale-105 transition-transform"
+              >
+                <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
+                  <Wallet size={14} className="text-yellow-300" strokeWidth={3} />
+                </div>
+                <span className="font-black text-sm text-orange-900">
+                  {loadingMockIDRX ? "..." : Math.floor(mockIDRXBalance).toLocaleString()}
                 </span>
-              </div>
-            )}
+                <span className="text-xs font-bold text-orange-900 opacity-80">IDRX</span>
+              </button>
 
-            {/* Notification Icon */}
-            <button className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-              <Bell size={18} className="text-white" strokeWidth={2} />
-            </button>
-          </div>
-        </header>
-
-        {/* Content Container */}
-        <div className="flex-1 px-4 space-y-4 overflow-y-auto">
-          {/* Total Minted Card */}
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-5 shadow-2xl border-2 border-yellow-400 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -mr-16 -mt-16" />
-            <div className="relative">
-              <p className="text-gray-400 text-xs font-bold mb-1">TOTAL MINTED</p>
-              <div className="flex items-end justify-between">
-                <div>
-                  <h2 className="text-5xl font-black text-white mb-1">
-                    {stats.totalMinted.toLocaleString()}
-                  </h2>
-                  <p className="text-yellow-400 text-sm font-bold">
-                    NFTs
-                  </p>
-                  <p className="text-orange-400 text-xs mt-2 flex items-center gap-1">
-                    <Flame size={14} className="text-orange-400" fill="currentColor" />
-                    <span>Last hour: <span className="font-bold">{stats.lastHourMinted}</span></span>
-                  </p>
+              {/* User Info Badge */}
+              {(userInfo.username || userInfo.email || walletAddress) && (
+                <div className="bg-emerald-500 border-2 border-emerald-400 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-lg">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                  <span className="text-white text-xs font-bold">
+                    {userInfo.username || (userInfo.email ? userInfo.email.split('@')[0] : null) || `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
+                  </span>
                 </div>
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
-                  <Car size={32} className="text-white" strokeWidth={2} />
+              )}
+
+              {/* Notification Icon */}
+              <button className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
+                <Bell size={18} className="text-white" strokeWidth={2} />
+              </button>
+            </div>
+          </header>
+
+          {/* Content Container */}
+          <div className="flex-1 px-4 space-y-4 overflow-y-auto">
+            {/* Total Minted Card */}
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-5 shadow-2xl border-2 border-yellow-400 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -mr-16 -mt-16" />
+              <div className="relative">
+                <p className="text-gray-400 text-xs font-bold mb-1">TOTAL MINTED</p>
+                <div className="flex items-end justify-between">
+                  <div>
+                    <h2 className="text-5xl font-black text-white mb-1">
+                      {stats.totalMinted.toLocaleString()}
+                    </h2>
+                    <p className="text-yellow-400 text-sm font-bold">
+                      NFTs
+                    </p>
+                    <p className="text-orange-400 text-xs mt-2 flex items-center gap-1">
+                      <Flame size={14} className="text-orange-400" fill="currentColor" />
+                      <span>Last hour: <span className="font-bold">{stats.lastHourMinted}</span></span>
+                    </p>
+                  </div>
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+                    <Car size={32} className="text-white" strokeWidth={2} />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
-              <p className="text-gray-400 text-xs font-bold mb-1">MY FRAGMENTS</p>
-              <p className="text-white text-2xl font-black">{userStats.totalFragments}</p>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
+                <p className="text-gray-400 text-xs font-bold mb-1">MY FRAGMENTS</p>
+                <p className="text-white text-2xl font-black">{userStats.totalFragments}</p>
+              </div>
+              <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
+                <p className="text-yellow-400 text-xs font-bold mb-1">MY NFTs</p>
+                <p className="text-white text-2xl font-black">{userStats.totalCars}</p>
+              </div>
             </div>
-            <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
-              <p className="text-yellow-400 text-xs font-bold mb-1">MY NFTs</p>
-              <p className="text-white text-2xl font-black">{userStats.totalCars}</p>
-            </div>
-          </div>
 
-          {/* Tier Supply Progress */}
-          <div className="bg-gray-900/80 rounded-2xl p-4 shadow-2xl">
-            <h3 className="text-white font-black text-sm mb-3 tracking-wide">
-              NFT SUPPLY BY TIER
-            </h3>
-            {supplyData.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
-                {supplyData.map((tier) => {
-                  const percentage = tier.maxSupply > 0 ? (tier.currentMinted / tier.maxSupply) * 100 : 0;
+            {/* Tier Supply Progress */}
+            <div className="bg-gray-900/80 rounded-2xl p-4 shadow-2xl">
+              <h3 className="text-white font-black text-sm mb-3 tracking-wide">
+                NFT SUPPLY BY TIER
+              </h3>
+              {supplyData.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {supplyData.map((tier) => {
+                    const percentage = tier.maxSupply > 0 ? (tier.currentMinted / tier.maxSupply) * 100 : 0;
 
-                  // Tier color configurations
-                  const tierColors = {
-                    Economy: {
-                      bg: "bg-gradient-to-br from-gray-700 to-gray-800",
-                      text: "text-gray-300",
-                      bar: "bg-gray-500",
-                      indicatorColor: "text-gray-400"
-                    },
-                    Sport: {
-                      bg: "bg-gradient-to-br from-blue-900 to-blue-950",
-                      text: "text-blue-400",
-                      bar: "bg-blue-500",
-                      indicatorColor: "text-blue-400"
-                    },
-                    Supercar: {
-                      bg: "bg-gradient-to-br from-purple-900 to-purple-950",
-                      text: "text-purple-400",
-                      bar: "bg-purple-500",
-                      indicatorColor: "text-purple-400"
-                    },
-                    Hypercar: {
-                      bg: "bg-gradient-to-br from-yellow-900 to-orange-950",
-                      text: "text-yellow-400",
-                      bar: "bg-yellow-500",
-                      indicatorColor: "text-yellow-400"
-                    }
-                  };
+                    // Tier color configurations
+                    const tierColors = {
+                      Economy: {
+                        bg: "bg-gradient-to-br from-gray-700 to-gray-800",
+                        text: "text-gray-300",
+                        bar: "bg-gray-500",
+                        indicatorColor: "text-gray-400"
+                      },
+                      Sport: {
+                        bg: "bg-gradient-to-br from-blue-900 to-blue-950",
+                        text: "text-blue-400",
+                        bar: "bg-blue-500",
+                        indicatorColor: "text-blue-400"
+                      },
+                      Supercar: {
+                        bg: "bg-gradient-to-br from-purple-900 to-purple-950",
+                        text: "text-purple-400",
+                        bar: "bg-purple-500",
+                        indicatorColor: "text-purple-400"
+                      },
+                      Hypercar: {
+                        bg: "bg-gradient-to-br from-yellow-900 to-orange-950",
+                        text: "text-yellow-400",
+                        bar: "bg-yellow-500",
+                        indicatorColor: "text-yellow-400"
+                      }
+                    };
 
-                  const config = tierColors[tier.series] || tierColors.Economy;
+                    const config = tierColors[tier.series] || tierColors.Economy;
 
-                  return (
-                    <div key={tier.series} className={`${config.bg} rounded-2xl p-4 shadow-xl border border-gray-700/50`}>
-                      {/* Tier Name with Indicator */}
-                      <div className="flex items-center justify-between mb-3">
-                        <span className={`text-xs font-black ${config.text} tracking-wider`}>
-                          {tier.series.toUpperCase()}
-                        </span>
-                        {tier.soldOut && (
-                          <Lock size={12} className="text-gray-400" />
-                        )}
-                        {tier.almostSoldOut && !tier.soldOut && (
-                          <Circle size={10} className={config.indicatorColor} fill="currentColor" />
-                        )}
-                      </div>
-
-                      {/* Big Number */}
-                      <div className="mb-3">
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-white text-4xl font-black">
-                            {tier.currentMinted}
+                    return (
+                      <div key={tier.series} className={`${config.bg} rounded-2xl p-4 shadow-xl border border-gray-700/50`}>
+                        {/* Tier Name with Indicator */}
+                        <div className="flex items-center justify-between mb-3">
+                          <span className={`text-xs font-black ${config.text} tracking-wider`}>
+                            {tier.series.toUpperCase()}
                           </span>
-                          <span className="text-gray-500 text-sm font-bold">
-                            /{tier.maxSupply}
-                          </span>
+                          {tier.soldOut && (
+                            <Lock size={12} className="text-gray-400" />
+                          )}
+                          {tier.almostSoldOut && !tier.soldOut && (
+                            <Circle size={10} className={config.indicatorColor} fill="currentColor" />
+                          )}
+                        </div>
+
+                        {/* Big Number */}
+                        <div className="mb-3">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-white text-4xl font-black">
+                              {tier.currentMinted}
+                            </span>
+                            <span className="text-gray-500 text-sm font-bold">
+                              /{tier.maxSupply}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="relative w-full h-2 bg-gray-800/50 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${config.bar} transition-all duration-500 ease-out`}
+                            style={{ width: `${percentage}%` }}
+                          />
                         </div>
                       </div>
-
-                      {/* Progress Bar */}
-                      <div className="relative w-full h-2 bg-gray-800/50 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${config.bar} transition-all duration-500 ease-out`}
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-8">
-                <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-3 animate-pulse">
-                  <Car size={24} className="text-gray-600" strokeWidth={1.5} />
+                    );
+                  })}
                 </div>
-                <p className="text-gray-500 text-sm font-medium">Loading supply data...</p>
-              </div>
-            )}
-          </div>
-
-          {/* Rare Pool Showcase */}
-          <div className="bg-gray-900/80 rounded-2xl p-4 shadow-2xl">
-            <h3 className="text-white font-black text-sm mb-3 tracking-wide">
-              RARE POOL SHOWCASE
-            </h3>
-
-            {/* Car Display */}
-            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 mb-3">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-400 text-xs font-bold">{currentCar.rarity.toUpperCase()}</span>
-                <span className="text-gray-400 text-xs">/1000</span>
-              </div>
-
-              <div className="relative h-32 mb-3 flex items-center justify-center">
-                <img
-                  src={currentCar.image}
-                  alt={currentCar.name}
-                  className="max-h-full max-w-full object-contain drop-shadow-2xl"
-                  onError={(e) => {
-                    e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150'%3E%3Crect fill='%23333' width='200' height='150'/%3E%3Ctext fill='%23999' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-size='16'%3ECar%3C/text%3E%3C/svg%3E";
-                  }}
-                />
-              </div>
-
-              <h4 className="text-white font-black text-center mb-3">
-                {currentCar.name}
-              </h4>
-
-              {/* Stats Badges */}
-              <div className="flex justify-center gap-2">
-                <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg px-3 py-1">
-                  <p className="text-white text-xs font-bold">{currentCar.speed}</p>
-                </div>
-                <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg px-3 py-1">
-                  <p className="text-white text-xs font-bold">{currentCar.power}</p>
-                </div>
-                <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-lg px-3 py-1">
-                  <p className="text-white text-xs font-bold">{currentCar.drift}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Carousel Dots */}
-            <div className="flex justify-center gap-1.5">
-              {showcaseCars.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentCarIndex(idx)}
-                  className={`h-2 rounded-full transition-all ${idx === currentCarIndex
-                    ? "w-6 bg-orange-500"
-                    : "w-2 bg-gray-600 hover:bg-gray-500"
-                    }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Live Activity Feed */}
-          <div className="bg-gray-900/80 rounded-2xl p-4 shadow-2xl">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-white font-black text-sm tracking-wide">
-                LIVE ACTIVITY FEED
-              </h3>
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <span className="text-red-500 text-xs font-bold">LIVE</span>
-              </div>
-            </div>
-
-            <div className="max-h-[300px] overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 scroll-smooth" id="activity-feed-container">
-              {recentActivity.length > 0 ? (
-                recentActivity.map((activity, index) => (
-                  <div
-                    key={activity.id}
-                    className="bg-gray-800/50 rounded-lg p-3 flex items-center gap-3 hover:bg-gray-800 transition-all animate-fade-up"
-                    style={{
-                      animationDelay: `${Math.min(index, 4) * 100}ms`,
-                      animationFillMode: 'backwards'
-                    }}
-                  >
-                    <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-lg flex-shrink-0">
-                      {activity.avatar}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm">
-                        <span className="font-bold">{activity.user}</span>{" "}
-                        <span className="text-gray-400">{activity.action}</span>
-                      </p>
-                    </div>
-                    <span className="text-gray-500 text-xs flex-shrink-0">
-                      {activity.time}
-                    </span>
-                  </div>
-                ))
               ) : (
                 <div className="flex flex-col items-center justify-center py-8">
-                  <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-3">
-                    <Activity size={24} className="text-gray-600" strokeWidth={1.5} />
+                  <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-3 animate-pulse">
+                    <Car size={24} className="text-gray-600" strokeWidth={1.5} />
                   </div>
-                  <p className="text-gray-500 text-sm font-medium">No activity yet</p>
-                  <p className="text-gray-600 text-xs">Be the first to open a gacha box!</p>
+                  <p className="text-gray-500 text-sm font-medium">Loading supply data...</p>
                 </div>
               )}
             </div>
+
+            {/* Rare Pool Showcase */}
+            <div className="bg-gray-900/80 rounded-2xl p-4 shadow-2xl">
+              <h3 className="text-white font-black text-sm mb-3 tracking-wide">
+                RARE POOL SHOWCASE
+              </h3>
+
+              {/* Car Display */}
+              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 mb-3">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-400 text-xs font-bold">{currentCar.rarity.toUpperCase()}</span>
+                  <span className="text-gray-400 text-xs">/1000</span>
+                </div>
+
+                <div className="relative h-32 mb-3 flex items-center justify-center">
+                  <img
+                    src={currentCar.image}
+                    alt={currentCar.name}
+                    className="max-h-full max-w-full object-contain drop-shadow-2xl"
+                    onError={(e) => {
+                      e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150'%3E%3Crect fill='%23333' width='200' height='150'/%3E%3Ctext fill='%23999' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-size='16'%3ECar%3C/text%3E%3C/svg%3E";
+                    }}
+                  />
+                </div>
+
+                <h4 className="text-white font-black text-center mb-3">
+                  {currentCar.name}
+                </h4>
+
+                {/* Stats Badges */}
+                <div className="flex justify-center gap-2">
+                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg px-3 py-1">
+                    <p className="text-white text-xs font-bold">{currentCar.speed}</p>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg px-3 py-1">
+                    <p className="text-white text-xs font-bold">{currentCar.power}</p>
+                  </div>
+                  <div className="bg-gradient-to-r from-yellow-500 to-amber-600 rounded-lg px-3 py-1">
+                    <p className="text-white text-xs font-bold">{currentCar.drift}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Carousel Dots */}
+              <div className="flex justify-center gap-1.5">
+                {showcaseCars.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentCarIndex(idx)}
+                    className={`h-2 rounded-full transition-all ${idx === currentCarIndex
+                      ? "w-6 bg-orange-500"
+                      : "w-2 bg-gray-600 hover:bg-gray-500"
+                      }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Live Activity Feed */}
+            <div className="bg-gray-900/80 rounded-2xl p-4 shadow-2xl">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-white font-black text-sm tracking-wide">
+                  LIVE ACTIVITY FEED
+                </h3>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  <span className="text-red-500 text-xs font-bold">LIVE</span>
+                </div>
+              </div>
+
+              <div className="max-h-[300px] overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 scroll-smooth" id="activity-feed-container">
+                {recentActivity.length > 0 ? (
+                  recentActivity.map((activity, index) => (
+                    <div
+                      key={activity.id}
+                      className="bg-gray-800/50 rounded-lg p-3 flex items-center gap-3 hover:bg-gray-800 transition-all animate-fade-up"
+                      style={{
+                        animationDelay: `${Math.min(index, 4) * 100}ms`,
+                        animationFillMode: 'backwards'
+                      }}
+                    >
+                      <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-lg flex-shrink-0">
+                        {activity.avatar}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-sm flex items-center flex-wrap gap-1">
+                          <span className="font-bold">{activity.user}</span>{" "}
+                          <span className="text-gray-400 flex items-center flex-wrap gap-1">
+                            {activity.action.split('admin').map((part, i) => (
+                              i === 0 ? part : (
+                                <span key={i} className="inline-flex items-center gap-0.5">
+                                  <span className="font-bold text-white">admin</span>
+                                  <BadgeCheck size={16} className="text-blue-400" strokeWidth={2.5} />
+                                  {part}
+                                </span>
+                              )
+                            ))}
+                          </span>
+                        </p>
+                      </div>
+                      <span className="text-gray-500 text-xs flex-shrink-0">
+                        {activity.time}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-3">
+                      <Activity size={24} className="text-gray-600" strokeWidth={1.5} />
+                    </div>
+                    <p className="text-gray-500 text-sm font-medium">No activity yet</p>
+                    <p className="text-gray-600 text-xs">Be the first to open a gacha box!</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
         </div>
       </PullToRefresh>
 
