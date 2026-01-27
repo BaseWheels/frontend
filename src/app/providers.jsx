@@ -6,6 +6,16 @@ import { Toaster } from "sonner";
 import { sdk } from "@farcaster/miniapp-sdk";
 import { useEffect } from "react";
 
+// Suppress React warning for isActive prop from Privy's styled-components
+// This is a known issue in @privy-io/react-auth library
+if (typeof window !== "undefined") {
+  const originalError = console.error;
+  console.error = (...args) => {
+    if (args[0]?.includes?.("isActive")) return;
+    originalError.apply(console, args);
+  };
+}
+
 export default function Providers({ children }) {
   const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID || "cmjxyscmx03pulf0cadbpdmvq";
 

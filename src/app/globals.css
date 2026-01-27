@@ -71,6 +71,20 @@ body {
   min-height: 100%;
   font-family: var(--font-display);
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global smooth transitions */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* GPU acceleration for animations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 ::selection {
@@ -84,6 +98,101 @@ body {
 
   to {
     opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-out-bottom {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modal-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
   }
 }
 
@@ -787,8 +896,77 @@ body {
     animation: fade-in 600ms ease forwards;
   }
 
+  .animate-fade-in-up {
+    animation: fade-in-up 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fade-in-scale {
+    animation: fade-in-scale 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-in-bottom {
+    animation: slide-in-bottom 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-modal-in {
+    animation: modal-in 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-backdrop-in {
+    animation: backdrop-in 200ms ease forwards;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
   .animate-rise {
     animation: rise 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Smooth button transitions */
+  .btn-smooth {
+    transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-smooth:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-smooth:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Smooth card transitions */
+  .card-smooth {
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card-smooth:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.4);
+  }
+
+  .card-smooth:active {
+    transform: translateY(-2px) scale(0.99);
+  }
+
+  /* Smooth tap effect for mobile */
+  .tap-smooth {
+    transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 150ms ease;
+  }
+
+  .tap-smooth:active {
+    transform: scale(0.97);
+    opacity: 0.9;
   }
 
   [data-reveal] {

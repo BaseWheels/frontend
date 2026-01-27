@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   Car, User, Twitter, MessageCircle, Mail, CreditCard,
   MapPin, Globe, Compass, MessageSquare, Info,
-  FileText, Lock, ChevronRight, Wallet,
-  HistoryIcon, BookOpen
+  ChevronRight, Wallet, HistoryIcon, BookOpen
 } from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
@@ -282,18 +281,11 @@ export default function ProfilePage() {
       onClick: () => setShowTutorial(true)
     },
     {
-      id: "terms",
-      Icon: FileText,
-      title: "Terms and Conditions",
-      subtitle: "",
-      onClick: () => handleComingSoon("Terms and conditions")
-    },
-    {
-      id: "privacy",
-      Icon: Lock,
-      title: "Privacy Policy",
-      subtitle: "",
-      onClick: () => handleComingSoon("Privacy policy")
+      id: "about",
+      Icon: Info,
+      title: "About",
+      subtitle: "MiniGarage v1.0",
+      onClick: () => handleComingSoon("About")
     },
   ];
 

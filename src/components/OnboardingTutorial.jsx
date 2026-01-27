@@ -6,7 +6,7 @@ import { X, ChevronRight, ChevronLeft, Wallet, Car, Flame, Gift } from 'lucide-r
 const TUTORIAL_STEPS = [
   {
     icon: '👋',
-    title: 'Welcome to BaseWheels!',
+    title: 'Welcome to MiniGarage!',
     description: 'Your gateway to collecting rare NFT cars on Base blockchain',
     image: '/assets/car/Blaze Runner.png',
     color: 'from-orange-500 to-red-600'

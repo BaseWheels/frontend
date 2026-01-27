@@ -3,7 +3,7 @@
  * Direct interaction dengan MockIDRX smart contract
  */
 
-const MOCKIDRX_ADDRESS = "0x57ADEa3A1F286bF386544Ec6ac53C3Ba2085217c"; // MockIDRX Contract
+const MOCKIDRX_ADDRESS = "0x998f8B20397445C10c1B60DCa1EebFbda4cA7847"; // MockIDRX Contract
 const BACKEND_WALLET_ADDRESS = "0xAb4cBeFaeb226BC23F6399E0327F40e362cdDC3B"; // Server wallet for gasless transactions
 
 export { BACKEND_WALLET_ADDRESS };
