@@ -1,0 +1,28 @@
+/**
+ * Blockchain Constants
+ * Contract addresses, chain IDs, and blockchain-related configuration
+ */
+
+export const MOCKIDRX_ADDRESS = "0x998f8B20397445C10c1B60DCa1EebFbda4cA7847";
+export const BACKEND_WALLET_ADDRESS = "0xAb4cBeFaeb226BC23F6399E0327F40e362cdDC3B";
+
+export const CHAIN_IDS = {
+  ETHEREUM_MAINNET: 1,
+  BASE_MAINNET: 8453,
+  BASE_SEPOLIA: 84532,
+  POLYGON: 137,
+  MUMBAI: 80001,
+};
+
+export const CHAIN_SYMBOLS = {
+  [CHAIN_IDS.ETHEREUM_MAINNET]: "ETH",
+  [CHAIN_IDS.BASE_MAINNET]: "ETH",
+  [CHAIN_IDS.BASE_SEPOLIA]: "ETH",
+  [CHAIN_IDS.POLYGON]: "MATIC",
+  [CHAIN_IDS.MUMBAI]: "MATIC",
+};
+
+export const TRANSACTION_TIMEOUT = 120000;
+export const WALLET_CHECK_DELAY = 5000;
+export const DEFAULT_APPROVAL_AMOUNT = 10000000;
+export const MIN_SERVER_ALLOWANCE = 10000;

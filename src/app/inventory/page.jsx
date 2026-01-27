@@ -14,23 +14,7 @@ import NetworkModal from "@/components/shared/NetworkModal";
 import SellToAdminModal from "@/components/SellToAdminModal";
 import { toast } from "sonner";
 import { PullToRefresh, SwipeCard } from "@/components/shared";
-
-// Rarity color mapping
-const rarityColorMap = {
-  common: "from-gray-500 to-gray-600",
-  rare: "from-blue-500 to-cyan-500",
-  epic: "from-purple-500 to-pink-500",
-  legendary: "from-yellow-500 to-orange-500",
-};
-
-// Fragment type icons mapping
-const fragmentIconsMap = {
-  0: { Icon: Car, label: "Chassis" },
-  1: { Icon: CircleDot, label: "Wheels" },
-  2: { Icon: Settings, label: "Engine" },
-  3: { Icon: Paintbrush, label: "Body" },
-  4: { Icon: Armchair, label: "Interior" },
-};
+import { RARITY_CONFIG, FRAGMENT_ICONS, DEFAULT_BUYBACK_PRICES, INVENTORY_FILTERS } from "@/constants";
 
 export default function InventoryPage() {
   const { authenticated, ready, getAccessToken } = usePrivy();
@@ -46,26 +30,21 @@ export default function InventoryPage() {
     usernameSet: false
   });
 
-  // Cars state
-  const [selectedFilter, setSelectedFilter] = useState("semua");
+  const [selectedFilter, setSelectedFilter] = useState("all");
   const [inventoryData, setInventoryData] = useState([]);
   const [loadingInventory, setLoadingInventory] = useState(true);
 
-  // Fragments state
   const [fragmentsData, setFragmentsData] = useState([]);
   const [loadingFragments, setLoadingFragments] = useState(true);
   const [assembling, setAssembling] = useState(false);
   const [assemblyResult, setAssemblyResult] = useState(null);
 
-  // Sold out modal state
   const [showSoldOutModal, setShowSoldOutModal] = useState(false);
   const [soldOutData, setSoldOutData] = useState(null);
   const [processingOption, setProcessingOption] = useState(false);
 
-  // Tab state
-  const [activeTab, setActiveTab] = useState("cars"); // "cars" or "fragments"
+  const [activeTab, setActiveTab] = useState("cars");
 
-  // Redeem/claim physical state
   const [showShippingModal, setShowShippingModal] = useState(false);
   const [showRedeemModal, setShowRedeemModal] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
@@ -75,31 +54,20 @@ export default function InventoryPage() {
   const [redeeming, setRedeeming] = useState(false);
   const [redeemResult, setRedeemResult] = useState(null);
 
-  // Marketplace listing state
-  const [activeListings, setActiveListings] = useState([]); // Array of tokenIds that are listed
+  const [activeListings, setActiveListings] = useState([]);
   const [showListingWarning, setShowListingWarning] = useState(false);
 
-  // Admin buyback state
   const [showSellToAdminModal, setShowSellToAdminModal] = useState(false);
   const [selectedCarForSale, setSelectedCarForSale] = useState(null);
-  const [buybackPrices, setBuybackPrices] = useState({
-    common: 150000,
-    rare: 300000,
-    epic: 600000,
-    legendary: 1200000
-  });
+  const [buybackPrices, setBuybackPrices] = useState(DEFAULT_BUYBACK_PRICES);
   const [sellLoading, setSellLoading] = useState(false);
 
-  const filters = ["semua", "legendary", "epic", "rare", "common"];
-
-  // Redirect if not authenticated
   useEffect(() => {
     if (ready && !authenticated) {
       router.push("/");
     }
   }, [ready, authenticated, router]);
 
-  // Fetch MockIDRX balance from backend
   useEffect(() => {
     if (authenticated) {
       fetchMockIDRXBalance();
@@ -130,7 +98,6 @@ export default function InventoryPage() {
     }
   };
 
-  // Fetch cars inventory
   const fetchInventory = async () => {
     try {
       setLoadingInventory(true);
@@ -154,7 +121,7 @@ export default function InventoryPage() {
         modelName: car.modelName || "Unknown",
         series: car.series || "Unknown",
         rarity: car.rarity || "common",
-        rarityColor: rarityColorMap[car.rarity] || "from-gray-500 to-gray-600",
+        rarityColor: RARITY_CONFIG[car.rarity]?.gradient || "from-gray-500 to-gray-600",
         image: `/assets/car/${car.modelName}.png`,
         mintTxHash: car.mintTxHash,
         isRedeemed: car.isRedeemed,
@@ -169,7 +136,6 @@ export default function InventoryPage() {
     }
   };
 
-  // Fetch fragments inventory
   const fetchFragments = async () => {
     try {
       setLoadingFragments(true);
@@ -194,7 +160,6 @@ export default function InventoryPage() {
     }
   };
 
-  // Fetch shipping info
   const fetchShippingInfo = async () => {
     try {
       const authToken = await getAccessToken();
@@ -314,7 +279,6 @@ export default function InventoryPage() {
     }
   };
 
-  // Fetch active listings from marketplace
   const fetchActiveListings = async () => {
     try {
       const authToken = await getAccessToken();
@@ -335,7 +299,6 @@ export default function InventoryPage() {
     }
   };
 
-  // Fetch buyback prices
   const fetchBuybackPrices = async () => {
     try {
       const authToken = await getAccessToken();
@@ -406,7 +369,6 @@ export default function InventoryPage() {
     }
   };
 
-  // Fetch data when authenticated
   useEffect(() => {
     if (authenticated) {
       fetchInventory();
@@ -418,7 +380,7 @@ export default function InventoryPage() {
   }, [authenticated]);
 
   // Filter inventory based on selected filter and exclude redeemed cars
-  const filteredInventory = selectedFilter === "semua"
+  const filteredInventory = selectedFilter === "all"
     ? inventoryData.filter((car) => !car.isRedeemed)
     : inventoryData.filter(
       (car) => car.rarity?.toLowerCase() === selectedFilter.toLowerCase() && !car.isRedeemed
@@ -658,11 +620,11 @@ export default function InventoryPage() {
             {/* Filter Tabs (only for cars) */}
             {activeTab === "cars" && (
               <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {filters.map((filter) => (
+                {INVENTORY_FILTERS.map((filter) => (
                   <button
                     key={filter}
-                    onClick={() => setSelectedFilter(filter)}
-                    className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all active:scale-95 ${selectedFilter === filter
+                    onClick={() => setSelectedFilter(filter.toLowerCase())}
+                    className={`px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap transition-all active:scale-95 ${selectedFilter === filter.toLowerCase()
                       ? "bg-white text-orange-600 shadow-lg scale-105"
                       : "bg-orange-600/50 text-white hover:bg-orange-600/70"
                       }`}
@@ -682,7 +644,7 @@ export default function InventoryPage() {
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                      <p className="text-white/60">Memuat inventory...</p>
+                      <p className="text-white/60">Loading inventory...</p>
                     </div>
                   </div>
                 ) : filteredInventory.length > 0 ? (
@@ -797,16 +759,16 @@ export default function InventoryPage() {
                         <Car size={40} className="text-white/40" strokeWidth={1.5} />
                       </div>
                       <h3 className="text-white text-xl font-black mb-2">
-                        {selectedFilter === "semua"
+                        {selectedFilter === "all"
                           ? "No Cars Yet"
                           : "No Cars Found"}
                       </h3>
                       <p className="text-white/60 text-sm mb-6 max-w-[200px] mx-auto">
-                        {selectedFilter === "semua"
+                        {selectedFilter === "all"
                           ? "Open your first gacha box to start your collection!"
                           : "Try a different filter or open more gacha boxes"}
                       </p>
-                      {selectedFilter === "semua" && (
+                      {selectedFilter === "all" && (
                         <button
                           onClick={() => router.push('/gacha')}
                           className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-orange-900 font-black py-3 px-6 rounded-full shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto"
@@ -830,7 +792,7 @@ export default function InventoryPage() {
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                      <p className="text-white/60">Memuat fragments...</p>
+                      <p className="text-white/60">Loading fragments...</p>
                     </div>
                   </div>
                 ) : fragmentsData.length > 0 ? (
@@ -838,7 +800,7 @@ export default function InventoryPage() {
                     {fragmentsData.map((brandData, index) => (
                       <div
                         key={brandData.brand}
-                        className={`bg-gradient-to-br ${rarityColorMap[brandData.rarity] || "from-gray-500 to-gray-600"} rounded-2xl p-4 shadow-xl transition-transform hover:scale-[1.01] active:scale-[0.99] inventory-card animate-rise`}
+                        className={`bg-gradient-to-br ${RARITY_CONFIG[brandData.rarity]?.gradient || "from-gray-500 to-gray-600"} rounded-2xl p-4 shadow-xl transition-transform hover:scale-[1.01] active:scale-[0.99] inventory-card animate-rise`}
                         style={{ animationDelay: `${index * 80}ms` }}
                       >
                         {/* Brand Header */}
@@ -862,7 +824,7 @@ export default function InventoryPage() {
                           {[0, 1, 2, 3, 4].map((typeId) => {
                             const fragment = brandData.fragments.find(f => f.typeId === typeId);
                             const hasFragment = fragment && fragment.count > 0;
-                            const { Icon, label } = fragmentIconsMap[typeId];
+                            const { Icon, label } = FRAGMENT_ICONS[typeId];
 
                             return (
                               <div

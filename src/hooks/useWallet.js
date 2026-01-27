@@ -2,6 +2,7 @@
 
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { useEffect, useState, useRef } from "react";
+import { CHAIN_SYMBOLS, WALLET_CHECK_DELAY } from "@/constants";
 
 /**
  * Custom hook for managing wallet connection with Privy
@@ -31,20 +32,9 @@ export function useWallet() {
       return;
     }
 
-    console.log("🔍 Checking wallets...", {
-      walletsCount: wallets.length,
-      wallets: wallets.map(w => ({
-        type: w.walletClientType,
-        address: w.address?.slice(0, 10) + "..."
-      }))
-    });
-
-    // Find Privy embedded wallet (for email/social login)
     const embeddedWallet = wallets.find((wallet) => wallet.walletClientType === "privy");
 
     if (embeddedWallet) {
-      // User login dengan email/social - pakai embedded wallet
-      console.log("✅ Found Privy embedded wallet:", embeddedWallet.address);
       setEmbeddedWallet(embeddedWallet);
       setWalletAddress(embeddedWallet.address);
       setWalletError(null);
@@ -52,15 +42,11 @@ export function useWallet() {
       return;
     }
 
-    // PRIORITAS 2: Cek apakah user punya linked wallet (bukan embedded)
-    // Hanya pakai external wallet (MetaMask, etc) kalau user TIDAK punya embedded wallet
     const externalWallets = wallets.filter((w) =>
       w.walletClientType !== "privy"
     );
 
     if (externalWallets.length > 0) {
-      // User connect dengan MetaMask atau wallet lain
-      console.log("✅ Using external wallet:", externalWallets[0].walletClientType, externalWallets[0].address);
       setEmbeddedWallet(externalWallets[0]);
       setWalletAddress(externalWallets[0].address);
       setWalletError(null);
@@ -70,53 +56,30 @@ export function useWallet() {
 
     // No wallet found - wait 5 seconds then try to create one manually
     if (!createWalletAttempted.current && wallets.length === 0) {
-      console.log("⏳ No wallet found yet. Waiting 5 seconds before attempting to create...");
 
       walletCheckTimeout.current = setTimeout(async () => {
-        // Double check wallet still doesn't exist
         if (wallets.length === 0 && !createWalletAttempted.current) {
           createWalletAttempted.current = true;
-          console.log("🔨 Calling createWallet()...");
 
           try {
             setIsConnecting(true);
             await createWallet();
-            console.log("✅ Wallet creation triggered successfully!");
           } catch (error) {
-            // Only log as error if it's NOT the expected "already has wallet" case
-            if (!error.message?.includes("already has an embedded wallet")) {
-              console.error("❌ Failed to create wallet:", error);
-            }
-
-            // Handle case where wallet already exists but hasn't appeared yet
             if (error.message?.includes("already has an embedded wallet")) {
-              console.log("ℹ️ User already has an embedded wallet. Waiting for it to appear...");
-              setWalletError(null); // Don't show error to user
-
-              // Reset flag so we can check again
+              setWalletError(null);
               createWalletAttempted.current = false;
-
-              // The wallet should appear in the wallets array soon
-              // The useEffect will re-run when wallets array updates
             } else {
+              console.error("Failed to create wallet:", error);
               setWalletError(error.message || "Failed to create wallet");
-
-              // Show user-friendly error for other cases
-              if (error.message?.includes("not enabled")) {
-                console.error("🚨 ERROR: Embedded wallets not enabled in Privy Dashboard!");
-                console.error("👉 Go to: https://dashboard.privy.io");
-                console.error("👉 Enable 'Embedded wallets' in Settings");
-              }
             }
           } finally {
             setIsConnecting(false);
           }
         }
-      }, 5000); // Wait 5 seconds
+      }, WALLET_CHECK_DELAY);
     }
-  }, [ready, authenticated, wallets]); // REMOVED createWallet from dependencies
+  }, [ready, authenticated, wallets]);
 
-  // Detect chain and update currency symbol
   useEffect(() => {
     if (!embeddedWallet) return;
 
@@ -127,17 +90,6 @@ export function useWallet() {
         const currentChainId = parseInt(chainIdHex, 16);
 
         setChainId(currentChainId);
-
-        // Set currency symbol based on chain
-        const CHAIN_SYMBOLS = {
-          1: "ETH",      // Ethereum Mainnet
-          8453: "ETH",   // Base Mainnet
-          84532: "ETH",  // Base Sepolia
-          137: "MATIC",  // Polygon
-          80001: "MATIC", // Mumbai
-          // Add more chains as needed
-        };
-
         setCurrencySymbol(CHAIN_SYMBOLS[currentChainId] || "ETH");
       } catch (error) {
         console.error("Failed to detect chain:", error);
@@ -193,13 +145,11 @@ export function useWallet() {
     try {
       const provider = await embeddedWallet.getEthereumProvider();
 
-      // Request balance using eth_getBalance
       const balanceHex = await provider.request({
         method: "eth_getBalance",
         params: [walletAddress, "latest"],
       });
 
-      // Convert from hex wei to ETH (decimal)
       const balanceWei = BigInt(balanceHex);
       const balanceEth = Number(balanceWei) / 1e18;
 

@@ -12,14 +12,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { BrowserProvider, Contract, parseUnits, formatUnits } from "ethers";
 import { toast } from "sonner";
 import { PullToRefresh } from "@/components/shared";
-
-// Rarity color mapping
-const rarityColorMap = {
-  common: "from-gray-500 to-gray-600",
-  rare: "from-blue-500 to-cyan-500",
-  epic: "from-purple-500 to-pink-500",
-  legendary: "from-yellow-500 to-orange-500",
-};
+import { RARITY_CONFIG } from "@/constants";
 
 export default function MarketplacePage() {
   const { authenticated, ready, getAccessToken } = usePrivy();
@@ -642,7 +635,7 @@ export default function MarketplacePage() {
                           setSelectedListing(listing);
                           setShowDetailModal(true);
                         }}
-                        className={`relative bg-gradient-to-br ${rarityColorMap[listing.car.rarity] || "from-gray-500 to-gray-600"
+                        className={`relative bg-gradient-to-br ${RARITY_CONFIG[listing.car.rarity] || "from-gray-500 to-gray-600"
                           } rounded-2xl p-3 shadow-xl cursor-pointer transition-transform hover:scale-105 active:scale-[0.98] group marketplace-card animate-rise`}
                         style={{ animationDelay: `${index * 70}ms` }}
                       >
@@ -866,7 +859,7 @@ function ListingCard({ listing, onCancel, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`bg-gradient-to-br ${rarityColorMap[listing.car.rarity] || "from-gray-500 to-gray-600"
+      className={`bg-gradient-to-br ${RARITY_CONFIG[listing.car.rarity] || "from-gray-500 to-gray-600"
         } rounded-2xl p-4 shadow-xl cursor-pointer hover:scale-[1.02] active:scale-[0.99] transition-transform marketplace-card`}
     >
       <div className="flex gap-3">
@@ -1214,7 +1207,7 @@ function DetailModal({ listing, balance, onClose, onBuy, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
       <div
-        className={`bg-gradient-to-br ${rarityColorMap[listing.car.rarity] || "from-gray-500 to-gray-600"
+        className={`bg-gradient-to-br ${RARITY_CONFIG[listing.car.rarity] || "from-gray-500 to-gray-600"
           } rounded-3xl p-6 max-w-sm w-full shadow-2xl`}
       >
         <div className="flex items-center justify-between mb-4">

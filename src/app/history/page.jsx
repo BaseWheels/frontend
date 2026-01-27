@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { Clock, TrendingUp, Package, ShoppingCart, DollarSign, Tag, Sparkles, Wrench, BadgeDollarSign } from "lucide-react";
+import { Clock, TrendingUp, Package, ShoppingCart, DollarSign, Tag, Sparkles, Wrench, BadgeDollarSign, ChevronLeft } from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { toast } from "sonner";
 
@@ -111,11 +111,20 @@ export default function HistoryPage() {
       <div className="relative z-10 max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {/* Header */}
         <header className="mb-4 sm:mb-6">
-          <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 flex items-center gap-2 sm:gap-3">
-            <Clock size={28} className="text-orange-400 sm:w-8 sm:h-8" />
-            <span className="leading-tight">Transaction History</span>
-          </h1>
-          <p className="text-sm sm:text-base text-gray-400">Your complete activity timeline</p>
+          <div className="flex items-center gap-3 mb-2">
+            <button
+              onClick={() => router.back()}
+              className="p-2 rounded-full bg-gray-800/80 hover:bg-gray-700 transition-colors active:scale-95"
+              aria-label="Go back"
+            >
+              <ChevronLeft size={24} className="text-white" />
+            </button>
+            <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2 sm:gap-3">
+              <Clock size={28} className="text-orange-400 sm:w-8 sm:h-8" />
+              <span className="leading-tight">Transaction History</span>
+            </h1>
+          </div>
+          <p className="text-sm sm:text-base text-gray-400 ml-12">Your complete activity timeline</p>
         </header>
 
         {/* Summary Cards */}

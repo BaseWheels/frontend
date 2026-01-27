@@ -1,10 +1,14 @@
 /**
  * MockIDRX Faucet Utility
- * Direct interaction dengan MockIDRX smart contract
+ * Direct interaction with MockIDRX smart contract
  */
 
-const MOCKIDRX_ADDRESS = "0x998f8B20397445C10c1B60DCa1EebFbda4cA7847"; // MockIDRX Contract
-const BACKEND_WALLET_ADDRESS = "0xAb4cBeFaeb226BC23F6399E0327F40e362cdDC3B"; // Server wallet for gasless transactions
+import {
+  MOCKIDRX_ADDRESS,
+  BACKEND_WALLET_ADDRESS,
+  DEFAULT_APPROVAL_AMOUNT,
+  MIN_SERVER_ALLOWANCE,
+} from "@/constants";
 
 export { BACKEND_WALLET_ADDRESS };
 
@@ -144,7 +148,7 @@ const MOCKIDRX_ABI = [
 ];
 
 /**
- * Claim faucet - User mendapat 1 juta IDRX
+ * Claim faucet - User receives 1 million IDRX
  * @param {Object} embeddedWallet - Privy embedded wallet
  * @returns {Promise<{success: boolean, txHash?: string, error?: string}>}
  */
@@ -154,13 +158,8 @@ export async function claimFaucet(embeddedWallet) {
       throw new Error("Wallet not connected");
     }
 
-    // Import ethers dynamically
     const { BrowserProvider, Contract } = await import("ethers");
-
-    // Get Ethereum provider dari Privy (bukan getEthersProvider!)
     const ethereumProvider = await embeddedWallet.getEthereumProvider();
-
-    // Wrap dengan ethers.js BrowserProvider
     const provider = new BrowserProvider(ethereumProvider);
     const signer = await provider.getSigner();
 
@@ -180,12 +179,11 @@ export async function claimFaucet(embeddedWallet) {
   } catch (error) {
     console.error("Claim faucet error:", error);
 
-    // Parse error message
     let errorMessage = "Failed to claim faucet";
     if (error.message?.includes("Faucet cooldown active")) {
-      errorMessage = "Cooldown aktif! Coba lagi setelah 24 jam.";
+      errorMessage = "Cooldown active! Try again after 24 hours.";
     } else if (error.message?.includes("user rejected")) {
-      errorMessage = "Transaksi dibatalkan";
+      errorMessage = "Transaction cancelled";
     }
 
     return {
@@ -196,10 +194,10 @@ export async function claimFaucet(embeddedWallet) {
 }
 
 /**
- * Cek berapa lama lagi bisa claim faucet
+ * Check how long until next faucet claim
  * @param {Object} embeddedWallet - Privy embedded wallet
  * @param {string} userAddress - User wallet address
- * @returns {Promise<number>} Seconds until next claim (0 jika bisa claim)
+ * @returns {Promise<number>} Seconds until next claim (0 if can claim)
  */
 export async function checkFaucetCooldown(embeddedWallet, userAddress) {
   try {
@@ -217,7 +215,7 @@ export async function checkFaucetCooldown(embeddedWallet, userAddress) {
     return Number(secondsUntilNext);
   } catch (error) {
     console.error("Check cooldown error:", error);
-    return 0; // Return 0 jika error, biarkan user coba claim
+    return 0;
   }
 }
 
@@ -241,7 +239,6 @@ export async function getMockIDRXBalance(embeddedWallet, userAddress) {
     const balance = await contract.balanceOf(userAddress);
     const decimals = await contract.decimals();
 
-    // Convert dari wei ke IDRX (18 decimals)
     return parseFloat(formatUnits(balance, decimals));
   } catch (error) {
     console.error("Get balance error:", error);
@@ -270,7 +267,6 @@ export async function burnMockIDRX(embeddedWallet, amount) {
     const decimals = await contract.decimals();
     const amountInWei = parseUnits(amount.toString(), decimals);
 
-    // User burns their own tokens - no approval needed!
     const tx = await contract.burn(amountInWei);
     const receipt = await tx.wait();
 
@@ -317,7 +313,6 @@ export async function approveMockIDRX(embeddedWallet, spenderAddress, amount) {
     const decimals = await contract.decimals();
     const amountInWei = parseUnits(amount.toString(), decimals);
 
-    // Approve spender to spend tokens
     const tx = await contract.approve(spenderAddress, amountInWei);
     const receipt = await tx.wait();
 
@@ -420,39 +415,22 @@ export async function payForSpin(embeddedWallet, amount, authToken) {
   }
 }
 
-/**
- * Format seconds menjadi human readable time
- * @param {number} seconds - Seconds
- * @returns {string} Formatted time (e.g., "5h 30m" atau "23h 15m")
- */
-export function formatCooldownTime(seconds) {
-  if (seconds <= 0) return "Ready!";
-
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  }
-  return `${minutes}m`;
-}
+export { formatCooldown as formatCooldownTime } from "@/utils";
 
 /**
  * Ensure user has approved server wallet for gasless transactions
  * If not approved or insufficient allowance, prompts user to approve
  * @param {Object} embeddedWallet - Privy embedded wallet
  * @param {string} userAddress - User wallet address
- * @param {number} minAllowance - Minimum required allowance (default: 10000 = 100.00 IDRX)
+ * @param {number} minAllowance - Minimum required allowance
  * @returns {Promise<{approved: boolean, txHash?: string, error?: string}>}
  */
-export async function ensureServerWalletApproval(embeddedWallet, userAddress, minAllowance = 10000) {
+export async function ensureServerWalletApproval(embeddedWallet, userAddress, minAllowance = MIN_SERVER_ALLOWANCE) {
   try {
-    // Check current allowance
     const currentAllowance = await checkAllowance(embeddedWallet, userAddress, BACKEND_WALLET_ADDRESS);
 
     console.log(`[ensureApproval] Current allowance: ${currentAllowance} IDRX, Required: ${minAllowance} IDRX`);
 
-    // If allowance is sufficient, return success
     if (currentAllowance >= minAllowance) {
       return {
         approved: true,
@@ -460,9 +438,8 @@ export async function ensureServerWalletApproval(embeddedWallet, userAddress, mi
       };
     }
 
-    // Need to approve - request large amount for many spins (100,000 IDRX)
     console.log('[ensureApproval] Requesting approval for 100,000 IDRX...');
-    const approveResult = await approveMockIDRX(embeddedWallet, BACKEND_WALLET_ADDRESS, 10000000);
+    const approveResult = await approveMockIDRX(embeddedWallet, BACKEND_WALLET_ADDRESS, DEFAULT_APPROVAL_AMOUNT);
 
     if (!approveResult.success) {
       return {

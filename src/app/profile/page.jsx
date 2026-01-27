@@ -307,28 +307,19 @@ export default function ProfilePage() {
         {/* Header */}
         <header className="px-6 pt-4 pb-6">
           {/* User Info Card */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 mb-4 profile-card">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <Car size={32} className="text-white" strokeWidth={2} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-black">{userName}</h2>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full uppercase font-bold flex items-center gap-1">
-                      {accountType === "Username" && <User size={10} strokeWidth={3} />}
-                      {accountType === "Twitter" && <Twitter size={10} strokeWidth={3} />}
-                      {accountType === "Discord" && <MessageCircle size={10} strokeWidth={3} />}
-                      {accountType === "Email" && <Mail size={10} strokeWidth={3} />}
-                      {accountType === "Wallet" && <CreditCard size={10} strokeWidth={3} />}
-                      {accountType}
-                    </span>
-                    {userEmail && (
-                      <span className="text-xs text-white/70">{userEmail}</span>
-                    )}
-                  </div>
-                </div>
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-5 mb-4 shadow-xl border border-white/30">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-18 h-18 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg p-4">
+                <Car size={36} className="text-white" strokeWidth={2} />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-black text-gray-800">{userName}</h2>
+                {userEmail && (
+                  <p className="text-sm text-gray-500 mt-0.5">{userEmail}</p>
+                )}
+                {!userEmail && walletAddress && (
+                  <p className="text-sm text-gray-500 mt-0.5 font-mono">{shortAddress}</p>
+                )}
               </div>
             </div>
 
@@ -354,17 +345,17 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={fetchBalance}
-                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white profile-badge transition-transform hover:scale-[1.02] active:scale-95"
+                className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-100 px-4 py-2 profile-badge transition-transform hover:scale-[1.02] active:scale-95"
                 aria-label="Refresh wallet balance"
                 title="Tap to refresh wallet balance"
               >
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-white font-black text-sm">
+                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-700 font-black text-sm">
                   Ξ
                 </div>
-                <span className="font-black text-lg">
+                <span className="font-black text-lg text-gray-800">
                   {loadingBalance ? "..." : balance.toFixed(4)}
                 </span>
-                <span className="text-sm font-bold text-white/70">{currencySymbol}</span>
+                <span className="text-sm font-bold text-gray-500">{currencySymbol}</span>
               </button>
             </div>
           </div>
@@ -379,24 +370,26 @@ export default function ProfilePage() {
                 key={item.id}
                 onClick={item.onClick}
                 disabled={item.disabled}
-                className={`group w-full bg-orange-500/50 backdrop-blur-sm rounded-xl p-4 transition-all transform hover:scale-[1.02] active:scale-95 ${
-                  item.disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-500/70"
+                className={`group w-full bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 transition-all transform hover:scale-[1.02] active:scale-95 ${
+                  item.disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-white hover:shadow-xl"
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-start gap-3 text-left">
-                    <IconComponent size={24} className="text-white" strokeWidth={2} />
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-md">
+                      <IconComponent size={20} className="text-white" strokeWidth={2.5} />
+                    </div>
                     <div>
-                      <h3 className="font-bold text-white">{item.title}</h3>
+                      <h3 className="font-bold text-gray-800">{item.title}</h3>
                       {item.subtitle && (
-                        <p className="text-sm text-white/80">{item.subtitle}</p>
+                        <p className="text-sm text-gray-600">{item.subtitle}</p>
                       )}
                       {item.hint && (
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">{item.hint}</span>
+                        <span className="text-[10px] uppercase tracking-[0.15em] text-orange-500 font-semibold">{item.hint}</span>
                       )}
                     </div>
                   </div>
-                  <ChevronRight size={24} className="text-white transition-transform group-hover:translate-x-1" strokeWidth={2} />
+                  <ChevronRight size={24} className="text-orange-500 transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
                 </div>
               </button>
             );

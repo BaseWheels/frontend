@@ -4,6 +4,7 @@
  */
 
 import { apiGet, apiPost } from "./api";
+import { RARITY_CONFIG } from "@/constants";
 
 /**
  * Get available gacha boxes and user MockIDRX balance
@@ -41,27 +42,7 @@ export async function openGachaBox(boxType, paymentTxHash, authToken) {
   }
 }
 
-/**
- * Map backend rarity to frontend display
- */
-export const RARITY_CONFIG = {
-  common: {
-    color: "from-gray-500 to-gray-600",
-    label: "COMMON",
-  },
-  rare: {
-    color: "from-blue-500 to-cyan-500",
-    label: "RARE",
-  },
-  epic: {
-    color: "from-purple-500 to-pink-500",
-    label: "EPIC",
-  },
-  legendary: {
-    color: "from-yellow-500 to-orange-500",
-    label: "LEGEND",
-  },
-};
+export { RARITY_CONFIG };
 
 /**
  * Get rarity display config
