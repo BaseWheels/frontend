@@ -5,7 +5,7 @@
   * [Problem & Solution](introduction/problem-solution.md)
   * [Why Base Blockchain](introduction/why-base.md)
   * [Key Features](introduction/key-features.md)
-  * [💼 Business Model](introduction/business-model.md)
+* [💼 Business Model](introduction/business-model.md)
 
 ## 🚀 Getting Started
 
