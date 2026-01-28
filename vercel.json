@@ -1,0 +1,54 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["sin1"],
+  "outputDirectory": ".next",
+  "env": {
+    "NEXT_PUBLIC_PRIVY_APP_ID": "@privy-app-id",
+    "NEXT_PUBLIC_BACKEND_URL": "@backend-url",
+    "NEXT_PUBLIC_MOCKIDRX_CONTRACT_ADDRESS": "@mockidrx-contract",
+    "NEXT_PUBLIC_CAR_CONTRACT_ADDRESS": "@car-contract",
+    "NEXT_PUBLIC_FRAGMENT_CONTRACT_ADDRESS": "@fragment-contract",
+    "NEXT_PUBLIC_BACKEND_WALLET_ADDRESS": "@backend-wallet"
+  },
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/manifest.webmanifest",
+      "destination": "/api/manifest"
+    }
+  ]
+}
