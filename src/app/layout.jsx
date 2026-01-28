@@ -9,13 +9,6 @@ export async function generateMetadata() {
     description: "Collect, race, and own digital collectible cars as NFTs on Base blockchain. Your personal garage of legendary racing machines.",
     applicationName: "MiniGarage",
     manifest: "/manifest.webmanifest",
-    themeColor: "#ff7a00",
-    viewport: {
-      width: "device-width",
-      initialScale: 1,
-      maximumScale: 5,
-      userScalable: true,
-    },
     icons: {
       icon: "/icons/icon-512.png",
     },
@@ -37,6 +30,14 @@ export async function generateMetadata() {
     },
   };
 }
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: "#ff7a00",
+};
 
 export default function RootLayout({ children }) {
   return (
