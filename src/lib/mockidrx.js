@@ -418,14 +418,46 @@ export async function payForSpin(embeddedWallet, amount, authToken) {
 export { formatCooldown as formatCooldownTime } from "@/utils";
 
 /**
+ * Request starter ETH from backend for gas fees
+ * @param {string} authToken - Auth token for backend
+ * @returns {Promise<{success: boolean, message?: string}>}
+ */
+export async function requestStarterETH(authToken) {
+  try {
+    console.log('[requestStarterETH] Requesting starter ETH from backend...');
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/gasless/request-starter-eth`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to request starter ETH');
+    }
+
+    console.log('[requestStarterETH] Success:', data.message);
+    return { success: true, message: data.message };
+  } catch (error) {
+    console.error('[requestStarterETH] Error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
  * Ensure user has approved server wallet for gasless transactions
- * If not approved or insufficient allowance, prompts user to approve
+ * User needs to approve ONCE, then all gacha spins are gasless!
  * @param {Object} embeddedWallet - Privy embedded wallet
  * @param {string} userAddress - User wallet address
  * @param {number} minAllowance - Minimum required allowance
+ * @param {string} authToken - Auth token (optional, for requesting starter ETH)
  * @returns {Promise<{approved: boolean, txHash?: string, error?: string}>}
  */
-export async function ensureServerWalletApproval(embeddedWallet, userAddress, minAllowance = MIN_SERVER_ALLOWANCE) {
+export async function ensureServerWalletApproval(embeddedWallet, userAddress, minAllowance = MIN_SERVER_ALLOWANCE, authToken = null) {
   try {
     const currentAllowance = await checkAllowance(embeddedWallet, userAddress, BACKEND_WALLET_ADDRESS);
 
@@ -438,7 +470,17 @@ export async function ensureServerWalletApproval(embeddedWallet, userAddress, mi
       };
     }
 
-    console.log('[ensureApproval] Requesting approval for 100,000 IDRX...');
+    console.log(`[ensureApproval] Need approval. Requesting user signature for ${DEFAULT_APPROVAL_AMOUNT} IDRX...`);
+
+    // Request starter ETH if auth token provided
+    if (authToken) {
+      console.log('[ensureApproval] First, requesting starter ETH for gas...');
+      await requestStarterETH(authToken);
+      // Wait 2 seconds for ETH to arrive
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    // Direct wallet approval (user signs once)
     const approveResult = await approveMockIDRX(embeddedWallet, BACKEND_WALLET_ADDRESS, DEFAULT_APPROVAL_AMOUNT);
 
     if (!approveResult.success) {
@@ -451,7 +493,7 @@ export async function ensureServerWalletApproval(embeddedWallet, userAddress, mi
     return {
       approved: true,
       txHash: approveResult.txHash,
-      message: "Approval successful! You can now use gasless transactions."
+      message: "Approval successful! You can now use gasless gacha spins."
     };
   } catch (error) {
     console.error("Ensure approval error:", error);

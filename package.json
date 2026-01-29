@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
+        "build:skip-lint": "SKIP_LINT=true next build",
         "start": "next start",
         "lint": "next lint"
     },
@@ -15,9 +16,11 @@
         "@solana-program/system": "latest",
         "@solana-program/token": "latest",
         "@solana/kit": "latest",
+        "@tanstack/react-query": "^5.90.20",
+        "@tanstack/react-query-devtools": "^5.91.2",
         "ethers": "^6.16.0",
         "lucide-react": "^0.563.0",
-        "next": "^15.5.9",
+        "next": "^16.1.6",
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
         "react-pull-to-refresh": "^2.0.1",

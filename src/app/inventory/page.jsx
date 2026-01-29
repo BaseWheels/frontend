@@ -15,27 +15,29 @@ import SellToAdminModal from "@/components/SellToAdminModal";
 import { toast } from "sonner";
 import { PullToRefresh, SwipeCard } from "@/components/shared";
 import { RARITY_CONFIG, FRAGMENT_ICONS, DEFAULT_BUYBACK_PRICES, INVENTORY_FILTERS } from "@/constants";
+import { useInventory, useFragments, useGarageOverview, useSellCar } from "@/hooks/useInventory";
 
 export default function InventoryPage() {
   const { authenticated, ready, getAccessToken } = usePrivy();
   const router = useRouter();
   const { walletAddress } = useWallet();
 
-  const [mockIDRXBalance, setMockIDRXBalance] = useState(0);
-  const [loadingMockIDRX, setLoadingMockIDRX] = useState(false);
+  // React Query hooks - Auto caching & loading states
+  const { data: inventoryData = [], isLoading: loadingInventory, refetch: refetchInventory } = useInventory();
+  const { data: fragmentsData = [], isLoading: loadingFragments, refetch: refetchFragments } = useFragments();
+  const { data: overviewData, isLoading: loadingMockIDRX, refetch: refetchOverview } = useGarageOverview();
+  const sellCarMutation = useSellCar();
+
+  // Extract data from overview
+  const mockIDRXBalance = overviewData?.user?.mockIDRX || 0;
+  const userInfo = {
+    username: overviewData?.user?.username || null,
+    email: overviewData?.user?.email || null,
+    usernameSet: overviewData?.user?.usernameSet || false
+  };
+
   const [showNetworkModal, setShowNetworkModal] = useState(false);
-  const [userInfo, setUserInfo] = useState({
-    username: null,
-    email: null,
-    usernameSet: false
-  });
-
   const [selectedFilter, setSelectedFilter] = useState("all");
-  const [inventoryData, setInventoryData] = useState([]);
-  const [loadingInventory, setLoadingInventory] = useState(true);
-
-  const [fragmentsData, setFragmentsData] = useState([]);
-  const [loadingFragments, setLoadingFragments] = useState(true);
   const [assembling, setAssembling] = useState(false);
   const [assemblyResult, setAssemblyResult] = useState(null);
 
@@ -68,122 +70,7 @@ export default function InventoryPage() {
     }
   }, [ready, authenticated, router]);
 
-  useEffect(() => {
-    if (authenticated) {
-      fetchMockIDRXBalance();
-    }
-  }, [authenticated]);
-
-  const fetchMockIDRXBalance = async () => {
-    try {
-      setLoadingMockIDRX(true);
-      const authToken = await getAccessToken();
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/overview`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      const data = await response.json();
-      setMockIDRXBalance(data.user?.mockIDRX || 0);
-      setUserInfo({
-        username: data.user?.username || null,
-        email: data.user?.email || null,
-        usernameSet: data.user?.usernameSet || false
-      });
-    } catch (error) {
-      console.error("Failed to fetch MockIDRX balance:", error);
-      setMockIDRXBalance(0);
-    } finally {
-      setLoadingMockIDRX(false);
-    }
-  };
-
-  const fetchInventory = async () => {
-    try {
-      setLoadingInventory(true);
-      const authToken = await getAccessToken();
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/cars`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch inventory");
-      }
-
-      const data = await response.json();
-
-      // Fetch metadata for each car to get IPFS image URLs
-      const transformedCarsPromises = data.cars.map(async (car) => {
-        try {
-          // Fetch NFT metadata from backend
-          const metadataResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata/cars/${car.tokenId}`);
-          const metadata = await metadataResponse.json();
-
-          return {
-            id: car.tokenId,
-            tokenId: car.tokenId,
-            name: car.modelName?.toUpperCase() || "UNKNOWN",
-            modelName: car.modelName || "Unknown",
-            series: car.series || "Unknown",
-            rarity: car.rarity || "common",
-            rarityColor: RARITY_CONFIG[car.rarity]?.gradient || "from-gray-500 to-gray-600",
-            image: metadata.image || `/assets/car/${car.modelName}.png`, // Use IPFS image from metadata
-            mintTxHash: car.mintTxHash,
-            isRedeemed: car.isRedeemed,
-          };
-        } catch (error) {
-          console.error(`Failed to fetch metadata for token ${car.tokenId}:`, error);
-          // Fallback to local image if metadata fetch fails
-          return {
-            id: car.tokenId,
-            tokenId: car.tokenId,
-            name: car.modelName?.toUpperCase() || "UNKNOWN",
-            modelName: car.modelName || "Unknown",
-            series: car.series || "Unknown",
-            rarity: car.rarity || "common",
-            rarityColor: RARITY_CONFIG[car.rarity]?.gradient || "from-gray-500 to-gray-600",
-            image: `/assets/car/${car.modelName}.png`,
-            mintTxHash: car.mintTxHash,
-            isRedeemed: car.isRedeemed,
-          };
-        }
-      });
-
-      const transformedCars = await Promise.all(transformedCarsPromises);
-      setInventoryData(transformedCars);
-    } catch (error) {
-      console.error("Failed to fetch inventory:", error);
-      setInventoryData([]);
-    } finally {
-      setLoadingInventory(false);
-    }
-  };
-
-  const fetchFragments = async () => {
-    try {
-      setLoadingFragments(true);
-      const authToken = await getAccessToken();
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/fragments`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch fragments");
-      }
-
-      const data = await response.json();
-      setFragmentsData(data.inventory || []);
-    } catch (error) {
-      console.error("Failed to fetch fragments:", error);
-      setFragmentsData([]);
-    } finally {
-      setLoadingFragments(false);
-    }
-  };
+  // React Query automatically fetches data - no manual fetch needed!
 
   const fetchShippingInfo = async () => {
     try {
@@ -292,7 +179,7 @@ export default function InventoryPage() {
       });
 
       // Refresh inventory
-      await fetchInventory();
+      await rerefetchInventory();
     } catch (error) {
       console.error("Redeem error:", error);
       setRedeemResult({
@@ -385,7 +272,7 @@ export default function InventoryPage() {
       });
 
       // Refresh inventory and balance
-      await Promise.all([fetchInventory(), fetchMockIDRXBalance()]);
+      await Promise.all([refetchInventory(), refetchOverview()]);
     } catch (error) {
       console.error("Sell to admin error:", error);
       throw error; // Let modal handle the error
@@ -396,8 +283,8 @@ export default function InventoryPage() {
 
   useEffect(() => {
     if (authenticated) {
-      fetchInventory();
-      fetchFragments();
+      // React Query auto-fetches inventory & fragments
+      // Only fetch non-cached data
       fetchShippingInfo();
       fetchActiveListings(); // Check for active marketplace listings
       fetchBuybackPrices(); // Fetch admin buyback prices
@@ -458,7 +345,7 @@ export default function InventoryPage() {
       });
 
       // Refresh data
-      await Promise.all([fetchInventory(), fetchFragments(), fetchMockIDRXBalance()]);
+      await Promise.all([refetchInventory(), refetchFragments(), refetchOverview()]);
     } catch (error) {
       console.error("Assembly failed:", error);
       setAssemblyResult({
@@ -503,7 +390,7 @@ export default function InventoryPage() {
       });
 
       // Refresh data
-      await Promise.all([fetchFragments(), fetchMockIDRXBalance()]);
+      await Promise.all([refetchFragments(), refetchOverview()]);
     } catch (error) {
       console.error("Refund failed:", error);
       toast.error(error.message || "Failed to process refund");
@@ -545,7 +432,7 @@ export default function InventoryPage() {
       });
 
       // Refresh data
-      await fetchFragments();
+      await refetchFragments();
     } catch (error) {
       console.error("Join waitlist failed:", error);
       toast.error(error.message || "Failed to join waiting list");
@@ -557,9 +444,9 @@ export default function InventoryPage() {
   // Handle pull to refresh
   const handleRefresh = async () => {
     await Promise.all([
-      fetchInventory(),
-      fetchFragments(),
-      fetchMockIDRXBalance(),
+      refetchInventory(),
+      refetchFragments(),
+      refetchOverview(),
       fetchActiveListings()
     ]);
   };
@@ -590,7 +477,7 @@ export default function InventoryPage() {
               {/* MockIDRX Balance Badge */}
               <button
                 type="button"
-                onClick={fetchMockIDRXBalance}
+                onClick={refetchOverview}
                 className="flex items-center gap-1.5 bg-yellow-400 rounded-full px-3 py-1.5 shadow-lg transition-transform hover:scale-[1.02] active:scale-95"
                 aria-label="Refresh IDRX balance"
                 title="Tap to refresh balance"

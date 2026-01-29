@@ -11,6 +11,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { PullToRefresh } from "@/components/shared";
 import { checkFaucetCooldown, formatCooldownTime, getMockIDRXBalance, claimFaucet } from "@/lib/mockidrx";
 import { toast } from "sonner";
+import { useGarageOverview, useInventory, useFragments } from "@/hooks/useInventory";
 
 export default function Dashboard() {
   const { authenticated, ready, getAccessToken } = usePrivy();
@@ -23,9 +24,42 @@ export default function Dashboard() {
     wallet => wallet.walletClientType === 'privy'
   );
 
-  // State
-  const [mockIDRXBalance, setMockIDRXBalance] = useState(0);
-  const [loadingMockIDRX, setLoadingMockIDRX] = useState(false);
+  // React Query - Auto caching
+  const { data: overviewData, isLoading: loadingMockIDRX, refetch: refetchOverview } = useGarageOverview();
+  const { data: inventoryData = [], isLoading: loadingInventory } = useInventory();
+  const { data: fragmentsData = [], isLoading: loadingFragments } = useFragments();
+
+  // DEBUG: Log the full overview data to see structure
+  useEffect(() => {
+    if (overviewData) {
+      console.log("📊 Full overviewData:", overviewData);
+      console.log("📊 userStats:", overviewData?.userStats);
+      console.log("📊 user:", overviewData?.user);
+    }
+    console.log("🚗 inventoryData (cars):", inventoryData);
+    console.log("🔧 fragmentsData:", fragmentsData);
+  }, [overviewData, inventoryData, fragmentsData]);
+
+  // Extract data from overview
+  const mockIDRXBalance = overviewData?.user?.mockIDRX || 0;
+  const userInfo = {
+    email: overviewData?.user?.email || null,
+    username: overviewData?.user?.username || null,
+    walletAddress: walletAddress,
+    usernameSet: overviewData?.user?.usernameSet || false
+  };
+
+  // Calculate stats from actual inventory data instead of relying on backend userStats
+  const userStats = {
+    totalCars: inventoryData?.length || 0,
+    // Sum all fragment counts across all brands
+    totalFragments: fragmentsData?.reduce((total, brandData) => {
+      const brandTotal = brandData.fragments?.reduce((sum, frag) => sum + (frag.count || 0), 0) || 0;
+      return total + brandTotal;
+    }, 0) || 0
+  };
+
+  // State (manual fetch for now - will migrate later)
   const [stats, setStats] = useState({
     totalMinted: 0,
     lastHourMinted: 0,
@@ -36,16 +70,6 @@ export default function Dashboard() {
   const [currentCarIndex, setCurrentCarIndex] = useState(0);
   const [recentActivity, setRecentActivity] = useState([]);
   const [supplyData, setSupplyData] = useState([]);
-  const [userStats, setUserStats] = useState({
-    totalCars: 0,
-    totalFragments: 0
-  });
-  const [userInfo, setUserInfo] = useState({
-    email: null,
-    username: null,
-    walletAddress: null,
-    usernameSet: false
-  });
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [faucetCooldown, setFaucetCooldown] = useState(0);
   const [claimingFaucet, setClaimingFaucet] = useState(false);
@@ -103,74 +127,7 @@ export default function Dashboard() {
     }
   }, [ready, authenticated, router]);
 
-  // Fetch MockIDRX balance and user stats
-  const fetchMockIDRXBalance = useCallback(async () => {
-    try {
-      setLoadingMockIDRX(true);
-      setFetchError(null);
-      const authToken = await getAccessToken();
-
-      // Fetch overview for balance and cars
-      const overviewResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/overview`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-      const overviewData = await overviewResponse.json();
-
-      // Get balance from blockchain (real-time) if wallet is available
-      if (embeddedWallet && walletAddress) {
-        try {
-          const blockchainBalance = await getMockIDRXBalance(embeddedWallet, walletAddress);
-          setMockIDRXBalance(blockchainBalance);
-        } catch (error) {
-          console.error("Failed to fetch blockchain balance:", error);
-          // Fallback to backend balance
-          setMockIDRXBalance(overviewData.user?.mockIDRX || 0);
-        }
-      } else {
-        // Use backend balance if wallet not ready
-        setMockIDRXBalance(overviewData.user?.mockIDRX || 0);
-      }
-
-      // Store user info (email/username)
-      setUserInfo(prev => {
-        const userData = {
-          email: overviewData.user?.email || null,
-          username: overviewData.user?.username || null,
-          walletAddress: overviewData.user?.walletAddress || null,
-          // Preserve usernameSet if already true (prevent overwriting)
-          usernameSet: prev?.usernameSet || overviewData.user?.usernameSet || false
-        };
-
-        // Show username modal if username not set and modal not already shown
-        if (!userData.usernameSet && !showUsernameModal) {
-          setShowUsernameModal(true);
-        }
-
-        return userData;
-      });
-
-      // Fetch fragments for available (unused) fragments count
-      const fragmentsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/fragments`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
-      const fragmentsData = await fragmentsResponse.json();
-
-      // Calculate total available fragments (unused only)
-      const availableFragments = fragmentsData.inventory?.reduce((sum, brand) => sum + brand.totalParts, 0) || 0;
-
-      // Update user stats with available fragments and total cars
-      setUserStats({
-        totalFragments: availableFragments,
-        totalCars: overviewData.stats?.totalCars || 0
-      });
-    } catch (error) {
-      console.error("Failed to fetch MockIDRX balance:", error);
-      setFetchError(error.message || "Failed to load data");
-      toast.error("Failed to load balance. Please try again.");
-    } finally {
-      setLoadingMockIDRX(false);
-    }
-  }, [getAccessToken, embeddedWallet, walletAddress]);
+  // React Query handles fetching - no manual fetch function needed!
 
   // Fetch dashboard stats
   const fetchStats = useCallback(async () => {
@@ -244,33 +201,51 @@ export default function Dashboard() {
         throw new Error(data.error || 'Failed to set username');
       }
 
-      // Update local state
-      setUserInfo(prev => ({
-        ...prev,
-        username: data.user.username,
-        usernameSet: true
-      }));
+      // Refresh data from server (React Query will update)
+      await refetchOverview();
 
       setShowUsernameModal(false);
-
-      // No need to refresh - we already have the updated user data from the response
     } catch (error) {
       console.error('Set username error:', error);
       throw error;
     }
   };
 
-  // Check faucet cooldown
+  // Check faucet cooldown - from backend instead of blockchain for better sync
   const checkCooldown = useCallback(async () => {
-    if (!walletAddress || !embeddedWallet) return;
+    console.log("🔍 checkCooldown() called");
 
     try {
-      const cooldownSeconds = await checkFaucetCooldown(embeddedWallet, walletAddress);
+      const authToken = await getAccessToken();
+      console.log("🔍 Got auth token, fetching faucet status...");
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/gasless/faucet-status`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+
+      console.log("🔍 Faucet status response:", response.status, response.statusText);
+
+      if (!response.ok) {
+        console.error("❌ Failed to fetch faucet status - status:", response.status);
+
+        // If endpoint doesn't exist (404), try to get last claim time from overview instead
+        if (response.status === 404) {
+          console.log("⚠️ Endpoint not found - faucet-status endpoint belum ada di backend");
+        }
+        return;
+      }
+
+      const data = await response.json();
+      const cooldownSeconds = data.cooldownSeconds || 0;
+
+      console.log("✅ Faucet status from backend:", data);
+      console.log("✅ Setting cooldown to:", cooldownSeconds);
+
       setFaucetCooldown(cooldownSeconds);
     } catch (error) {
-      console.error("Failed to check faucet cooldown:", error);
+      console.error("❌ Error checking faucet cooldown:", error);
     }
-  }, [walletAddress, embeddedWallet]);
+  }, [getAccessToken]);
 
   // Handle claim faucet (gasless via backend)
   const handleClaimFaucet = async () => {
@@ -307,17 +282,58 @@ export default function Dashboard() {
       const data = await response.json();
 
       if (!response.ok) {
+        // If cooldown error, extract cooldown time from backend response
+        if (data.cooldownSeconds && data.cooldownSeconds > 0) {
+          console.log("🚫 Cooldown from error response:", data.cooldownSeconds);
+          setFaucetCooldown(data.cooldownSeconds);
+        }
         throw new Error(data.error || data.details || 'Failed to claim faucet');
       }
 
+      // Success! Show toast
       toast.success("Faucet claimed successfully! +1,000,000 IDRX");
 
-      // Refresh balance directly from blockchain
-      const newBalance = await getMockIDRXBalance(embeddedWallet, walletAddress);
-      setMockIDRXBalance(newBalance);
+      // OPTIMISTIC UPDATE: Set cooldown immediately for instant UI feedback
+      console.log("🚀 Setting optimistic cooldown: 86400 seconds");
+      console.log("🚀 Current faucetCooldown before set:", faucetCooldown);
+      setFaucetCooldown(86400); // 24 hours = 86400 seconds
 
-      // Check cooldown again
-      await checkCooldown();
+      // Use setTimeout to check if state actually updated
+      setTimeout(() => {
+        console.log("🔍 Checking faucetCooldown after setState...");
+      }, 100);
+
+      // Refresh balance from server (React Query will update)
+      await refetchOverview();
+      console.log("✅ Overview refetched");
+
+      // Sync with blockchain in background (replace optimistic value with real data)
+      const syncCooldown = async () => {
+        try {
+          if (!walletAddress || !embeddedWallet) return;
+
+          // Retry up to 10 times with exponential backoff
+          for (let attempt = 0; attempt < 10; attempt++) {
+            const cooldown = await checkFaucetCooldown(embeddedWallet, walletAddress);
+
+            if (cooldown > 0) {
+              // Got real cooldown from blockchain, update UI
+              setFaucetCooldown(cooldown);
+              console.log(`✅ Cooldown synced from blockchain: ${cooldown}s`);
+              break;
+            }
+
+            // Wait before retry (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+          }
+        } catch (error) {
+          console.error("Failed to sync cooldown from blockchain:", error);
+          // Keep optimistic value (86400) if blockchain sync fails
+        }
+      };
+
+      // Start syncing in background
+      setTimeout(syncCooldown, 2000);
     } catch (error) {
       console.error("Claim faucet error:", error);
       toast.error(error.message || "Failed to claim faucet");
@@ -327,8 +343,12 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    console.log("🔄 Dashboard useEffect triggered, authenticated:", authenticated);
+
     if (authenticated) {
-      fetchMockIDRXBalance();
+      console.log("✅ User authenticated, fetching data...");
+
+      refetchOverview();
       fetchStats();
       fetchRecentActivity();
       checkCooldown();
@@ -342,15 +362,30 @@ export default function Dashboard() {
 
       return () => clearInterval(interval);
     }
-  }, [authenticated, fetchMockIDRXBalance, fetchStats, fetchRecentActivity, checkCooldown]);
+  }, [authenticated, refetchOverview, fetchStats, fetchRecentActivity, checkCooldown]);
+
+  // DEBUG: Log faucetCooldown changes
+  useEffect(() => {
+    console.log("⏱️ faucetCooldown changed to:", faucetCooldown);
+  }, [faucetCooldown]);
 
   // Countdown faucet cooldown timer
   useEffect(() => {
     if (faucetCooldown > 0) {
+      console.log("⏱️ Starting countdown interval, cooldown:", faucetCooldown);
       const interval = setInterval(() => {
-        setFaucetCooldown(prev => Math.max(0, prev - 1));
+        setFaucetCooldown(prev => {
+          const newValue = Math.max(0, prev - 1);
+          if (newValue % 60 === 0) { // Log every minute
+            console.log("⏱️ Countdown tick:", newValue);
+          }
+          return newValue;
+        });
       }, 1000);
-      return () => clearInterval(interval);
+      return () => {
+        console.log("⏱️ Clearing countdown interval");
+        clearInterval(interval);
+      };
     }
   }, [faucetCooldown]);
 
@@ -405,7 +440,7 @@ export default function Dashboard() {
   // Handle pull to refresh
   const handleRefresh = async () => {
     await Promise.all([
-      fetchMockIDRXBalance(),
+      refetchOverview(),
       fetchStats(),
       fetchRecentActivity()
     ]);
@@ -463,7 +498,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between gap-2 mb-3">
               {/* MockIDRX Balance Badge */}
               <button
-                onClick={fetchMockIDRXBalance}
+                onClick={refetchOverview}
                 className="flex items-center gap-1.5 bg-yellow-400 rounded-full px-3 py-1.5 shadow-lg hover:scale-105 transition-transform"
               >
                 <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
@@ -486,21 +521,56 @@ export default function Dashboard() {
               )}
             </div>
 
-            {/* Bottom - Faucet Button (Full Width) */}
-            <button
-              onClick={handleClaimFaucet}
-              disabled={faucetCooldown > 0 || claimingFaucet}
-              className={`w-full flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 shadow-xl transition-all font-bold ${
-                faucetCooldown > 0 || claimingFaucet
-                  ? 'bg-gray-400 cursor-not-allowed opacity-60'
-                  : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:scale-[1.02] hover:shadow-2xl'
-              }`}
-            >
-              <Droplet size={16} className="text-white" strokeWidth={3} />
-              <span className="text-sm text-white">
-                {claimingFaucet ? "Claiming..." : faucetCooldown > 0 ? `Wait ${formatCooldownTime(faucetCooldown)}` : "Claim Free 1,000,000 IDRX"}
-              </span>
-            </button>
+            {/* Bottom - Faucet Button with Dynamic Countdown */}
+            <div className="w-full space-y-2">
+              {/* Progress Bar (if cooldown active) */}
+              {faucetCooldown > 0 && (
+                <div className="w-full h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 transition-all duration-1000 ease-linear"
+                    style={{
+                      width: `${((86400 - faucetCooldown) / 86400) * 100}%`
+                    }}
+                  />
+                </div>
+              )}
+
+              <button
+                onClick={() => {
+                  console.log("🔘 Claim button clicked, faucetCooldown:", faucetCooldown, "claimingFaucet:", claimingFaucet);
+                  handleClaimFaucet();
+                }}
+                disabled={faucetCooldown > 0 || claimingFaucet}
+                className={`w-full rounded-xl px-4 py-3 shadow-xl transition-all font-bold ${
+                  faucetCooldown > 0
+                    ? 'bg-gradient-to-r from-gray-600 to-gray-700 cursor-not-allowed'
+                    : claimingFaucet
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 cursor-wait'
+                    : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:scale-[1.02] hover:shadow-2xl active:scale-95'
+                }`}
+              >
+                <div className="flex flex-col items-center gap-1">
+                  {/* Icon & Main Text */}
+                  <div className="flex items-center gap-2">
+                    <Droplet size={18} className="text-white" strokeWidth={3} />
+                    <span className="text-sm text-white font-black">
+                      {claimingFaucet
+                        ? "CLAIMING..."
+                        : faucetCooldown > 0
+                        ? "NEXT CLAIM IN"
+                        : "CLAIM FREE 1,000,000 IDRX"}
+                    </span>
+                  </div>
+
+                  {/* Countdown Timer (Dynamic) */}
+                  {faucetCooldown > 0 && (
+                    <div className="text-sm font-bold text-white/90 tabular-nums">
+                      {formatCooldownTime(faucetCooldown)}
+                    </div>
+                  )}
+                </div>
+              </button>
+            </div>
           </header>
 
           {/* Content Container */}
@@ -534,7 +604,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
                 <p className="text-gray-400 text-xs font-bold mb-1">MY FRAGMENTS</p>
-                {loadingMockIDRX ? (
+                {loadingFragments ? (
                   <div className="h-8 bg-gray-700 rounded animate-pulse" />
                 ) : (
                   <p className="text-white text-2xl font-black">{userStats.totalFragments}</p>
@@ -542,7 +612,7 @@ export default function Dashboard() {
               </div>
               <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
                 <p className="text-yellow-400 text-xs font-bold mb-1">MY NFTs</p>
-                {loadingMockIDRX ? (
+                {loadingInventory ? (
                   <div className="h-8 bg-gray-700 rounded animate-pulse" />
                 ) : (
                   <p className="text-white text-2xl font-black">{userStats.totalCars}</p>

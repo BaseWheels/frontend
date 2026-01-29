@@ -14,22 +14,28 @@ import NetworkModal from "@/components/shared/NetworkModal";
 import ShippingInfoModal from "@/components/ShippingInfoModal";
 import OnboardingTutorial from "@/components/OnboardingTutorial";
 import { toast } from "sonner";
+import { useGarageOverview } from "@/hooks/useInventory";
 
 
 export default function ProfilePage() {
   const { authenticated, ready, user, logout, getAccessToken } = usePrivy();
   const { isConnected, walletAddress, getBalance, currencySymbol, chainId } = useWallet();
   const router = useRouter();
+
+  // React Query - Auto caching
+  const { data: overviewData, isLoading: loadingMockIDRX, refetch: refetchOverview } = useGarageOverview();
+
+  // Extract data from overview
+  const mockIDRXBalance = overviewData?.user?.mockIDRX || 0;
+  const userInfo = {
+    username: overviewData?.user?.username || null,
+    email: overviewData?.user?.email || null,
+    usernameSet: overviewData?.user?.usernameSet || false
+  };
+
   const [balance, setBalance] = useState(0);
-  const [mockIDRXBalance, setMockIDRXBalance] = useState(0);
   const [loadingBalance, setLoadingBalance] = useState(false);
-  const [loadingMockIDRX, setLoadingMockIDRX] = useState(false);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
-  const [userInfo, setUserInfo] = useState({
-    username: null,
-    email: null,
-    usernameSet: false
-  });
   const [showShippingModal, setShowShippingModal] = useState(false);
   const [shippingInfo, setShippingInfo] = useState({
     shippingName: null,
@@ -76,7 +82,7 @@ export default function ProfilePage() {
   // Fetch MockIDRX balance from backend
   useEffect(() => {
     if (authenticated) {
-      fetchMockIDRXBalance();
+      refetchOverview();
     }
   }, [authenticated]);
 
@@ -93,38 +99,7 @@ export default function ProfilePage() {
     }
   };
 
-  const fetchMockIDRXBalance = async () => {
-    try {
-      setLoadingMockIDRX(true);
-      const authToken = await getAccessToken();
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/overview`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      const data = await response.json();
-      setMockIDRXBalance(data.user?.mockIDRX || 0);
-
-      // Store user info from backend
-      setUserInfo({
-        username: data.user?.username || null,
-        email: data.user?.email || null,
-        usernameSet: data.user?.usernameSet || false
-      });
-
-      // Store shipping info
-      setShippingInfo({
-        shippingName: data.user?.shippingName || null,
-        shippingPhone: data.user?.shippingPhone || null,
-        shippingAddress: data.user?.shippingAddress || null
-      });
-    } catch (error) {
-      console.error("Failed to fetch MockIDRX balance:", error);
-      setMockIDRXBalance(0);
-    } finally {
-      setLoadingMockIDRX(false);
-    }
-  };
+  // React Query handles fetching - no manual function needed!
 
   const handleLogout = async () => {
     try {
@@ -328,7 +303,7 @@ export default function ProfilePage() {
               {/* MockIDRX Balance Badge */}
               <button
                 type="button"
-                onClick={fetchMockIDRXBalance}
+                onClick={refetchOverview}
                 className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full px-4 py-2 w-fit profile-badge transition-transform hover:scale-[1.02] active:scale-95"
                 aria-label="Refresh IDRX balance"
                 title="Tap to refresh IDRX balance"

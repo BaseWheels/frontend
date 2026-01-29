@@ -210,21 +210,30 @@ export default function GachaTierPage() {
       // Step 1: Get auth token
       const authToken = await getAccessToken();
 
-      // Step 2: Ensure server wallet approval first
+      // Step 2: Ensure server wallet approval first (one-time setup)
       console.log('🔍 Checking server wallet approval...');
+
+      // Show toast to explain what's happening
+      toast.info("First time? We'll send you gas ETH + you approve once!", { duration: 4000 });
+
       const approvalResult = await ensureServerWalletApproval(
         embeddedWallet,
         walletAddress,
-        selectedBox.costCoins
+        selectedBox.costCoins,
+        authToken  // Pass authToken to request starter ETH
       );
 
       if (!approvalResult.approved) {
-        throw new Error(approvalResult.error || "Failed to approve server wallet");
+        // User rejected or failed
+        const errorMsg = approvalResult.error?.includes("rejected")
+          ? "You need to approve to spin gacha. Please try again."
+          : approvalResult.error || "Failed to approve";
+        throw new Error(errorMsg);
       }
 
       if (approvalResult.txHash) {
         console.log('✅ Approval successful:', approvalResult.txHash);
-        toast.success("Server wallet approved! You can now use gasless transactions.");
+        toast.success("✅ Approved! All future spins will be gasless!");
       }
 
       // Step 3: User pays for spin by transferring to treasury (GASLESS!)
