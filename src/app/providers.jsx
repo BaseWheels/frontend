@@ -5,6 +5,8 @@ import { base, baseSepolia, mainnet } from "viem/chains";
 import { Toaster } from "sonner";
 import { sdk } from "@farcaster/miniapp-sdk";
 import { useEffect } from "react";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import GlobalLoadingIndicator from "@/components/shared/GlobalLoadingIndicator";
 
 // Suppress React warning for isActive prop from Privy's styled-components
 // This is a known issue in @privy-io/react-auth library
@@ -25,7 +27,8 @@ export default function Providers({ children }) {
   }, []);
 
   return (
-    <>
+    <ErrorBoundary>
+      <GlobalLoadingIndicator />
       <Toaster
         position="top-center"
         richColors
@@ -56,6 +59,6 @@ export default function Providers({ children }) {
     >
       {children}
     </PrivyProvider>
-    </>
+    </ErrorBoundary>
   );
 }

@@ -1,108 +1,114 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Share2, Tag, Eye } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Share2, Eye, MoreVertical, X } from "lucide-react";
 
 /**
- * Swipe Card Component
- * Card with swipe gestures to reveal actions
+ * SwipeCard Component - Click-based action menu
+ * Click 3 dots to show/hide action buttons
  */
 
 export default function SwipeCard({
   children,
   onView,
   onShare,
-  onSell,
   className = ""
 }) {
-  const [offsetX, setOffsetX] = useState(0);
-  const [isSwiping, setIsSwiping] = useState(false);
-  const startXRef = useRef(0);
-  const cardRef = useRef(null);
+  const [showActions, setShowActions] = useState(false);
+  const menuRef = useRef(null);
 
-  const maxSwipe = 120; // Maximum swipe distance
-  const actionThreshold = 60; // Threshold to trigger action
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowActions(false);
+      }
+    };
 
-  const handleTouchStart = (e) => {
-    startXRef.current = e.touches[0].clientX;
-    setIsSwiping(true);
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isSwiping) return;
-
-    const currentX = e.touches[0].clientX;
-    const diff = currentX - startXRef.current;
-
-    // Only allow left swipe (negative diff)
-    if (diff < 0) {
-      setOffsetX(Math.max(diff, -maxSwipe));
+    if (showActions) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
     }
-  };
 
-  const handleTouchEnd = () => {
-    setIsSwiping(false);
-
-    // Check if swiped far enough
-    if (Math.abs(offsetX) < actionThreshold) {
-      // Reset to original position
-      setOffsetX(0);
-    } else {
-      // Keep at action position
-      setOffsetX(-maxSwipe);
-    }
-  };
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [showActions]);
 
   const handleAction = (action) => {
-    action?.();
-    // Reset position after action
-    setTimeout(() => setOffsetX(0), 300);
+    if (action) {
+      action();
+    }
+    setShowActions(false);
   };
 
+  const toggleActions = (e) => {
+    e.stopPropagation();
+    setShowActions(!showActions);
+  };
+
+  // If no actions provided, render children directly
+  if (!onView && !onShare) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
-    <div className="relative overflow-hidden">
-      {/* Action buttons (revealed on swipe left) */}
-      <div className="absolute top-0 right-0 bottom-0 flex items-center gap-2 pr-3">
-        {onView && (
-          <button
-            onClick={() => handleAction(onView)}
-            className="bg-blue-500 text-white p-3 rounded-lg shadow-lg active:scale-95 transition-transform"
-          >
-            <Eye size={20} />
-          </button>
-        )}
-        {onShare && (
-          <button
-            onClick={() => handleAction(onShare)}
-            className="bg-green-500 text-white p-3 rounded-lg shadow-lg active:scale-95 transition-transform"
-          >
-            <Share2 size={20} />
-          </button>
-        )}
-        {onSell && (
-          <button
-            onClick={() => handleAction(onSell)}
-            className="bg-orange-500 text-white p-3 rounded-lg shadow-lg active:scale-95 transition-transform"
-          >
-            <Tag size={20} />
-          </button>
+    <div className={`relative ${className}`}>
+      {/* Card content */}
+      {children}
+
+      {/* 3 Dots Menu Button - Top Right Corner */}
+      <div className="absolute top-2 right-2 z-20" ref={menuRef}>
+        <button
+          onClick={toggleActions}
+          className="bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white p-1.5 rounded-full shadow-lg active:scale-95 transition-all"
+          aria-label="More actions"
+        >
+          {showActions ? <X size={14} /> : <MoreVertical size={14} />}
+        </button>
+
+        {/* Action Menu Dropdown */}
+        {showActions && (
+          <div className="absolute top-full right-0 mt-1 bg-gray-900/95 backdrop-blur-md rounded-lg shadow-2xl border border-white/10 overflow-hidden animate-scale-in min-w-[140px] z-30">
+            {onView && (
+              <button
+                onClick={() => handleAction(onView)}
+                className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-white hover:bg-blue-500/20 active:bg-blue-500/30 transition-colors text-sm"
+              >
+                <Eye size={16} className="text-blue-400" />
+                <span>View Details</span>
+              </button>
+            )}
+            {onShare && (
+              <button
+                onClick={() => handleAction(onShare)}
+                className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-white hover:bg-green-500/20 active:bg-green-500/30 transition-colors text-sm"
+              >
+                <Share2 size={16} className="text-green-400" />
+                <span>Share</span>
+              </button>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Card content */}
-      <div
-        ref={cardRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        className={`relative z-10 ${className}`}
-        style={{
-          transform: `translateX(${offsetX}px)`,
-          transition: isSwiping ? "none" : "transform 0.3s ease-out",
-        }}
-      >
-        {children}
-      </div>
+      <style jsx>{`
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95) translateY(-4px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        .animate-scale-in {
+          animation: scale-in 0.15s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

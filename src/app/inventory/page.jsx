@@ -708,7 +708,7 @@ export default function InventoryPage() {
                           </div>
 
                           {/* Token ID Badge */}
-                          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 z-10">
+                          <div className="absolute top-2 right-10 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 z-10">
                             <span className="text-white text-[10px] font-bold">
                               #{car.tokenId}
                             </span>
