@@ -2,375 +2,239 @@
 
 ## 🚨 The Problem
 
-Traditional digital collectibles and in-game assets have **four critical flaws** that prevent true ownership and long-term value:
-
-### 1. No True Ownership
-
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>❌ Traditional Games</strong></td><td>You spend money on in-game items, but the game company owns everything. When the game shuts down, you lose it all.</td></tr><tr><td><strong>✅ MiniGarage</strong></td><td>Every car is an NFT you truly own. Even if our platform closes, your NFTs remain on-chain forever.</td></tr></tbody></table>
-
-**Example:**
-> Player spends $500 on rare car skins in a mobile game. Game company decides to shut down the game. **Result:** Player loses everything, no refund, no way to transfer assets.
+Traditional digital collectibles, gacha systems, and real-world collecting suffer from **key structural flaws** that prevent true ownership, fairness, and long-term value.
 
 ---
 
-### 2. Complex Crypto Onboarding
+### 1. No True Ownership
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>❌ Most Web3 Games</strong></td><td>Require users to:<br>• Install MetaMask<br>• Write down 12-word seed phrase<br>• Buy ETH for gas<br>• Understand blockchain</td></tr><tr><td><strong>✅ MiniGarage</strong></td><td>Just login with:<br>• Email<br>• Google<br>• Twitter<br>• Discord<br><br>Wallet created automatically!</td></tr></tbody></table>
+<table data-card-size="large" data-view="cards">
+<thead><tr><th></th><th></th></tr></thead>
+<tbody>
+<tr>
+<td><strong>❌ Traditional Games</strong></td>
+<td>You spend money on in-game items, but the game company owns everything. When the game shuts down, you lose it all.</td>
+</tr>
+<tr>
+<td><strong>✅ MiniGarage</strong></td>
+<td>Every car is issued as an NFT that you truly own. Even if the platform shuts down, your assets remain on-chain.</td>
+</tr>
+</tbody>
+</table>
 
-**Stats:**
-- **95% of users** abandon Web3 apps during wallet setup
-- **70% of beginners** lose access to wallets within first month
-- MiniGarage **reduces onboarding to 30 seconds**
+**Example:**  
+> A player spends \$500 on rare car skins in a mobile game.  
+> The game shuts down.  
+> **Result:** All items are lost, with no refund or transferability.
+
+---
+
+### 2. Complex Web3 Onboarding
+
+<table data-card-size="large" data-view="cards">
+<thead><tr><th></th><th></th></tr></thead>
+<tbody>
+<tr>
+<td><strong>❌ Most Web3 Apps</strong></td>
+<td>
+Require users to:
+<br>• Install browser wallets
+<br>• Secure seed phrases
+<br>• Buy ETH for gas
+<br>• Understand blockchain concepts
+</td>
+</tr>
+<tr>
+<td><strong>✅ MiniGarage</strong></td>
+<td>
+Login using:
+<br>• Farcaster
+<br>• Email
+<br>• External Wallet
+<br><br>No complex setup required.
+</td>
+</tr>
+</tbody>
+</table>
+
+**Reality:**
+- Most mainstream users abandon Web3 apps during wallet setup  
+- MiniGarage removes this friction with familiar login methods  
 
 ---
 
 ### 3. No Fair & Transparent Supply Control for RWA
 
-Most gacha systems suffer from:
-- **Infinite minting** - Companies can create unlimited items
-- **Unclear odds** - Real drop rates hidden from players
-- **No guarantee that assets truly run out** - "Limited edition" items keep appearing
+Most gacha and digital collectible systems suffer from:
 
-This creates:
-- **Distrust** - Players lose faith in rarity claims
-- **Over-supply** - Market floods with "rare" items
-- **Broken economies** - Value collapses from infinite supply
+- **Infinite minting** — supply can be increased at will  
+- **Unverifiable scarcity** — “limited” items keep reappearing  
+- **Broken RWA claims** — NFTs exceed real-world asset availability  
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>❌ Traditional Gacha</strong></td><td>Even if items are "rare", they can be minted endlessly. Companies control supply without transparency.</td></tr><tr><td><strong>✅ MiniGarage</strong></td><td>Minting is <strong>hard-capped</strong> by real-world asset supply. If only 1,000 cars exist physically, only 1,000 NFTs can ever exist. Fully transparent on-chain.</td></tr></tbody></table>
+This leads to:
+- Loss of trust  
+- Oversupply  
+- Broken economies  
 
-**Example:**
-> Company claims "Only 500 Legendary Swords available!" in gacha game. Players spend $10,000 total trying to get them. Company secretly mints 200 more because sales are good. **Result:** Original buyers feel scammed, value drops, economy breaks.
+<table data-card-size="large" data-view="cards">
+<thead><tr><th></th><th></th></tr></thead>
+<tbody>
+<tr>
+<td><strong>❌ Traditional Gacha</strong></td>
+<td>Items can be minted endlessly, even if marketed as rare.</td>
+</tr>
+<tr>
+<td><strong>✅ MiniGarage</strong></td>
+<td>
+NFT minting is <strong>hard-capped</strong> by real-world asset supply.  
+If only 1,000 physical items exist, only 1,000 NFTs can ever be minted.
+</td>
+</tr>
+</tbody>
+</table>
 
 ---
 
-### 4. Lack of Gaming Collectibles on Base
+### 4. Pure RNG Gacha Is Unfair
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>❌ Current State</strong></td><td>Base has amazing DeFi and social apps, but lacks engaging collectible gaming experiences that bridge Web2 and Web3.</td></tr><tr><td><strong>✅ MiniGarage</strong></td><td>First major NFT car collection game on Base, combining mainstream appeal with blockchain benefits.</td></tr></tbody></table>
+Traditional gacha systems rely entirely on luck:
+
+- Two users can spend the same amount  
+- One gets a rare item, the other gets nothing  
+- There is no guaranteed progress  
+
+This creates frustration and discourages long-term collectors.
+
+---
+
+### 5. Physical Collecting Is Inefficient
+
+Real-world collectors often:
+
+- Visit multiple physical stores  
+- Spend time and travel costs  
+- Arrive only to find items already sold out  
+
+There is no real-time visibility into remaining supply, leading to wasted effort and unfair access.
 
 ---
 
 ## ✅ Our Solution
 
-MiniGarage addresses these problems with a **5-pillar approach**:
+MiniGarage addresses these problems through a system designed for **ownership, fairness, and real-world-backed scarcity**.
+
+---
 
 ### 1. True Digital Ownership via NFTs
 
 ```mermaid
 graph LR
-    A[User Opens Gacha] --> B[Wins Car/Fragment]
-    B --> C[NFT Minted On-Chain]
-    C --> D[Stored in User Wallet]
-    D --> E[User Fully Owns Asset]
-    E --> F{What Now?}
-    F --> G[Trade on Marketplace]
-    F --> H[Keep Forever]
-    F --> I[Redeem for Physical]
-```
+A[User Opens Gacha] --> B[Wins Car or Fragment]
+B --> C[NFT Minted On-Chain]
+C --> D[Stored in User Wallet]
+D --> E[User Owns Asset]
+E --> F{Next Step}
+F --> G[Trade]
+F --> H[Hold]
+F --> I[Redeem Physical]
+Key Benefits:
 
-**Key Benefits:**
-- ✅ **Permanent Ownership** - NFTs exist on Base blockchain forever
-- ✅ **Provable Scarcity** - On-chain verification of rarity (10 Legendary, 20 Hypercar, 50 Supercar, etc.)
-- ✅ **Interoperability** - Works with any NFT marketplace
-- ✅ **Transferable** - Gift, sell, or trade freely
+Permanent ownership
 
----
+Fully transferable assets
 
-### 2. Seamless Onboarding with Privy
+Independent of platform availability
 
-```mermaid
+2. Seamless Web2-Style Onboarding
 sequenceDiagram
-    participant U as User
-    participant P as Privy
-    participant W as Embedded Wallet
-    participant B as Base Blockchain
+participant U as User
+participant A as Auth (Farcaster / Email / Wallet)
+participant W as Wallet
+participant B as Base Blockchain
 
-    U->>P: Login with Email/Social
-    P->>W: Create Wallet
-    W->>B: Wallet Address Registered
-    B->>U: Ready to Play!
+U->>A: Login
+A->>W: Connect or Create Wallet
+W->>B: Register Address
+B->>U: Ready to Collect
+Users interact with blockchain without needing to understand crypto mechanics.
 
-    Note over U,B: Total Time: ~30 seconds
-```
+3. Gas-Abstracted User Experience
+All core actions are gas-abstracted using IDRX or sponsored transactions:
 
-**How It Works:**
-1. User clicks "Login with Google"
-2. Google OAuth authenticates
-3. Privy generates embedded wallet
-4. Wallet keys encrypted with user's OAuth token
-5. User gets Base address automatically
+Action	Traditional Web3	MiniGarage
+Open Gacha	ETH + Gas	Gasless
+Mint NFT	User Pays Gas	Sponsored
+Trade NFT	Gas Required	Gasless
+Assemble Fragments	Gas Required	Gasless
+Redeem Physical	Gas Required	Sponsored
+Users never deal with failed transactions or unpredictable fees.
 
-**No Need For:**
-- ❌ MetaMask installation
-- ❌ Seed phrase management
-- ❌ Gas fee confusion
-- ❌ Network switching
+4. Gacha + Fragment Crafting (Fair Progression)
+Traditional Gacha:
+Open Box → Random Result → Often Nothing
 
----
+MiniGarage:
+Open Box → Fragment
+Fragment → Progress
+Enough Fragments → Guaranteed Car
+Why It Matters:
 
-### 3. Gasless UX with MockIDRX
+Every action has value
 
-Instead of requiring users to have ETH for every transaction, we use **IDRX tokens**:
+RNG frustration is reduced
 
-| Action | Traditional Web3 | MiniGarage |
-|--------|------------------|------------|
-| **Open Gacha Box** | Pay 0.001 ETH (~$2) + gas | Pay 25K IDRX (free from faucet) |
-| **Mint NFT** | User pays gas (~$0.50) | Backend sponsors gas (FREE) |
-| **Trade NFT** | Pay listing price + gas | Pay IDRX only, no gas |
-| **Claim Physical** | User pays gas | Backend sponsors gas (FREE) |
-| **Fragment Assembly** | User pays gas | Backend sponsors gas (FREE) |
+Progress is guaranteed over time
 
-**Gasless Transactions:**
-- ✅ **Gacha box opening** - Backend sponsors minting gas
-- ✅ **NFT minting** - Completely free for users
-- ✅ **Fragment assembly** - No gas fees to create complete car
-- ✅ **Physical redemption** - Sponsored by platform
+5. Hard Supply Caps Tied to Real-World Assets (RWA)
+Each car NFT represents a limited physical collectible.
 
-**Benefits:**
-- ✅ Users never see gas fees
-- ✅ Predictable costs in IDRX
-- ✅ Familiar denominations (1M IDRX vs 0.0001 ETH)
-- ✅ Cultural connection for Indonesian market
+NFT minting is strictly capped by physical supply
 
----
+When supply is exhausted, gacha and assembly are disabled
 
-### 4. Fragment Crafting System
+Redemption requires burning the NFT on-chain
 
-Unlike pure-RNG gacha games, MiniGarage adds **progression**:
+Physical assets are custody-managed and can only be redeemed once, preventing double claims.
 
-```
-Pure RNG (Traditional Gacha):
-┌─────────┐
-│ Open Box│ → Random Car (0.1% legendary)
-└─────────┘
-❌ Frustrating for unlucky players
+6. Peer-to-Peer Marketplace
+Collectors can trade directly with each other:
 
-MiniGarage (Fragment + RNG):
-┌─────────┐     ┌──────────┐     ┌────────────┐
-│ Open Box│ →  │ Fragment │  →  │ Collect 5  │ → Complete Car
-└─────────┘     └──────────┘     └────────────┘
-✅ Progress toward guaranteed reward
-```
+No intermediaries
 
-**How It Works:**
-- Collect 5 fragment types: Engine, Chassis, Wheels, Body, Electronics
-- Each fragment belongs to a specific car brand (e.g., Ferrari, Lamborghini)
-- Assemble complete set → Get NFT car of that brand
-- Choose to keep digital OR burn for physical diecast
+Transparent price discovery
 
-**Advantages:**
-- ✅ **Reduces RNG Frustration** - Every pull has value
-- ✅ **Adds Progression** - Work toward specific cars
-- ✅ **Guaranteed Rewards** - Collect enough fragments = guaranteed car
-- ✅ **Increases Engagement** - Collection goals and milestones
+On-chain ownership transfer
 
----
+Marketplace activity never affects total supply.
 
-### 5. Bridge to Physical World (RWA)
+🔮 Future Roadmap: NFT Identity & Provenance
+MiniGarage plans to adopt ERC-6551 as a future enhancement.
 
-**This is what makes MiniGarage unique:** Unlike pure digital NFTs, every car is **backed by a real physical diecast collectible**.
+This will allow each car NFT to carry:
 
-```
-Digital Collecting Phase          Physical Redemption Phase
-┌──────────────┐                 ┌──────────────┐
-│   Own NFT    │                 │  Burn NFT    │
-│   Digital    │  ────────────►  │   On-Chain   │
-│   Forever    │                 │  Permanent   │
-└──────────────┘                 └──────────────┘
-                                        │
-                                        ▼
-                                 ┌──────────────┐
-                                 │ Receive Real │
-                                 │   Diecast    │
-                                 │   at Home    │
-                                 └──────────────┘
-```
+Serial numbers
 
-**How It Works:**
-1. **Collect** - Win NFT cars from gacha or marketplace
-2. **Choose** - Keep digital or claim physical
-3. **Shipping Info** - Enter delivery address (one-time)
-4. **Burn NFT** - Permanently remove from blockchain
-5. **Receive Physical** - Real diecast car shipped to you
+Mint origin (gacha or assembly)
 
-**Benefits:**
-- ✅ **Real Value** - Not just pixels, backed by physical collectible
-- ✅ **Verifiable Authenticity** - Blockchain proves ownership history
-- ✅ **Collector's Dream** - Bridge digital collecting with physical ownership
-- ✅ **Deflationary Supply** - Every redemption reduces NFT circulation
-- ✅ **Proof of Rarity** - On-chain record of total minted vs redeemed
+Redemption status
 
-**Example User Journey:**
-```
-1. User wins Legendary Ferrari NFT from gacha
-2. Trades it on marketplace for 500K IDRX
-3. Buys Lamborghini NFT they really want
-4. Enters shipping info
-5. Burns Lamborghini NFT to claim physical
-6. Receives authentic diecast at home
-7. NFT supply decreases, increasing value for remaining holders
-```
+ERC-6551 is not part of the current MVP, but strengthens long-term transparency and trust for real-world-backed collectibles.
 
----
+🎯 Impact
+Before MiniGarage
 
-### 6. P2P Trading Marketplace
+Spend → Hope → Lose Access → Zero Value
+With MiniGarage
 
-Trade cars with other collectors **without intermediaries**:
+Login → Collect → Progress → Own → Trade or Redeem
+MiniGarage transforms:
 
-**Key Features:**
-- **Zero Platform Fees** - Pure peer-to-peer trading
-- **IDRX Payments** - Use in-game currency (no ETH needed)
-- **Supply Cap Enforcement** - Smart contract ensures scarcity
-- **Browse by Rarity** - Filter: Legendary, Epic, Rare, Common
-- **Instant Transactions** - Buy/sell immediately
-- **Price Discovery** - See what others are selling for
+Spending into ownership
 
-**Marketplace Flow:**
-```mermaid
-sequenceDiagram
-    participant Seller
-    participant Contract
-    participant Buyer
+RNG into progression
 
-    Seller->>Contract: List NFT for 100K IDRX
-    Buyer->>Contract: Buy NFT with 100K IDRX
-    Contract->>Seller: Transfer 100K IDRX
-    Contract->>Buyer: Transfer NFT Ownership
-
-    Note over Seller,Buyer: No platform fees!
-```
-
-**Why P2P Matters:**
-- ✅ **True Ownership** - You control your assets
-- ✅ **Fair Pricing** - Market decides value
-- ✅ **Transparent History** - All trades on-chain
-- ✅ **No Middleman** - Direct collector-to-collector
-
----
-
-## 🎯 Impact
-
-### Before MiniGarage
-
-```
-User Journey (Traditional Games):
-1. Install game → 10 min
-2. Make in-game purchases → $100
-3. Game shuts down → Lose everything
-4. User frustrated → Never trusts again
-```
-
-### With MiniGarage
-
-```
-User Journey (MiniGarage):
-1. Login with email → 30 sec
-2. Claim free IDRX → 1 min
-3. Open gacha boxes → 5 min
-4. Own NFTs forever → Lifetime value
-5. Trade OR redeem physical → Full control
-6. NFT remains on-chain even if platform closes
-```
-
----
-
-## 📊 Comparison
-
-| Feature | Traditional Games | Other Web3 Games | MiniGarage |
-|---------|-------------------|------------------|------------|
-| **True Ownership** | ❌ No | ✅ Yes | ✅ Yes |
-| **Easy Onboarding** | ✅ Yes | ❌ No | ✅ Yes |
-| **Low/No Gas Fees** | ✅ Yes | ❌ No | ✅ Yes |
-| **Progression System** | ✅ Yes | ⚠️ Rare | ✅ Yes |
-| **Blockchain Benefits** | ❌ No | ✅ Yes | ✅ Yes |
-| **Physical Redemption** | ❌ No | ❌ No | ✅ Yes (RWA) |
-| **P2P Marketplace** | ❌ No | ⚠️ Limited | ✅ Zero Fees |
-| **Supply Transparency** | ❌ No | ⚠️ Some | ✅ On-Chain |
-
----
-
-## 🎮 Complete User Experience
-
-```
-New User Flow:
-┌────────────────┐
-│ Login (30 sec) │
-└────────┬───────┘
-         │
-         ▼
-┌────────────────┐
-│ Claim Free     │
-│ IDRX Tokens    │
-└────────┬───────┘
-         │
-         ▼
-┌────────────────┐     ┌────────────────┐
-│ Open Gacha     │────▶│ Win Fragments  │
-│ Boxes          │     │ or Complete    │
-└────────────────┘     │ Cars           │
-                       └────────┬───────┘
-                                │
-                ┌───────────────┼───────────────┐
-                │               │               │
-                ▼               ▼               ▼
-         ┌──────────┐    ┌──────────┐   ┌──────────┐
-         │ Assemble │    │  Trade   │   │   Keep   │
-         │ Fragments│    │   NFT    │   │  Digital │
-         └─────┬────┘    └─────┬────┘   └──────────┘
-               │               │
-               └───────┬───────┘
-                       │
-                       ▼
-              ┌─────────────────┐
-              │ Complete NFT Car│
-              └────────┬─────────┘
-                       │
-         ┌─────────────┴─────────────┐
-         │                           │
-         ▼                           ▼
-┌────────────────┐          ┌────────────────┐
-│  Keep Digital  │          │ Burn for       │
-│  (tradeable)   │          │ Physical       │
-└────────────────┘          └────────┬───────┘
-                                     │
-                                     ▼
-                            ┌────────────────┐
-                            │ Real Diecast   │
-                            │ Delivered      │
-                            └────────────────┘
-```
-
----
+Digital collectibles into real-world-backed assets
 
 {% hint style="success" %}
-**MiniGarage = Best of Three Worlds**
-
-We combine:
-1. **Accessibility** of traditional games (easy login, no crypto knowledge)
-2. **Ownership** of Web3 (true NFT ownership, forever on-chain)
-3. **Physical Value** of RWA (burn NFT → receive real diecast)
-
-Without the usual friction.
+MiniGarage combines accessibility, ownership, and physical value — without the usual Web3 friction.
 {% endhint %}
-
----
-
-{% hint style="info" %}
-**Key Innovation: Digital-First, Physical-Optional**
-
-Unlike traditional collectibles where you must buy physical first, MiniGarage lets you:
-- Collect digitally (instant, gasless)
-- Trade freely (P2P marketplace)
-- Claim physical only when you want (burn NFT)
-
-This reduces shipping costs, enables global trading, and gives collectors full flexibility.
-{% endhint %}
-
----
-
-## Next: Why Base?
-
-Learn why we chose Base blockchain for optimal performance and cost efficiency →
-
-{% content-ref url="why-base.md" %}
-[why-base.md](why-base.md)
-{% endcontent-ref %}
