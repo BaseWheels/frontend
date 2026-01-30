@@ -25,10 +25,10 @@ MiniGarage is available as a **Base Mini App**, designed for instant access with
 ### Available Access Points
 
 - **Web Demo (Testnet)**  
-  https://minigarageapp.vercel.app  
+  [https://minigarageapp.vercel.app](https://minigarageapp.vercel.app)
 
 - **Farcaster Mini App**  
-  https://farcaster.xyz/miniapps/PV89sm1opO1J/minigarage  
+  [https://farcaster.xyz/miniapps/PV89sm1opO1J/minigarage](https://farcaster.xyz/miniapps/PV89sm1opO1J/minigarage)
 
 {% hint style="info" %}
 **Network:** Base Sepolia Testnet  
