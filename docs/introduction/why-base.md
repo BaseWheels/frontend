@@ -2,286 +2,219 @@
 
 ## ⚡ Overview
 
-MiniGarage is built on **Base Sepolia** (testnet) with plans to migrate to **Base Mainnet**. Here's why Base is the perfect blockchain for our NFT car collection platform.
+MiniGarage is currently built on **Base Sepolia (testnet)** with a planned migration to **Base Mainnet**.  
+Base is chosen because it provides the best balance between **cost efficiency, performance, developer experience, and user onboarding** for a consumer-focused NFT and gacha platform.
 
 ---
 
-## 🔍 The Selection Criteria
+## 🔍 Selection Criteria
 
-When choosing a blockchain for MiniGarage, we evaluated based on:
+When selecting a blockchain for MiniGarage, we evaluated networks based on the following priorities:
 
-| Criterion | Weight | Winner |
-|-----------|--------|--------|
-| **Transaction Cost** | 🔥🔥🔥 High | Base |
-| **Speed** | 🔥🔥🔥 High | Base |
-| **Developer Experience** | 🔥🔥 Medium | Base |
-| **Ecosystem Size** | 🔥🔥 Medium | Base |
-| **User Onboarding** | 🔥🔥🔥 High | Base |
+| Criterion | Priority |
+|---------|----------|
+| Transaction Cost | High |
+| Speed & Finality | High |
+| Developer Experience | Medium |
+| Ecosystem & Adoption | Medium |
+| User Onboarding | High |
 
----
-
-## ✅ Why Base Wins
-
-### 1. Ultra-Low Gas Fees
-
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>Ethereum Mainnet</strong></td><td>• Mint NFT: $15-50<br>• Transfer: $5-20<br>• Gacha roll: $10-30<br><br>❌ Too expensive for gaming</td></tr><tr><td><strong>Base</strong></td><td>• Mint NFT: $0.01<br>• Transfer: &lt;$0.01<br>• Gacha roll: $0.02<br><br>✅ Affordable for everyone</td></tr></tbody></table>
-
-**Real Example:**
-```
-Opening 10 Gacha Boxes:
-
-On Ethereum:
-• 10 IDRX purchases: $50
-• 10 mint transactions: $150
-• Total: ~$200 in gas
-
-On Base:
-• 10 IDRX purchases: $0.10
-• 10 mint transactions: $0.10
-• Total: ~$0.20 in gas
-
-Savings: 99.9% cheaper! 💰
-```
+Base consistently ranked highest across these criteria.
 
 ---
 
-### 2. Fast Finality
+## ✅ Why Base
+
+### 1. Low and Predictable Transaction Costs
+
+Frequent actions such as gacha rolls, fragment assembly, and NFT transfers require **low-cost transactions** to remain accessible.
+
+<table data-card-size="large" data-view="cards">
+<thead><tr><th></th><th></th></tr></thead>
+<tbody>
+<tr>
+<td><strong>Ethereum Mainnet</strong></td>
+<td>
+• NFT mint: \$10–\$50  
+• Transfer: \$5–\$20  
+• High friction for consumer apps
+</td>
+</tr>
+<tr>
+<td><strong>Base</strong></td>
+<td>
+• NFT mint: ~\$0.01–\$0.05  
+• Transfer: &lt;\$0.01  
+• Affordable for high-frequency interactions
+</td>
+</tr>
+</tbody>
+</table>
+
+**Example Scenario:**
+Opening multiple gacha boxes:
+
+Ethereum L1:
+• High and unpredictable gas costs
+• Unsuitable for repeated interactions
+
+Base:
+• Orders of magnitude cheaper
+• Consistent and predictable fees
+
+
+This cost structure enables MiniGarage to offer a gas-abstracted user experience without sacrificing decentralization.
+
+---
+
+### 2. Fast Finality for Better User Experience
+
+Base offers fast block times (~2 seconds), which is well-suited for interactive consumer applications.
 
 ```mermaid
 graph LR
-    A[User Opens Gacha] --> B[Transaction Sent]
-    B --> C[Block Confirmed]
-    C --> D[NFT Minted]
-    
-    style A fill:#e1f5ff
-    style D fill:#d4edda
-    
-    note1[2 seconds on Base]
-    note2[vs 12-15 sec on L1]
-```
+A[User Action] --> B[Transaction Sent]
+B --> C[Block Confirmed]
+C --> D[Result Available]
+Block Time Comparison:
 
-**Speed Comparison:**
+Network	Approx. Block Time
+Ethereum L1	~12–15 seconds
+Polygon	~2 seconds
+Base	~2 seconds
+Arbitrum	Sub-second batching
+For MiniGarage, Base provides fast-enough finality while maintaining a stable and widely adopted environment.
 
-| Blockchain | Block Time | User Experience |
-|------------|------------|-----------------|
-| **Ethereum** | ~12-15 sec | ⚠️ Noticeable delay |
-| **Polygon** | ~2 sec | ✅ Fast |
-| **Base** | ~2 sec | ✅ Fast |
-| **Arbitrum** | ~250ms | ✅ Very fast |
+3. Full EVM Compatibility
+Base is fully EVM-compatible, allowing MiniGarage to:
 
-**Why 2 seconds is good enough:**
-- ✅ Feels instant to users
-- ✅ Animation can cover the wait
-- ✅ No frustrating loading screens
-- ✅ Competitive with Web2 games
+Use Solidity without modification
 
----
+Leverage standard tooling (Hardhat, Foundry, Ethers.js)
 
-### 3. EVM Compatibility
+Apply established Ethereum security practices
 
-Base is **100% EVM-compatible**, which means:
+Maintain easy interoperability with Ethereum and other L2s
 
-| Benefit | Explanation |
-|---------|-------------|
-| **Use Solidity** | No new language to learn |
-| **Existing Tools** | Hardhat, Ethers.js, Foundry work perfectly |
-| **Audit Resources** | Same security best practices as Ethereum |
-| **Interoperability** | Easy bridge to Ethereum and other L2s |
+This reduces development risk and speeds up iteration.
 
-**Developer Experience:**
-```javascript
-// Code that works on Ethereum:
-const contract = new ethers.Contract(address, abi, signer);
-await contract.mintCar(tokenId);
+4. Strong Ecosystem and Institutional Backing
+Base is developed and supported by Coinbase, which provides:
 
-// Works EXACTLY the same on Base - no changes needed! ✅
-```
+Trusted infrastructure
 
----
+A large existing user base
 
-### 4. Backed by Coinbase
+Reliable developer tooling
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>🏢 Institutional Trust</strong></td><td>Coinbase's reputation provides confidence for users and partners</td></tr><tr><td><strong>💼 Enterprise Support</strong></td><td>Access to Coinbase's infrastructure and services</td></tr><tr><td><strong>🌐 Onboarding Pipeline</strong></td><td>Millions of Coinbase users can easily try Base apps</td></tr><tr><td><strong>🛡️ Security</strong></td><td>Battle-tested infrastructure from crypto's largest exchange</td></tr></tbody></table>
+Long-term ecosystem commitment
 
----
+This backing makes Base particularly suitable for consumer-facing applications that require trust and reliability.
 
-### 5. Growing Ecosystem
+5. Consumer-Focused Ecosystem Growth
+Base has become a popular L2 for consumer and social applications, including:
 
-Base is rapidly becoming the **L2 of choice for consumer apps**:
+Decentralized social platforms
 
-```mermaid
-pie title Base Ecosystem (2024)
-    "DeFi" : 30
-    "Social/Consumer" : 35
-    "NFTs/Gaming" : 20
-    "Infrastructure" : 15
-```
+NFT marketplaces
 
-**Notable Base Projects:**
-- **Friend.tech** - Social finance
-- **Farcaster** - Decentralized social
-- **Zora** - NFT marketplace
-- **Aerodrome** - DEX
-- **MiniGarage** - NFT car collection (that's us! 🚗)
+Consumer-focused DeFi
 
-**Why This Matters:**
-- ✅ More users already on Base
-- ✅ Better liquidity for our marketplace
-- ✅ Cross-promotion opportunities
-- ✅ Shared infrastructure costs
+This ecosystem alignment creates:
 
----
+Easier user discovery
 
-### 6. OP Stack = Future-Proof
+Better liquidity for NFT trading
 
-Base is built on the **OP Stack** (Optimism's rollup framework):
+Potential cross-application integrations
 
-```mermaid
+MiniGarage is designed to grow alongside this ecosystem.
+
+6. OP Stack and Long-Term Scalability
+Base is built on the OP Stack, aligning it with the broader Optimism ecosystem and the Superchain vision.
+
 graph TD
-    A[OP Stack] --> B[Base]
-    A --> C[Optimism]
-    A --> D[Other OP Chains]
-    
-    B --> E[Superchain Vision]
-    C --> E
-    D --> E
-    
-    E --> F[Seamless Cross-Chain]
-    
-    style A fill:#ff0420
-    style E fill:#0052FF
-```
+A[OP Stack] --> B[Base]
+A --> C[Optimism]
+A --> D[Other OP Chains]
+B --> E[Superchain]
+C --> E
+D --> E
+Benefits:
 
-**Superchain Benefits:**
-- 🔗 **Native Interoperability** - Easy cross-chain NFT transfers
-- 💸 **Shared Sequencer** - Lower costs through batching
-- 🔐 **Unified Security** - Ethereum's security for all chains
-- 🚀 **Network Effects** - User base grows across all OP chains
+Shared security model
 
----
+Lower costs through batching
 
-## 🆚 Base vs Alternatives
+Future cross-chain interoperability
 
-### Base vs Polygon
+Long-term scalability
 
-| Feature | Base | Polygon |
-|---------|------|---------|
-| **Gas Fees** | ✅ $0.01-0.05 | ✅ $0.01-0.10 |
-| **Speed** | ✅ 2 sec blocks | ✅ 2 sec blocks |
-| **Backing** | ✅ Coinbase | ⚠️ Independent |
-| **EVM Compatibility** | ✅ 100% | ✅ 100% |
-| **User Base** | 🔥 Growing fast | ✅ Established |
+This ensures MiniGarage remains compatible with future network upgrades.
 
-**Verdict:** Base chosen for **backing and growth trajectory**.
+🆚 Base Compared to Alternatives
+Base vs Polygon
+Aspect	Base	Polygon
+Fees	Low & predictable	Low
+Speed	~2s blocks	~2s blocks
+Ecosystem Focus	Consumer & Social	Broad
+Backing	Coinbase	Independent
+Summary: Base was chosen for its strong consumer focus and ecosystem momentum.
 
----
+Base vs Arbitrum
+Aspect	Base	Arbitrum
+Fees	Lower on average	Slightly higher
+UX Focus	Consumer-first	DeFi-heavy
+Coinbase Integration	Native	None
+Summary: Base better matches MiniGarage’s onboarding and UX goals.
 
-### Base vs Arbitrum
+Base vs Ethereum L1
+Aspect	Base	Ethereum L1
+Fees	~$0.01–$0.05	$5–$50
+Speed	~2s	~12–15s
+Consumer Suitability	High	Low
+Summary: Base delivers Ethereum-level security with drastically lower cost and latency.
 
-| Feature | Base | Arbitrum |
-|---------|------|----------|
-| **Gas Fees** | ✅ Cheaper | ⚠️ Slightly more |
-| **Speed** | ✅ Fast | ✅ Very fast |
-| **Consumer Focus** | ✅ Strong | ⚠️ More DeFi |
-| **Coinbase Integration** | ✅ Native | ❌ No |
-
-**Verdict:** Base better for **consumer onboarding**.
-
----
-
-### Base vs Ethereum L1
-
-| Feature | Base L2 | Ethereum L1 |
-|---------|---------|-------------|
-| **Gas Fees** | ✅ $0.01-0.05 | ❌ $5-50 |
-| **Speed** | ✅ 2 seconds | ⚠️ 12-15 seconds |
-| **Security** | ✅ Inherits from L1 | ✅ Maximum |
-| **Decentralization** | ⚠️ Sequencer centralized | ✅ Fully decentralized |
-
-**Verdict:** Base provides **99% of benefits at 0.1% of cost**.
-
----
-
-## 🎯 Perfect for MiniGarage
-
-Base checks all boxes for our use case:
-
-```
-MiniGarage Requirements → Base Features
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Cheap NFT mints     →  $0.01 per mint
-✅ Fast confirmations  →  2-second blocks
-✅ Easy onboarding     →  Coinbase ecosystem
-✅ EVM compatibility   →  Use standard tools
-✅ Growing user base   →  Consumer-focused L2
-✅ Future-proof        →  OP Stack / Superchain
-```
-
----
-
-## 📊 Technical Specs
-
-### Base Sepolia (Current Testnet)
-
-| Parameter | Value |
-|-----------|-------|
-| **Chain ID** | 84532 |
-| **RPC URL** | https://sepolia.base.org |
-| **Block Explorer** | https://sepolia.basescan.org |
-| **Gas Token** | Sepolia ETH |
-| **Block Time** | ~2 seconds |
-| **Faucet** | https://faucet.base.org |
-
-### Base Mainnet (Migration Target)
-
-| Parameter | Value |
-|-----------|-------|
-| **Chain ID** | 8453 |
-| **RPC URL** | https://mainnet.base.org |
-| **Block Explorer** | https://basescan.org |
-| **Gas Token** | ETH |
-| **Block Time** | ~2 seconds |
-| **Bridge** | https://bridge.base.org |
-
----
-
-## 🚀 Migration Path
-
-Our plan for Base Mainnet:
-
-```mermaid
+🚀 Deployment & Migration Strategy
 graph LR
-    A[Current: Sepolia] --> B[Audit Contracts]
-    B --> C[Deploy to Mainnet]
-    C --> D[Bridge IDRX]
-    D --> E[Migrate Users]
-    E --> F[Full Launch]
-    
-    style A fill:#e1f5ff
-    style F fill:#d4edda
-```
+A[Base Sepolia] --> B[Security Review]
+B --> C[Base Mainnet Deployment]
+C --> D[User Migration]
+D --> E[Production Launch]
+Current Status:
 
-**Timeline:**
-- ✅ **Phase 1:** Build on Sepolia (Current)
-- 🔄 **Phase 2:** Security audit (Planned)
-- 📅 **Phase 3:** Mainnet launch (Q2 2024)
-- 🌟 **Phase 4:** Full production (Q3 2024)
+Development and testing on Base Sepolia
 
----
+Mainnet deployment planned after security review and validation
 
+📊 Network Details
+Base Sepolia (Current)
+Parameter	Value
+Chain ID	84532
+RPC	https://sepolia.base.org
+Explorer	https://sepolia.basescan.org
+Block Time	~2 seconds
+Base Mainnet (Target)
+Parameter	Value
+Chain ID	8453
+RPC	https://mainnet.base.org
+Explorer	https://basescan.org
+Block Time	~2 seconds
+🎯 Why Base Fits MiniGarage
+MiniGarage Needs        → Base Capabilities
+-----------------------------------------
+Low-cost transactions  → Affordable L2 fees
+Fast interactions      → Short block times
+Easy onboarding        → Coinbase ecosystem
+Developer velocity     → EVM compatibility
+Future scalability     → OP Stack / Superchain
 {% hint style="info" %}
-**Base Sepolia Faucet**
-
-Need testnet ETH for development? Get free Sepolia ETH at:
-🔗 https://faucet.base.org
+Base enables MiniGarage to focus on building a smooth collecting experience without exposing users to blockchain complexity.
 {% endhint %}
 
----
-
-## Next: Key Features
-
-Discover what makes MiniGarage unique →
+Next: Key Features
+Learn how MiniGarage’s gacha, fragment system, and RWA mechanics work →
 
 {% content-ref url="key-features.md" %}
-[key-features.md](key-features.md)
+key-features.md
 {% endcontent-ref %}
