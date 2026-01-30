@@ -22,8 +22,9 @@ Traditional digital collectibles, gacha systems, and real-world collecting suffe
 </tbody>
 </table>
 
-**Example:**
-> A player spends $500 on rare car skins in a mobile game. The game shuts down.
+**Example:**  
+> A player spends \$500 on rare car skins in a mobile game.  
+> The game shuts down.  
 > **Result:** All items are lost, with no refund or transferability.
 
 ---
@@ -36,40 +37,44 @@ Traditional digital collectibles, gacha systems, and real-world collecting suffe
 <tr>
 <td><strong>❌ Most Web3 Apps</strong></td>
 <td>
-Require users to:<br>
-• Install browser wallets<br>
-• Secure seed phrases<br>
-• Buy ETH for gas<br>
-• Understand blockchain concepts
+Require users to:
+<br>• Install browser wallets
+<br>• Secure seed phrases
+<br>• Buy ETH for gas
+<br>• Understand blockchain concepts
 </td>
 </tr>
 <tr>
 <td><strong>✅ MiniGarage</strong></td>
 <td>
-Login using:<br>
-• Farcaster<br>
-• Email<br>
-• External Wallet<br><br>
-No complex setup required.
+Login using:
+<br>• Farcaster
+<br>• Email
+<br>• External Wallet
+<br><br>No complex setup required.
 </td>
 </tr>
 </tbody>
 </table>
 
 **Reality:**
-*   Most mainstream users abandon Web3 apps during wallet setup.
-*   MiniGarage removes this friction with familiar login methods.
+- Most mainstream users abandon Web3 apps during wallet setup  
+- MiniGarage removes this friction with familiar login methods  
 
 ---
 
 ### 3. No Fair & Transparent Supply Control for RWA
 
 Most gacha and digital collectible systems suffer from:
-*   **Infinite minting** — supply can be increased at will.
-*   **Unverifiable scarcity** — “limited” items keep reappearing.
-*   **Broken RWA claims** — NFTs exceed real-world asset availability.
 
-This leads to loss of trust, oversupply, and broken economies.
+- **Infinite minting** — supply can be increased at will  
+- **Unverifiable scarcity** — “limited” items keep reappearing  
+- **Broken RWA claims** — NFTs exceed real-world asset availability  
+
+This leads to:
+- Loss of trust  
+- Oversupply  
+- Broken economies  
 
 <table data-card-size="large" data-view="cards">
 <thead><tr><th></th><th></th></tr></thead>
@@ -81,7 +86,7 @@ This leads to loss of trust, oversupply, and broken economies.
 <tr>
 <td><strong>✅ MiniGarage</strong></td>
 <td>
-NFT minting is <strong>hard-capped</strong> by real-world asset supply.
+NFT minting is <strong>hard-capped</strong> by real-world asset supply.  
 If only 1,000 physical items exist, only 1,000 NFTs can ever be minted.
 </td>
 </tr>
@@ -93,9 +98,10 @@ If only 1,000 physical items exist, only 1,000 NFTs can ever be minted.
 ### 4. Pure RNG Gacha Is Unfair
 
 Traditional gacha systems rely entirely on luck:
-*   Two users can spend the same amount.
-*   One gets a rare item, the other gets nothing.
-*   There is no guaranteed progress.
+
+- Two users can spend the same amount  
+- One gets a rare item, the other gets nothing  
+- There is no guaranteed progress  
 
 This creates frustration and discourages long-term collectors.
 
@@ -104,9 +110,10 @@ This creates frustration and discourages long-term collectors.
 ### 5. Physical Collecting Is Inefficient
 
 Real-world collectors often:
-*   Visit multiple physical stores.
-*   Spend time and travel costs.
-*   Arrive only to find items already sold out.
+
+- Visit multiple physical stores  
+- Spend time and travel costs  
+- Arrive only to find items already sold out  
 
 There is no real-time visibility into remaining supply, leading to wasted effort and unfair access.
 
@@ -120,17 +127,7 @@ MiniGarage addresses these problems through a system designed for **ownership, f
 
 ### 1. True Digital Ownership via NFTs
 
-```mermaid
-graph LR
-A[User Opens Gacha] --> B[Wins Car or Fragment]
-B --> C[NFT Minted On-Chain]
-C --> D[Stored in User Wallet]
-D --> E[User Owns Asset]
-E --> F{Next Step}
-F --> G[Trade]
-F --> H[Hold]
-F --> I[Redeem Physical]
-```
+![Ownership Flow](graph.png)
 
 **Key Benefits:**
 *   Permanent ownership.
