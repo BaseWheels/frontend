@@ -35,17 +35,21 @@ Frequent actions such as gacha rolls, fragment assembly, and NFT transfers requi
 <tr>
 <td><strong>Ethereum Mainnet</strong></td>
 <td>
-• NFT mint: \$10–\$50  
-• Transfer: \$5–\$20  
-• High friction for consumer apps
+<strong>High Cost & Friction</strong><br><br>
+• NFT Mint: $10 – $50<br>
+• Transfer: $5 – $20<br>
+• Gacha Roll: High Gas<br><br>
+❌ <strong>Unsuitable for Consumer Apps</strong>
 </td>
 </tr>
 <tr>
 <td><strong>Base</strong></td>
 <td>
-• NFT mint: ~\$0.01–\$0.05  
-• Transfer: &lt;\$0.01  
-• Affordable for high-frequency interactions
+<strong>Low Cost & Scalable</strong><br><br>
+• NFT Mint: $0.01 – $0.05<br>
+• Transfer: &lt;$0.01<br>
+• Gacha Roll: Negligible<br><br>
+✅ <strong>Perfect for High Frequency</strong>
 </td>
 </tr>
 </tbody>
