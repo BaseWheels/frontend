@@ -1,11 +1,15 @@
 # ✅ Deployment on Base
 
+This page documents the **actual on-chain deployment** of MiniGarage on Base Sepolia.
+
+---
+
 ## 🌐 Network Information
 
-**MiniGarage is deployed on Base Sepolia testnet:**
+MiniGarage is deployed on **Base Sepolia (testnet)**:
 
 | Property | Value |
-|----------|-------|
+|--------|-------|
 | **Network Name** | Base Sepolia |
 | **Chain ID** | 84532 |
 | **RPC URL** | https://sepolia.base.org |
@@ -15,198 +19,162 @@
 
 ---
 
-## 📜 Deployed Contracts
+## 📜 Deployed Smart Contracts
 
-### Production Contracts (Base Sepolia)
+### Active Contracts (Base Sepolia)
 
-| Contract | Address | Explorer | Deploy Tx Hash |
-|----------|---------|----------|----------------|
-| **MockIDRX (ERC-20)** | `0x998f8B20397445C10c1B60DCa1EebFbda4cA7847` | [View](https://sepolia.basescan.org/address/0x998f8B20397445C10c1B60DCa1EebFbda4cA7847) | `0xabc123...` |
-| **CarNFT (ERC-721)** | `TBD` | [View](#) | `TBD` |
-| **FragmentNFT (ERC-721)** | `TBD` | [View](#) | `TBD` |
-| **GachaVault** | `TBD` | [View](#) | `TBD` |
-| **Marketplace** | `TBD` | [View](#) | `TBD` |
+| Contract | Standard | Address | Explorer |
+|--------|----------|---------|----------|
+| **MockIDRX** | ERC-20 | `0x998f8B20397445C10c1B60DCa1EebFbda4cA7847` | [View](https://sepolia.basescan.org/address/0x998f8B20397445C10c1B60DCa1EebFbda4cA7847) |
+| **Fragment Contract** | ERC-1155 | `0xf477FEcF885956eeCe8E84a1507D7b5Ef3Fae589` | [View](https://sepolia.basescan.org/address/0xf477FEcF885956eeCe8E84a1507D7b5Ef3Fae589) |
+| **Car NFT Contract** | ERC-721 | `0x7AEE1BFE9fD152eA1f99818cB02E1bc64DBE8b7C` | [View](https://sepolia.basescan.org/address/0x7AEE1BFE9fD152eA1f99818cB02E1bc64DBE8b7C) |
 
 {% hint style="info" %}
-**Contract Verification:** All contracts are verified on BaseScan for transparency. You can read the code directly on the explorer.
+**Verification Status:**  
+All deployed contracts are **verified on BaseScan** and publicly readable.
 {% endhint %}
 
 ---
 
-## 🖼️ Deployment Proof
+## 🧠 Architecture Clarification
 
-### Transaction Screenshots
+MiniGarage intentionally uses a **hybrid architecture**:
 
-<figure><img src="../.gitbook/assets/deploy-mockidrx.png" alt="MockIDRX Deployment"><figcaption><p>MockIDRX ERC-20 deployment transaction on Base Sepolia</p></figcaption></figure>
+### ✅ On-Chain
+- Token ownership (ERC-20, ERC-721, ERC-1155)
+- Minting & burning
+- Permanent ownership records
 
-<figure><img src="../.gitbook/assets/deploy-carnft.png" alt="CarNFT Deployment"><figcaption><p>CarNFT ERC-721 deployment transaction</p></figcaption></figure>
+### ⚙️ Off-Chain (Backend-Coordinated)
+- Gacha RNG logic
+- Marketplace matching & settlement
+- Gas sponsorship (server wallet)
+- User-friendly UX (no ETH required)
 
----
-
-## 🔗 Verification Links
-
-### MockIDRX Token
-
-**Contract Address:** `0x998f8B20397445C10c1B60DCa1EebFbda4cA7847`
-
-**View on BaseScan:**  
-🔍 [https://sepolia.basescan.org/address/0x998f8B20397445C10c1B60DCa1EebFbda4cA7847](https://sepolia.basescan.org/address/0x998f8B20397445C10c1B60DCa1EebFbda4cA7847)
-
-**Key Functions Verified:**
-- ✅ `name()` → "MockIDRX"
-- ✅ `symbol()` → "IDRX"
-- ✅ `decimals()` → 18
-- ✅ `totalSupply()` → Dynamic (minted on demand)
-
-**Recent Transactions:**
-- View live transaction history on BaseScan
-- Faucet mints, transfers, and burns visible on-chain
+> There is **NO on-chain Marketplace.sol or GachaVault.sol** in the MVP.  
+> This is a **deliberate design decision** to reduce complexity and gas costs during hackathon phase.
 
 ---
 
-## 📊 Deployment Stats
+## 💰 MockIDRX (ERC-20)
 
-| Metric | Value |
-|--------|-------|
-| **Total Contracts** | 5 |
-| **Deployment Date** | January 2026 |
-| **Network** | Base Sepolia (Testnet) |
-| **Gas Used (Total)** | ~2.5M gas |
-| **Verification Status** | All verified ✅ |
+**Purpose:** In-game currency  
+**Decimals:** 2 (Rupiah-style UX)
+
+**Contract Address:**  
+`0x998f8B20397445C10c1B60DCa1EebFbda4cA7847`
+
+### Key Capabilities
+- Faucet minting (daily claim)
+- Burn / transfer for gacha
+- Server-relayed gasless payments
+- Marketplace settlement currency
+
+**Verified Functions:**
+- `balanceOf`
+- `transfer`
+- `approve`
+- `burn`
+- `payForSpinOnBehalfOf` (gasless backend relay)
+
+---
+
+## 🧩 Fragment Contract (ERC-1155)
+
+**Purpose:** Car parts & daily rewards  
+**Standard:** ERC-1155 (multi-token)
+
+**Contract Address:**  
+`0xf477FEcF885956eeCe8E84a1507D7b5Ef3Fae589`
+
+### Why ERC-1155?
+- Efficient multi-part management
+- Same fragment types reused across models
+- Lower gas than minting many ERC-721s
+
+### Fragment Types
+| ID | Part |
+|--|--|
+| 0 | Chassis |
+| 1 | Wheels |
+| 2 | Engine |
+| 3 | Body |
+| 4 | Interior |
+
+Fragments are **burned during assembly** to mint a full car NFT.
+
+---
+
+## 🚗 Car NFT Contract (ERC-721)
+
+**Purpose:** Full assembled cars (collectible NFTs)
+
+**Contract Address:**  
+`0x7AEE1BFE9fD152eA1f99818cB02E1bc64DBE8b7C`
+
+### Characteristics
+- Unique token per car
+- Minted via:
+  - Gacha reward
+  - Fragment assembly
+- Burnable for future physical redemption (roadmap)
+
+Metadata served via backend using `baseURI + tokenId`.
 
 ---
 
 ## 🔐 Contract Ownership
 
-| Contract | Owner Address | Type |
-|----------|---------------|------|
-| MockIDRX | `0xAb4cBeFaeb226BC23F6399E0327F40e362cdDC3B` | Backend Wallet |
-| CarNFT | `0xAb4cBeFaeb226BC23F6399E0327F40e362cdDC3B` | Backend Wallet |
-| FragmentNFT | `0xAb4cBeFaeb226BC23F6399E0327F40e362cdDC3B` | Backend Wallet |
-| GachaVault | `0xAb4cBeFaeb226BC23F6399E0327F40e362cdDC3B` | Backend Wallet |
-| Marketplace | `0xAb4cBeFaeb226BC23F6399E0327F40e362cdDC3B` | Backend Wallet |
+| Contract | Owner |
+|-------|-------|
+| MockIDRX | Backend Admin Wallet |
+| Fragment ERC-1155 | Backend Admin Wallet |
+| Car ERC-721 | Backend Admin Wallet |
 
 {% hint style="warning" %}
-**Security Note:** Owner wallet is a hot wallet for testnet. Mainnet will use multisig + timelock for admin functions.
+**Security Note:**  
+Owner wallet is a **hot wallet for testnet only**.  
+Mainnet plan includes **multisig + timelock**.
 {% endhint %}
 
 ---
 
-## 🧪 Testing on Base Sepolia
+## 🧪 How to Verify Deployment (Judges)
 
-### Add Network to Wallet
+1. Open BaseScan  
+2. Paste any contract address above  
+3. Check:
+   - ✅ Verified source code
+   - ✅ Read / Write Contract tabs
+   - ✅ Live transactions
 
-**MetaMask / Privy:**
-```json
-{
-  "chainId": "0x14A34",
-  "chainName": "Base Sepolia",
-  "rpcUrls": ["https://sepolia.base.org"],
-  "nativeCurrency": {
-    "name": "Ethereum",
-    "symbol": "ETH",
-    "decimals": 18
-  },
-  "blockExplorerUrls": ["https://sepolia.basescan.org"]
-}
-```
-
-### Get Test ETH
-
-1. Visit [Coinbase Faucet](https://www.coinbase.com/faucets/base-ethereum-goerli-faucet)
-2. Connect wallet
-3. Claim free Sepolia ETH
-4. Bridge to Base Sepolia
+Example:  
+https://sepolia.basescan.org/address/0x998f8B20397445C10c1B60DCa1EebFbda4cA7847
 
 ---
 
-## 🎯 Mainnet Readiness
-
-### Pre-Launch Checklist
-
-- [ ] Security audit completed
-- [ ] Multisig wallet setup for admin
-- [ ] Timelock for critical functions
-- [ ] Gas optimization review
-- [ ] Frontend/backend mainnet configs
-- [ ] Real IDRX integration plan
-- [ ] Legal/compliance review
-
-### Mainnet Deployment Plan
-
-**Phase 1 - Soft Launch:**
-- Deploy to Base Mainnet (Chain ID: 8453)
-- Limited user access (whitelist)
-- Monitor for issues
-
-**Phase 2 - Public Launch:**
-- Open to all users
-- Marketing campaign
-- Community building
-
----
-
-## 📈 On-Chain Activity
-
-### Live Stats (Base Sepolia)
+## 📊 Deployment Summary
 
 | Metric | Value |
-|--------|-------|
-| **Total IDRX Minted** | 50M+ IDRX |
-| **Unique Wallets** | 100+ |
-| **NFTs Minted** | 200+ |
-| **Marketplace Trades** | 50+ |
-| **Total Transactions** | 1,000+ |
-
-**View Live:** [BaseScan Activity](https://sepolia.basescan.org/address/0x998f8B20397445C10c1B60DCa1EebFbda4cA7847)
+|-----|------|
+| **Total Contracts** | 3 |
+| **Network** | Base Sepolia |
+| **Deployment Date** | Jan 2026 |
+| **Verification** | 100% Verified |
+| **Architecture** | Hybrid (On-chain + Backend) |
 
 ---
 
-## 🛠️ Developer Tools
+## 🚀 Mainnet Readiness (Next Steps)
 
-### Etherscan API
-
-```bash
-# Get MockIDRX balance
-curl "https://api-sepolia.basescan.org/api?module=account&action=tokenbalance&contractaddress=0x998f8B20397445C10c1B60DCa1EebFbda4cA7847&address=YOUR_ADDRESS&tag=latest&apikey=YOUR_API_KEY"
-```
-
-### ethers.js Example
-
-```javascript
-import { ethers } from 'ethers';
-
-const provider = new ethers.JsonRpcProvider('https://sepolia.base.org');
-const mockIDRXAddress = '0x998f8B20397445C10c1B60DCa1EebFbda4cA7847';
-const abi = ['function balanceOf(address) view returns (uint256)'];
-
-const contract = new ethers.Contract(mockIDRXAddress, abi, provider);
-const balance = await contract.balanceOf('YOUR_ADDRESS');
-console.log('Balance:', ethers.formatUnits(balance, 18));
-```
+- [ ] Multisig admin wallet
+- [ ] Timelock for sensitive functions
+- [ ] Contract audit
+- [ ] Gas optimization review
+- [ ] Base Mainnet deployment (8453)
 
 ---
-
-## 🔍 Verifying Deployment
-
-### For Judges/Auditors
-
-**Step 1:** Visit BaseScan  
-Go to [https://sepolia.basescan.org/address/0x998f8B20397445C10c1B60DCa1EebFbda4cA7847](https://sepolia.basescan.org/address/0x998f8B20397445C10c1B60DCa1EebFbda4cA7847)
-
-**Step 2:** Check Contract Tab  
-- "Contract" section shows verified source code
-- Green checkmark = verified ✅
-
-**Step 3:** Read Contract  
-- Click "Read Contract"
-- Call `name()`, `symbol()`, `decimals()`
-- Verify it matches our documentation
-
-**Step 4:** Check Transactions  
-- "Transactions" tab shows all activity
-- Filter by method to see mints, transfers, burns
 
 {% hint style="success" %}
-**Proof of Deployment:** All contracts are live, verified, and actively used by our app!
+**All contracts listed above are live, verifiable, and actively used by the MiniGarage application.**
 {% endhint %}

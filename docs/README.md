@@ -164,21 +164,30 @@ Get started in less than 5 minutes with our [Demo & Links Guide](getting-started
 
 Explore the full documentation:
 
-* 💡 [Introduction](introduction/)
+* 💡 **Introduction**
   * [Problem & Solution](introduction/problem-solution.md)
   * [Why Base?](introduction/why-base.md)
   * [Key Features](introduction/key-features.md)
-* 🚀 [Getting Started](getting-started/)
+* 🚀 **Getting Started**
+  * [Quick Start](getting-started/quick-start.md)
   * [Demo & Links](getting-started/demo-and-links.md)
   * [User Flow](getting-started/user-flow.md)
-  * [Deployment Info](getting-started/deployment-on-base.md)
-* 🏗️ [Technical Architecture](technical/)
+* 🎮 **Core Features**
+  * [Gacha System](core-features/gacha-system.md)
+  * [Fragment Assembly](core-features/fragment-assembly.md)
+  * [NFT Marketplace](core-features/nft-marketplace.md)
+  * [Inventory Management](core-features/inventory-management.md)
+* 💼 **Business Model**
+  * [Business Model](Business-model/business-model.md)
+* 🏗️ **Technical Architecture**
   * [System Architecture](technical/architecture.md)
   * [Smart Contracts](technical/smart-contracts.md)
   * [IDRX Integration](technical/idrx-integration.md)
-* 📋 [Project Info](project/)
+  * [Security & Audits](architecture/security-and-audits.md)
+* 📋 **Project Info**
   * [Roadmap](project/roadmap.md)
   * [Team](project/team.md)
-  * [Local Setup](project/local-setup.md)
-* 📚 [Resources](resources/)
+  * [Deployment on Base](project/deployment-on-base.md)
+* 📚 **Resources**
   * [FAQ](resources/faq.md)
+

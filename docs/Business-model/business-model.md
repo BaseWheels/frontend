@@ -1,86 +1,199 @@
 # 💼 Business Model
 
-How MiniGarage creates sustainable value and revenue.
+MiniGarage is a digital-first collectible platform that blends gaming mechanics, true ownership, and real-world assets (RWA) on Base.
 
 ---
 
-## 💎 Revenue Streams
+## 🎯 Target Market Strategy
 
-MiniGarage operates on a **hybrid Web3 game economy**, balancing accessibility with long-term sustainability.
+MiniGarage uses a dual-market approach: **Collectors-first, Gamers-second** (growth engine). This ensures long-term value while enabling mass adoption.
+
+### 🧩 Primary Market — Collectors (Core Users)
+**Who They Are:**
+*   Die-cast car collectors
+*   NFT collectors
+*   Hobbyists & memorabilia enthusiasts
+*   RWA-focused Web3 users
+
+#### Why Collectors Matter
+*   ✅ **Hold longer**
+*   ✅ **Care about authenticity & scarcity**
+*   ✅ **Willing to pay premium**
+*   ✅ **Value physical redemption**
+
+#### Solving Collector Problems
 
 <table data-card-size="large" data-view="cards">
-<thead><tr><th>Stream</th><th>Description</th><th>Est. Share</th></tr></thead>
+<thead><tr><th>Problem</th><th>MiniGarage Solution</th></tr></thead>
 <tbody>
 <tr>
-<td><strong>🎰 Gacha & Chests</strong></td>
-<td>Sales of Gacha boxes (Standard to Legendary)</td>
-<td><strong>70%</strong></td>
+<td><strong>Hard to verify authenticity</strong></td>
+<td>On-chain NFT provenance</td>
 </tr>
 <tr>
-<td><strong>🏪 Marketplace Fees</strong></td>
-<td>2.5% service fee on every secondary trade</td>
-<td><strong>20%</strong></td>
+<td><strong>Limited global access</strong></td>
+<td>Digital-first collecting</td>
 </tr>
 <tr>
-<td><strong>⚡ Premium Features</strong></td>
-<td>Future subscriptions, early access, custom skins</td>
-<td><strong>10%</strong></td>
+<td><strong>Expensive upfront physical</strong></td>
+<td>Buy digital, redeem later</td>
+</tr>
+<tr>
+<td><strong>Illiquid collectibles</strong></td>
+<td>P2P marketplace</td>
 </tr>
 </tbody>
 </table>
 
-> **💡 Note:** In the testnet phase, all "revenue" is in MockIDRX. On mainnet, this translates to real value via stablecoin or partner token integration.
+> **Value Proposition:** “Collect digitally, trade globally, redeem physically — only when you want.”
 
 ---
 
-## 🔄 The Economic Loop
+### 🎮 Secondary Market — Gamers (Growth Engine)
+**Why Gamers?** They are the fastest adoption channel. They are familiar with gacha, comfortable with digital assets, and used to spending.
 
-1.  **Inflow:** Users purchase IDRX (via fiat on-ramp or partner swap) to play.
-2.  **Action:** Users spend IDRX on **Gacha Boxes**.
-    *   *System Revenue:* 100% of Gacha cost goes to the **Treasury**.
-3.  **Circulation:** Users trade items on the **Marketplace**.
-    *   *System Revenue:* 2.5% of trade volume goes to the **Treasury**.
-4.  **Outflow (Cost):**
-    *   **Gas Sponsorship:** Treasury funds the Paymaster to keep the app gasless.
-    *   **RWA Manufacturing:** Funds used to produce/procure physical cars for redemption.
+#### Target Gamer Segments
+
+| Targeting | Segment | Reason |
+| :--- | :--- | :--- |
+| **✅ Targeting** | Mobile gamers | Gacha-native behavior |
+| **✅ Targeting** | Casual gamers | Progression-driven |
+| **✅ Targeting** | Simulation fans | Asset value mindset |
+| **❌ Not Targeting** | Competitive FPS | Skill-based only |
+
+#### Validated Gamer Pain Points
+
+<table data-card-size="large" data-view="cards">
+<thead><tr><th>Gamer Problem</th><th>MiniGarage Fix</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>Items lost on shutdown</strong></td>
+<td>NFT ownership</td>
+</tr>
+<tr>
+<td><strong>Cannot sell items</strong></td>
+<td>P2P marketplace</td>
+</tr>
+<tr>
+<td><strong>RNG frustration</strong></td>
+<td>Fragment assembly</td>
+</tr>
+<tr>
+<td><strong>Gas fees & wallets</strong></td>
+<td>Gasless UX</td>
+</tr>
+</tbody>
+</table>
+
+> **Key Insight:** Gamers already spend money — MiniGarage gives them exit liquidity.
+
+#### Gamer → Collector Conversion Loop
+```mermaid
+flowchart LR
+    A[Gamer enters via Gacha] --> B[Owns NFT]
+    B --> C[Trades on Marketplace]
+    C --> D[Builds Collection]
+    D --> E[Becomes Collector]
+    E --> F[Redeems Physical RWA]
+```
+*Gamers enter for fun, Collectors stay for value.*
 
 ---
 
-## 🏭 Cost Structure
+## 🌍 Market Size & Real Communities
 
-To maintain a "Gasless" and "RWA" experience, we manage specific costs:
+**🇮🇩 Indonesia as Launch Market**
 
-### 1. Gas Sponsorship (User Acquisition)
-We pay the gas fees for user transactions (Minting, Crafting, Spinning).
-*   **Why?** Removes the biggest barrier to entry for non-crypto users.
-*   **Viability:** On Base, gas is negligible (~$0.01). The "Customer Acquisition Cost" (CAC) of paying gas is far lower than traditional marketing.
+| Metric | Data |
+| :--- | :--- |
+| **Population** | ~275M |
+| **Gamers** | ~185M (Top 5 Globally) |
+| **Mobile Usage** | >70% |
 
-### 2. Physical Inventory (RWA)
-Cost of manufacturing or procuring die-cast models.
-*   **Strategy:** Inventory is procured *before* minting. Digital supply is strictly hard-capped 1:1 with physical stock to prevent liability.
+### Existing Communities (Organic Fit)
+
+<table data-card-size="large" data-view="cards">
+<thead><tr><th></th><th></th></tr></thead>
+<tbody>
+<tr>
+<td><strong>🚗 Die-cast</strong></td>
+<td>Diecast Indonesia (100K+), Hot Wheels Indo (200K+)</td>
+</tr>
+<tr>
+<td><strong>🎮 Gaming</strong></td>
+<td>Mobile Legends Indo (1M+), Gacha Gamers</td>
+</tr>
+</tbody>
+</table>
+
+> These users already collect digitally — just without ownership.
 
 ---
 
-## 📈 Growth Strategy
+## 💰 Revenue Streams
 
-### Phase 1: Virtual Economy (Current)
-*   Focus on **digital collectibles**.
-*   Revenue comes from selling "excitement" (Gacha) and "progression" (Fragments).
-*   Low operational overhead.
+### 1️⃣ Gacha Revenue
+*   Users spend IDRX to open boxes
+*   Backend-sponsored gas
+*   **Predictable pricing**
 
-### Phase 2: RWA & Brand Partnerships (Future)
-*   **Sponsored Collections:** Car brands pay to release a limited digital series in MiniGarage.
-    *   *Example:* "Ferrari Week" – Exclusive drops.
-*   **Physical Merch:** Official redeemable cars shipped globally.
+### 2️⃣ Marketplace Fees
+*   **2.5% service fee** on trades
+*   No listing fee
+*   Paid only when users trade
+
+### 3️⃣ RWA Redemption (Future)
+*   Physical fulfillment margin
+*   Limited edition premiums
+
+### 4️⃣ Brand Collaborations (Future)
+*   Sponsored drops & co-branded releases
 
 ---
 
-## 🛡️ Sustainability (Treasury)
+## 🧠 Why This Model Works on Base
 
-The **MiniGarage Treasury** is the central bank of the game.
+### Strategic Fit
 
-*   **Role:** Collects revenues, pays gas fees, funds development.
-*   **Transparency:** All treasury flows will be visible on-chain.
-*   **Goal:** Ensure the platform remains profitable even if new user growth slows, relying on marketplace volume (royalties).
+<table data-card-size="large" data-view="cards">
+<thead><tr><th>Base Strength</th><th>MiniGarage Fit</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>Consumer L2</strong></td>
+<td>Consumer collectibles</td>
+</tr>
+<tr>
+<td><strong>Social Layer</strong></td>
+<td>Community-driven collecting</td>
+</tr>
+<tr>
+<td><strong>Low Fees</strong></td>
+<td>Micro-transactions viable</td>
+</tr>
+<tr>
+<td><strong>Coinbase Trust</strong></td>
+<td>Mainstream appeal</td>
+</tr>
+</tbody>
+</table>
 
-> **Sustainable Flywheel:** More Users → More Trades → More Fees → More Gas Sponsorship → More Users.
+---
+
+## 🏁 Strategic Positioning Summary
+
+MiniGarage is **not "a game"**. It is a **collectible platform** that uses game mechanics.
+
+| Aspect | Strategics Position |
+| :--- | :--- |
+| **Core Value** | Collectibles & RWA |
+| **Engagement** | Gacha & Progression |
+| **Growth Engine** | Gamers |
+| **Retention** | Collectors |
+| **Blockchain** | Base |
+
+> **📌 Key Takeaway:**
+> *   Gamers bring **users**.
+> *   Collectors bring **value**.
+> *   RWA brings **longevity**.
+>
+> MiniGarage is built to scale across all three.

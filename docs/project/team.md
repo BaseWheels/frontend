@@ -268,22 +268,6 @@ We're available 24/7 during the judging period!
 
 > "Design should be invisible. Users shouldn't have to think about blockchain - they should just enjoy collecting cars. That's what I aimed for with MiniGarage's UX."
 
-***
-
-## 🌟 Join Our Team
-
-We're looking to expand post-hackathon!
-
-### Open Positions
-
-* [ ] **Community Manager** - Manage Discord, Twitter
-* [ ] **Marketing Lead** - Growth strategies, partnerships
-* [ ] **Backend Developer** - Scale infrastructure
-* [ ] **QA Engineer** - Testing, bug hunting
-
-**Interested?** Email: careers@minigarage.app
-
-***
 
 {% hint style="success" %}
 **For Judges:** Feel free to reach out on Discord for live demos, technical deep-dives, or just to say hi! We love talking about our project. 🚗💨
