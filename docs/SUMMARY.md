@@ -5,8 +5,7 @@
   * [Problem & Solution](introduction/problem-solution.md)
   * [Why Base Blockchain](introduction/why-base.md)
   * [Key Features](introduction/key-features.md)
-* [💼 Business](introduction/business-model.md)
-  * [Business Model](Business-model/overview.md)
+
 
 ## 🚀 Getting Started
 
@@ -33,6 +32,7 @@
 ## 📊 Project
 
 * [🗺️ Roadmap](project/roadmap.md)
+* [💼 Business Model](Business-model/business-model.md)
 * [👥 Team](project/team.md)
 * [Deployment on Base](project/deployment-on-base.md)
 
