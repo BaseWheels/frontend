@@ -12,7 +12,10 @@ This section provides direct access to the MiniGarage demo, source code, and on-
   https://mini-garage.vercel.app  
 
 - **Farcaster Mini App:**  
-  https://farcaster.xyz/miniapps/PV89sm1opO1J/minigarage  
+  https://farcaster.xyz/miniapps/PV89sm1opO1J/minigarage 
+
+- **Base App:**  
+  https://base.app/app/minigarageapp.vercel.app
 
 {% hint style="info" %}
 **Network:** Base Sepolia Testnet  
@@ -23,7 +26,7 @@ This is a testnet demo. No real money is involved.
 
 ## 🎬 Video Demo
 
-{% embed url="https://youtu.be/YOUR_VIDEO_ID" %}
+{% embed url="https://youtu.be/u_c0s9pS8TU" %}
 Short walkthrough of MiniGarage core features
 {% endembed %}
 
@@ -37,25 +40,22 @@ Short walkthrough of MiniGarage core features
 ---
 
 ## 📂 GitHub Repositories
+**Github Organization:** 
+🔗 https://github.com/MiniGarage
 
 **Frontend:**  
-🔗 https://github.com/yourusername/minigarage-frontend  
+🔗 https://github.com/MiniGarage/frontend
+
+**Backends :**
+🔗 https://github.com/MiniGarage/backend
 
 **Smart Contracts:**  
-🔗 https://github.com/yourusername/minigarage-contracts  
+🔗 https://github.com/MiniGarage/smartcontract 
 
 {% hint style="success" %}
 For reviewers: commit history shows the full development journey.
 {% endhint %}
 
----
-
-## 📊 Pitch Deck (Optional)
-
-**Presentation Slides:**  
-🔗 MiniGarage Pitch Deck (Google Slides)
-
----
 
 ## 🚀 Quick Demo Flow (For Judges)
 
